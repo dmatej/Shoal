@@ -1,45 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-<title>Project Home Page</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="CONTENT-TYPE"
+ content="text/html; charset=iso-8859-1">
+  <title></title>
+  <meta name="GENERATOR" content="StarOffice 8  (Solaris x86)">
+  <meta name="AUTHOR" content="Shreedhar Ganapathy">
+  <meta name="CREATED" content="20060425;11113700">
+  <meta name="CHANGEDBY" content="Shreedhar Ganapathy">
+  <meta name="CHANGED" content="20060505;13580100">
 </head>
-
-<body bgcolor="#FFFFFF" text="#000000">
-<h1>Default project home page </h1>
-<p>Congratulations on your new java.net project! </p>
-<p>This page is the home page for your new project. This content is appearing 
-  because you have selected the option <b>Use project index.html</b>. To edit 
-  the information displayed on this page, just use CVS to check out your project's 
-  CVS repository and edit index.html in directory www. You can get more information 
-  on how to set-up your local CVS client, click on <b>Version Control</b> on the 
-  left nav bar. </p>
-<p>If you don't want to use CVS to manage your home page, click on the <b>Edit 
-  project</b> link on this page and unclick the option <b>Use project index.html</b>. 
-  Your project home page contents will be generated from the <b>Edit project</b> 
-  field <b>Description</b>. Edit the text on that field to change your home page 
-  contents. Click on <b>Submit changes</b> to save your edits. </p>
-<p>If you are looking for <a href="https://java-net.dev.java.net/ProjectPages.html#templates">sample 
-  home page templates</a>, check out the <a href="https://java-net.dev.java.net/ProjectPages.html">java.net 
-  Project Starter Kit</a>. Copy either of the templates into your project's html 
-  to get started on your project's home page. </p>
-<p>You can find lots of helpful information in the Starter Kit to get your project 
-  started. Some of the things you will find in there include:</p>
+<body dir="ltr" lang="en-US">
+<p style="margin-top: 0.17in; page-break-after: avoid;"><font
+ face="Helvetica, sans-serif"><font style="font-size: 16pt;" size="4"><b>Shoal
+&#8211; A Generic Clustering Framework</b></font></font></p>
+<p style="margin-top: 0.17in; page-break-after: avoid;"><font
+ face="Helvetica, sans-serif"><font size="4"><b>About
+Shoal Framework</b></font></font></p>
+<p><font face="Arial, sans-serif">Shoal is a java based clustering
+framework
+that provides infrastructure to build fault tolerance, reliability and
+availability. The framework can be plugged into any product needing
+clustering and related distributed systems capability without tightly
+binding to a specific communications infrastructure. The framework
+can be plugged in as an in-process component. The framework will have
+two broad categories of APIs, namely, a&nbsp; Client API, and a Group
+Communication Provider API. The Client API will allow in-process
+client components to be notified of cluster events and to send and
+receive messages to/from the group or individual members. The Group
+Communication Provider
+API provides for integration of any group communication technology such
+as <a href="http://www.jxta.org">JXTA</a>, <a
+ href="http://www.jgroups.org">JGroups</a>, etc. as
+the underlying group communications provider. The Framework thus
+provides a layer of abstraction for consuming applications/products
+without tightly binding them to a specific group
+communication system semantics and implementation. This allows
+employing applications to simply
+call the framework's APIs for building clustering and related
+enterprise distributed systems characteristics.</font></p>
+<p style="margin-top: 0.17in; page-break-after: avoid;"><font
+ face="Helvetica, sans-serif"><font style="font-size: 16pt;" size="4"><b>Shoal
+Capabilities</b></font></font></p>
+<p style="margin-top: 0.17in; page-break-after: avoid;"><font
+ face="Helvetica, sans-serif"><font size="3"><b>Cluster
+Member Event Management</b></font></font></p>
+<p><font face="Arial, sans-serif"><font size="3">The Shoal Framework,
+written in Java, can be used as an in-process component for cluster
+communications and cluster event management. As an in-process
+component, Shoal's core service, the Group Management Service (GMS),
+provides the ability for the process (JVM) to become a communicating
+member of a predefined cluster. As a result, within each process,
+clients implementing Shoal's client API can get notifications of
+cluster events. By becoming a communicating cluster member, the
+process gets the ability to </font></font>
+</p>
 <ul>
-  <li>Hints on how to <a href="https://java-net.dev.java.net/ProjectPages.html#pages">set-up 
-    your project's</a> home page</li>
-  <li>Ideas on how to <a href="https://java-net.dev.java.net/ProjectPages.html#publicity">publicize 
-    your project</a> including RSS feeds</li>
-  <li>Hints on <a href="https://java-net.dev.java.net/pagedesign.html">project 
-    page HTML</a></li>
-  <li>Setting up project <a href="https://java-net.dev.java.net/ProjectPages.html#wiki">wiki 
-    pages</a></li>
-  <li>And places to go if <a href="https://java-net.dev.java.net/ProjectPages.html#feedback">you 
-    have questions</a>.</li>
+  <li>
+    <p><font face="Arial, sans-serif"><font size="3">be notified of
+members' joining, failures, and planned shutdowns among cluster members
+( see <a href="ShoalGroupEventNotifications.html"
+ name="Shoal Group Event Notifications" target="_blank">Shoal Group
+Event Notifications</a>), </font></font> </p>
+  </li>
+  <li>
+    <p><font face="Arial, sans-serif"><font size="3">be notified of the
+process's selection as a recovery member for any recovery operations on
+another member on occurrence that other member's failure. (see <a
+ href="ShoalAutomatedDelegatedRecoveryInitiation.html"
+ name="Shoal Automated Delegated Recovery Initiation" target="_blank">Shoal
+Automated Delegated Recovery Initiation</a>), </font></font> </p>
+  </li>
+  <li>
+    <p><font face="Arial, sans-serif"><font size="3">check, while
+joining, if any other process in the cluster is performing any recovery
+operations on its resources (see <a href="ShoalProtectiveFencing.odt"
+ name="Shoal Protective Fencing">Shoal Protective Fencing</a>),</font></font></p>
+  </li>
+  <li>
+    <p><font face="Arial, sans-serif"><font size="3">receive messages
+sent by one or more members directly to it or to the group as a whole
+(see <a href="ShoalMessaging.html" name="Shoal Messaging">Shoal
+Messaging</a>) and </font></font> </p>
+  </li>
+  <li>
+    <p><font face="Arial, sans-serif"><font size="3">send messages to
+the group as a whole or a particular member (see <a
+ href="ShoalMessaging.html" name="Shoal Messaging">Shoal Messaging</a>)
+    </font></font> </p>
+  </li>
 </ul>
-<p>Remember that you will attract more new members and your project team will 
-  work more effectively if you, as the project owner, supply sufficient information 
-  about your project for visitors to your project space. Good luck with your new 
-  project! </p>
+<p style="margin-top: 0.17in; page-break-after: avoid;"><font
+ face="Arial, sans-serif"><font size="4"><b><font size="3"><font
+ face="Helvetica, sans-serif">Membership
+in Multiple Groups</font></font></b> </font></font>
+</p>
+<p><font face="Arial, sans-serif"><font size="3">A single process can
+be a member of multiple groups to represent different groups. For
+example, the instance could participate in the pre-defined cluster
+that encompasses all cluster members while also participating in a
+different group, say, a replication group that represents a sub-group
+of members in that cluster to which this member would replicate its
+state to. For each such group, GroupManagementService instances can
+be created within the process and these will be independent of each
+other. </font></font>
+</p>
+<p style="margin-top: 0.17in; page-break-after: avoid;"><font
+ face="Helvetica, sans-serif"><font size="3"><b>Core
+and Spectator Member Roles</b></font></font></p>
+<p><font face="Arial, sans-serif"><font size="3">A member can
+participate in a group either as a core member or as a spectator
+member. If configured to participate as a Core member, then that
+member's failure would be notified to all other members. If
+configured to participate as a Spectator, then the spectator member's
+failure will not be notified to all other members, however, the
+spectator member would receive all notifications pertaining to other
+Core members. This is useful for non-cluster processes to be part of
+a defined group to get the advantages of the various notifications
+and messages described in the previous paragraph. Typically, this is
+useful for monitoring or administrative infrastructures in that the
+ability to communicate and receive notifications allows such
+non-cluster members to effect configuration changes based on certain
+group events and also send out meaningful messages to listening
+endpoints in the group. </font></font>
+</p>
+<p><font face="Arial, sans-serif"><font size="3">The functionalities
+provided by the Shoal Framework lays down foundations for building
+broader fault tolerance capabilities and application state in-memory
+replication possibilities for infrastructure consuming this
+Framework.</font></font></p>
+<p><br>
+<br>
+</p>
+<p><br>
+<br>
+</p>
 </body>
 </html>
 

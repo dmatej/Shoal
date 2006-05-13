@@ -131,14 +131,54 @@ endpoints in the group.<br>
 <p style="margin-top: 0.17in; page-break-after: avoid;"><font
  face="Helvetica, sans-serif"><font size="4"><b>Distributed
 State Cache</b></font></font></p>
-<h1><font face="Arial, sans-serif"><font size="3"> </font></font></h1>
 <p><font face="Arial, sans-serif">Shoal also provides the ability to
 add distributed cache implementations by exposing an interface
 DistributedStateCache. A default implementation is provided by GMS for
 lightweight replicated caching.&nbsp; Shoal framework users have the
 opportunity to develop their own implementations of the
 DistributedStateCache for use within their clustering environment along
-with GMS. </font></p>
+with GMS.<br>
+</font></p>
+<p style="margin-top: 0.17in; page-break-after: avoid;"><font
+ face="Helvetica, sans-serif"><font size="4"><b>Shoal GMS Use Cases</b></font></font></p>
+<p><font face="Arial, sans-serif">Some real use
+cases are listed here. Note that these are not exhaustive and the
+extent to which GMS could be used is only limited by imagination.</font><br>
+</p>
+<ul>
+  <li><font face="Arial, sans-serif">In a Java EE (J2EE) environment,
+transaction service reliability can be significantly improved in a
+cluster setting, by using delegated recovery initiation notification
+that automatically picks another cluster member to perform recovery
+operations from the failed member's transaction logs.&nbsp; Contrast
+this with manual transaction recovery which depends on availability of
+administrative personnel to perform the job.</font></li>
+  <li><font face="Arial, sans-serif">Another example in the Java EE
+environment is IIOP Failover. With GMS, the ORB layer can now be
+dynamically notified of failures, shutdowns and member joins thereby
+allowing the list of IOR addresses to be updated out-of-band to IIOP
+clients. This allows for better failover scenario compared to a static
+list wherein failover entails moving from one address to another until
+a live instance is found.</font></li>
+  <li><font face="Arial, sans-serif">GMS provided Distributed State
+Cache can be used as an in-memory store for session data. The
+underlying group communication provider such as JXTA, JGroups, etc. can
+be tuned to run in a highly performant manner, enabling high
+availability of servers.</font></li>
+  <li><font face="Arial, sans-serif">Read-only and read-mostly beans on
+various instances in a cluster can be notified when a cache update is
+discovered by one of the instances. The notification can be done
+through GMS's messaging API. <br>
+    </font></li>
+  <li><font face="Arial, sans-serif">Monitoring Clients/Agents can now
+participate in the cluster as Spectator members and be notified of
+cluster instance lifecycle events. <br>
+    </font></li>
+  <li><font face="Arial, sans-serif">Dynamic Provisioning services can
+take advantage of GMS thereby taking appropriate actions of providing
+more resources on occurence of failures depending on load conditions. <br>
+    </font></li>
+</ul>
 <br>
 <br>
 <br>

@@ -1,0 +1,939 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 8  (Solaris x86)">
+	<META NAME="AUTHOR" CONTENT="Shreedhar Ganapathy">
+	<META NAME="CREATED" CONTENT="20060505;14051600">
+	<META NAME="CHANGEDBY" CONTENT="Shreedhar Ganapathy">
+	<META NAME="CHANGED" CONTENT="20060512;18485100">
+	<STYLE>
+	<!--
+		H2 { margin-left: 0.3in; margin-top: 0.1in; margin-bottom: 0.04in; page-break-before: auto; page-break-after: auto }
+		H2.western { font-family: "Arial", sans-serif; font-size: 12pt }
+		H2.cjk { font-family: "HG Mincho Light J"; font-size: 14pt; font-weight: medium }
+		H2.ctl { font-family: "Arial Unicode MS"; font-size: 14pt; font-weight: medium }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Shoal
+Framework Design Overview</B></FONT></FONT></P>
+<P><FONT FACE="Arial, sans-serif">The Shoal Framework is designed
+with a view to providing a layer of abstraction for communicating
+process groups above the actual communication layer. This enables
+members of a process group to use API calls to communicate and
+receive notifications for group events without knowing about the
+underlying group communication provider semantics, thus avoiding
+tight binding to a specific group communication implementation.
+Essentially, one could achieve clustering related features through
+this framework while using a preferred underlying group communication
+provider based on performance characteristics, and business/licensing
+needs. </FONT>
+</P>
+<P><FONT FACE="Arial, sans-serif">This document covers the overall
+design, functional capabilities and programming model of this
+framework in some detail.</FONT></P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Introduction</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>The
+Shoal Framework is an independent module whose instances may be
+embedded and started by processes that require group management
+services such as:</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Ability
+	to participate in a process group/cluster</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Receive
+	membership change notifications service such as joining, leaving and
+	shutdowns</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Receive
+	Delegated Recovery Initiation service</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Protective
+	Fencing Service</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Group
+	Messaging Service</FONT></FONT></P>
+</UL>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Shoal's
+core service, the GroupManagementService (GMS) provides the basis for
+employing applications to consume its services through APIs. GMS
+provides APIs to integrate any group communications infrastructure.
+Initially, Shoal's GMS will have two group communications provider
+implementations, one based on </FONT><A HREF="http://www.jxta.org/"><FONT FACE="Arial, sans-serif">Jxta</FONT></A><FONT FACE="Arial, sans-serif">
+peer-to-peer technology, and another based on the </FONT><A HREF="http://www.jgroups.org/"><FONT FACE="Arial, sans-serif">JGroups</FONT></A><FONT FACE="Arial, sans-serif">
+toolkit. </FONT>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Side
+Note:</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>To
+learn more about group communications and the particular group
+communications infrastructure used in the implementation of Shoal
+framework, please refer to the references section below.</FONT></FONT></P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Arial, sans-serif"><FONT SIZE=4>Supported
+Features</FONT></FONT></P>
+<P><FONT FACE="Arial, sans-serif">Shoal's GroupManagementService
+(GMS) provides the following features:</FONT></P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Ability
+	to join one or more named group(s)</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Member
+	Failure notification</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Member
+	Join, and Planned Shutdown notifications</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Recovery
+	target member selection</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Protection
+	of recovery using protective fencing</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Sending
+	and Receiving of messages to all group members</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Lightweight
+	Distributed State Cache implementation </FONT></FONT>
+	</P>
+</UL>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Shoal
+provides a simple, easy-to-use API for consuming applications.</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>The
+features of the Shoal's GMS can be broken into three large classes:</FONT></FONT></P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Features
+	that provide a group sensory-action theme. (GMS &ldquo;senses&rdquo;
+	group events raised from the group communication infrastructure,
+	packs relevant events into Signals and and initiates &ldquo;actions.&rdquo;)
+	</FONT></FONT>
+	</P>
+</UL>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Features
+	that provide a group communications theme. (GMS provides a &ldquo;handle&rdquo;
+	to the group for light-weight messaging. When messages are received
+	GMS packs them into message signals and delivers them to &ldquo;actions&rdquo;.)</FONT></FONT></P>
+</UL>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Features
+	that provide Shared or Distributed Storage theme. (GMS provides a
+	DistributedStateCache interface along with an implementation that
+	allows for dynamic shared storage of data.)</FONT></FONT></P>
+</UL>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Not
+Supported Features</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Shoal's GMS does not
+support any special handling of cascading failures. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Shoal's GMS does not
+detect subsystem failures within a process or server instance.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Shoal's GMS does not yet
+detect or handle network partitions. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Albany, sans-serif"><FONT SIZE=4><FONT FACE="Helvetica, sans-serif">Other
+limitations</FONT></FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>It is important to note
+that failure detection in GMS relies on the underlying group
+communication provider mechanism. Typically, failure detection is
+based on a limited concept of failure, focusing on &ldquo;unreachability&rdquo;.
+&ldquo;Unreachability&rdquo; in GMS finds its more crisp definition
+in the underlying group communication provider's failure detection
+protocol. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>For example, failure
+detection time-out parameters can play a role in determining whether
+a server is &ldquo;unreachable&rdquo; along with retry settings. In
+other words, what is &ldquo;unreachable&rdquo; may depend on how long
+you wait to reach it and how often you try to reach it. Parameters
+for failure detection in GMS have been judiciously selected to have
+the right heuristics such that a failure detection is realistic.
+Nevertheless, the distinction among failures and the source of
+failures remain well beyond the scope of this version of Shoal.</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Design
+Approach</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>The
+approach taken relies on a group communications toolkit (such as
+JGroups, or Jxta) to build an underlying protocol stack for
+inter-process group communications. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS
+then uses sensor/actuator model, in that, GMS &ldquo;senses&rdquo;
+events received from the underlying group communications
+infrastructure in each member process.</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS performs minimal
+analysis on these group events and packages them as signals to be
+handed to higher layers. Thereby, GMS &ldquo;actuates&rdquo; higher
+layer actions.</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Design
+Principles</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Design
+principle for this module included the following:</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Our
+	approach is based on simplicity (using <A HREF="http://pespmc1.vub.ac.be/OCCAMRAZ.html">Occam's
+	Razor</A> principle) and on incremental but consistent evolution of
+	these APIs.</FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>A
+	general purpose failure detection and recovery initiation
+	capability.</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Zero
+	dependence on the employing application's internals or services.</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>An
+	easy to use programming model.</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Ability
+	to participate in the group through instantiation and start up of a
+	GMS module, i.e. no external representations of the group are need.</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>All
+	entities and events above GMS (which are used for programming to it)
+	are in-process entities and events. In other words, the programming
+	model of GMS involves no RPCs. (Although some RPCs or RPC-like
+	communications may happen behind the scenes, in reaction to
+	sensor/actuator calls, the GMS user operates with programming
+	objects in the same address space.)</FONT></FONT></P>
+</UL>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Programing
+Model</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in"><FONT FACE="Helvetica, sans-serif">Shoal's
+GMS programming model is based on the paradigm of Signal, Action and
+ActionFactory for group sensory (notifications) theme, and provides a
+Group Handle for the communications theme (sending messages to
+individual members or the group) and the storage theme
+(DistributedStateCache implementation). </FONT>
+</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT FACE="Helvetica, sans-serif">An
+ActionFactory produces a specific Action. An Action consumes a
+specific Signal type, which is handed to it by GMS, in order to take
+remedial action on account of the Signal, denoting a group event. GMS
+clients implement specific ActionFactory types and Action types
+depending upon the group event of interest. GMS provides
+implementations of all Signal types (see illustration 1 below).</FONT></P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT FACE="Helvetica, sans-serif">Each
+employing application process (or server instance) has its own
+instance of GMS per group/cluster. GMS is initialized through the
+GMSFactory which returns an instance of GroupManagementService class
+which represents the member's GMS group reference when its
+getGMSModule() is called. One of the getGMSModule() overloaded
+methods requires passing in the identity token of the process, the
+group to join, the member type (i.e. SPECTATOR or CORE member), and a
+set of configuration properties that apply to the underlying group
+communication provider.   A SPECTATOR member is configured only when
+that member's failure is of no consequence to the group while
+allowing that member to take full advantage of group membership. A
+CORE member on the other hand is a member whose failure is a
+significant incident warranting action either limited to failure
+notification or extending to selecting a recovery server for such a
+failure. </FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>Each
+server process may include services (e.g., in an application server
+Transaction Service, Timer Service, EJB and Web Containers, RMI-IIOP
+Service, etc.) which may depend on GMS for the services it provides. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>The
+services that may have dependencies on the GMS, will interact with
+GMS through registration of callback factories (i.e., instances of
+valid &quot;ActionFactory&quot; types). </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>These
+callback factories must be provided in accordance with the GMS
+programming model. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<DIV ID="Frame3" DIR="LTR" STYLE="float: left; width: 5.18in; height: 4.18in; border: none; padding: 0in; background: #ffffff">
+	<P STYLE="margin-top: 0.08in; margin-bottom: 0.08in"><IMG SRC="ShoalDesignDocument_html_50813c40.jpg" NAME="Graphic17" ALIGN=LEFT WIDTH=100% BORDER=0><BR CLEAR=LEFT><FONT SIZE=2><B><I>Illustration
+	1 </I></B><FONT FACE="Helvetica, sans-serif">Examples of
+	ActionFactories and Actions. GMS Clients implement a specific
+	ActionFactory and Action type for the related group event
+	notification</FONT></FONT></P>
+</DIV><BR CLEAR=LEFT>
+<P ALIGN=LEFT STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>GMS
+implementation includes a set of valid Signal types (see Illustration
+2). </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>Each
+Signal type has its own particular delivery, acquisition and release
+semantics. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<DIV ID="Frame4" DIR="LTR" STYLE="float: left; width: 5.16in; height: 4.1in; border: none; padding: 0in; background: #ffffff">
+	<P STYLE="margin-top: 0.08in; margin-bottom: 0.08in"><IMG SRC="ShoalDesignDocument_html_2576af72.jpg" NAME="Graphic18" ALIGN=RIGHT WIDTH=100% BORDER=0><BR CLEAR=RIGHT><FONT SIZE=2><I><B>Illustration
+	2</B><FONT FACE="Helvetica, sans-serif"> </FONT></I><FONT FACE="Helvetica, sans-serif">Examples
+	of GMS defined Signal Types. GMS provides implementation of all
+	Signal types.</FONT></FONT></P>
+</DIV><BR CLEAR=LEFT>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>For
+each Signal type (see Illustration 2), GMS includes abstract types
+(interfaces) for the corresponding ActionFactory and Action types
+(see Illustration 1).</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>To
+use the GMS service, one needs to select and implement a type of
+ActionFactory and the corresponding type of Action. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>Actions
+are effectively callbacks that receive signals.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>Signals
+need to be used according to a strict but very simple programming
+model. (See below for further details.)</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif">A
+great deal of flexibility is left to the programmer who intends to
+use the GMS. For example, in the implementation of the ActionFactory,
+the user can decide whether to recycle Actions or whether to allow
+concurrent access to Action instances. This decision is made in the
+implementation of the factory method produceAction()which returns an
+Action. If the user decides to return the same instance of Action
+from the factory method, this instance will effectively be accessed
+by multiple threads delivering signals.</FONT></P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>The
+user can also manage a pool of Actions in the ActionFactory. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<H2 CLASS="western" STYLE="margin-left: 0in">More on Signals</H2>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS
+generates Signals in response to group infrastructure events it
+observes and analyzes prior to packing them as Signals. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS
+also generates Signals for group messages that were sent through the
+GMS GroupHandle.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT FACE="Arial, sans-serif">The
+Signal types have been defined to contain the information required by
+the corresponding Action type implementations on</FONT>
+<FONT FACE="Courier New">consumeSignal()</FONT><FONT FACE="Arial, sans-serif">
+callbacks.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Furthermore,
+Signals have to be handled in an orderly fashion.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">To
+be more specific, at the API level, a Signal type and consequently
+its sub-types expose two primary methods, namely, <FONT FACE="Courier New">acquire()</FONT>
+and</FONT> <FONT FACE="Courier New">release()</FONT>. 
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Action
+implementations must first attempt to &quot;acquire&quot; a signal
+before further processing. Actions must &quot;release&quot; a Signal
+once they have acquired it. (Action implementations with a &ldquo;finally&rdquo;
+clause, which contains Signal.release(), will generally cover this
+latter requirement.)</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Actions have the
+flexibility to decide issues of priority and preparation before
+acquisition and processing of a signal. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS Signals are
+in-process entities. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Signals generated by GMS
+instance contained in a server instance are handled by Action
+instances in the same server instance. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS Signals do not leave
+the process within which they have been created. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>(However, since Signals
+are generated due to events from the underlying group communications
+infrastructure, GMS instances generate the same GMS Signals in all
+group members in all cases, except the FailureRecoverySignal which is
+generated in only one member of the group per failure.)</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Signals are constructed
+based on the &quot;sensory&quot; data (i.e. group membership &quot;view&quot;
+changes) which the GMS module instance in a server instance observes.
+</FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>As noted earlier, Signals
+are handled by Action implementations provided by GMS users.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS calls all
+corresponding ActionFactories to produce appropriate Actions to
+receive the corresponding Signal. The &quot;routing&quot; of Signals
+to Actions is based on type compatibility defined in the GMS
+programming model. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Each
+Action produced from the factories receives its own instance of the
+relevant Signal. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Say,
+we have a FailureNotificationSignal. All
+FailureNotificationActionFactory instances will be asked to produce a
+corresponding FailureNotificationAction. All so produced
+FailureNotificationActions will receive a copy of the
+FailureNotificationSignal. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Signals should be
+&quot;acquired&quot; before processing. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Signals must be
+&quot;released&quot; after processing is complete or before the
+Action callback method (&quot;consumeSignal&quot;) returns.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>However, we recommend,
+when necessary, for the Action code to have its own state machine.
+(We say more on this below.)</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>If a &quot;Signal&quot;
+becomes &quot;stale&quot; between the time of its delivery to an
+Action and the time of its attempted acquisition by the Action, the
+acquisition attempt gives rise to appropriate exceptions. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>A
+Signal can become &quot;stale&quot; for various reasons. For example,
+if the server whose failure is packed in the Signal restarts before
+Signal's acquisition, the Signal becomes &quot;stale&quot;. When
+receiving an exception upon Signal.acquire(), an Action
+implementation must cease processing the signal and performing other
+tasks. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Again,
+Signals must be &quot;released&quot; if they have been acquired
+before the Action callback returns (see Illustration 3).</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<DIV ID="Frame5" DIR="LTR" STYLE="float: left; width: 5.8in; height: 4.52in; border: none; padding: 0in; background: #ffffff">
+	<P STYLE="margin-top: 0.08in; margin-bottom: 0.08in"><IMG SRC="ShoalDesignDocument_html_1158c21f.png" NAME="Graphic19" ALIGN=LEFT WIDTH=100% BORDER=0><BR CLEAR=LEFT><FONT COLOR="#000000"><FONT SIZE=2><I><B>Illustration
+	3</B><FONT FACE="Arial, sans-serif"> Acquisition and Release of a
+	FailureRecoverySignal. (In this example, additional information is
+	given to illustrate that GMS implements the Signal type and that in
+	response to acquisition and release, GMS may perform some house
+	keeping.)</FONT></I></FONT></FONT></P>
+</DIV><BR CLEAR=LEFT>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<H2 CLASS="western" STYLE="margin-left: 0in">Actions and
+ActionFactories</H2>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Action
+and ActionFactory interfaces are implemented by various in-process
+component developers. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Each
+server instance registers its ActionFactory instances with its GMS
+instance, at its start-up. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS
+uses these ActionFactories to produce Action instances.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT FACE="Arial, sans-serif">GMS
+delivers Signals to Actions through Actions' </FONT><FONT FACE="Courier New">consumeSignal</FONT><FONT FACE="Arial, sans-serif">
+callback method.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">The
+implementation of <FONT FACE="Courier New">consumeSignal</FONT>
+method must follow the rules of operation defined for Signals. Action
+must first &quot;acquire&quot; the Signal it receives on the
+consumeSignal callback. </FONT>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT COLOR="#000000"><FONT SIZE=3><FONT FACE="Arial, sans-serif">If
+the Signal is of the FailureRecoverySignal type, acquisition of the
+Signal results in protective failure-fencing procedures to be
+executed before Signal.acquire returns. (See Illustration 3's
+</FONT><FONT FACE="Courier New">closeDoor() </FONT><FONT FACE="Arial, sans-serif">and
+</FONT><FONT FACE="Courier New">openDoor()</FONT> <FONT FACE="Arial, sans-serif">expressions.)</FONT></FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Implementation
+of the specialized sub-types of ActionFactory and Action would expect
+a corresponding specialized Signal sub-type in the consumeSignal
+method of the Action implementation. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Each
+Action type has a corresponding ActionFactory and a corresponding
+Signal type. Typing is used for the purpose of Signal generation,
+cloning, routing and delivery within the GMS module. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT FACE="Arial, sans-serif">Before
+GMS delivers any new Signal through the</FONT> <FONT FACE="Courier New">consumeSignal()</FONT>
+<FONT FACE="Arial, sans-serif">method in Action, GMS will call
+appropriate ActionFactories to produce Actions to receive the Signal.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>As noted above,
+management of Action instances is the task of the corresponding
+ActionFactory. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>A
+resilient Action implementation must have its own state machine to
+allow it to handle its own incomplete executions between the time of
+&quot;acquisition&quot; and &quot;release&quot; of signals passed to
+it. <SPAN STYLE="text-decoration: none">For example, in the case of
+chained recovery of transaction failures, the Action implementation
+may decide to preserve an index to the transaction file (of the
+failed server) as an indicator of its &quot;level of completion&quot;.</SPAN></FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<H2 CLASS="western" STYLE="margin-left: 0in">Implementations of
+Signal, Action and Action Factory</H2>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Signal&quot;
+implementations are part of the GMS module. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Currently, GMS provides
+implementations of four Signal types and these are
+FailureNotificationSignal, FailureRecoverySignal, MessageSignal, and
+PlannedShutdownSignal.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Users of GMS provide
+&quot;Action&quot; and &quot;ActionFactory&quot; implementations.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<H2 CLASS="western" STYLE="margin-left: 0in">Registration of Action
+Factories</H2>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Users of GMS register
+action factories for desired signals at the time of the GMS
+start-up.. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Multiple action factories
+may be registered for a particular <I>type</I> of &quot;Signal&quot;.
+</FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>As we noted earlier, for
+each generated Signal type, the GMS delivers that Signal to all
+Actions of corresponding type produced using each of the
+ActionFactories of corresponding type. Type-correspondence here means
+that Signals of type FailureNotificationSignal are only delivered to
+Actions of type FailureNotificationAction type produced from
+factories of type FailureNotificationActionFactory, and so on. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<H2 CLASS="western" STYLE="margin-left: 0in">Generation of signals</H2>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Signals are generated,
+among other possible reasons, in response to membership view changes
+observed by the GMS. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>The MessageSignals are
+generated when group messages that were sent through GroupeHandle are
+received. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Membership view changes
+are reported by the underlying group communications infrastructure
+(e.g. JGroups, or Jxta). The underlying group communications
+mechanisms can guarantee that all processes see the same sequence of
+membership view changes. Therefore, the same sequence of signals will
+be generated.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<H2 CLASS="western" STYLE="margin-left: 0in">Delivery of signals</H2>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS matches
+Signals/Actions/ActionFactories based on their type. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS &quot;routes&quot;
+Signals to appropriate Actions based on type matching.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Signals generated within
+a process are only delivered to Actions within that same process. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Since all server
+instances (i.e. the Actions within the server instances) see the <I>same</I>
+sequence of Signals, they have the potential to act in a semantically
+consistent manner. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<DIV ID="Frame6" DIR="LTR" STYLE="float: left; width: 6.41in; height: 5.19in; border: none; padding: 0in; background: #ffffff">
+	<P STYLE="margin-top: 0.08in; margin-bottom: 0.08in"><IMG SRC="ShoalDesignDocument_html_585e747e.png" NAME="Graphic20" ALIGN=LEFT WIDTH=616 HEIGHT=451 BORDER=0><BR CLEAR=LEFT><FONT SIZE=2><I><B>Illustration
+	4</B> <FONT FACE="Helvetica, sans-serif">Registration of an
+	ActionFactory, the production of Action and delivery of Signal. (In
+	this example, we have shown some of the internal implementation of
+	GMS only to motivate the ideas of ActionFactory registration, Action
+	production and Signal delivery. This design document does not
+	purport to give a complete picture of GMS implementation. It
+	discusses only the semantics of its operations and programming
+	model.)</FONT></I></FONT></P>
+</DIV><BR CLEAR=LEFT>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<H2 CLASS="western" STYLE="margin-left: 0in">Specific ( Signal |
+Action | ActionFactory ) Types</H2>
+<P STYLE="margin-left: 0.25in; margin-bottom: 0.04in; widows: 2; orphans: 2">
+<BR><BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>Multiple,
+specific Signal-Action-ActionFactory types can be defined. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>Each
+type adds a new &quot;facility&quot; to the set of &quot;facilities&quot;
+provided by GMS for use by GMS application programmers.</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>At
+the present, GMS will support four scenarios that demand their own
+individual types. </FONT></FONT>
+</P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>The
+corresponding facilities are:</FONT></FONT></P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>Failure
+	notification facility</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2; text-decoration: none">
+	<FONT COLOR="#000000"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>Recovery
+	server selection and failure fencing facility</FONT></FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>Group
+	message reception facility</FONT></FONT></P>
+	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>Planned
+	Shutdown notification facility</FONT></FONT></P>
+</UL>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Reference
+Documents</FONT></FONT></P>
+<P STYLE="margin-left: 0.7in; margin-bottom: 0.04in; widows: 2; orphans: 2">
+<BR><BR>
+</P>
+<DL>
+	<DL>
+		<DD>
+		<TABLE WIDTH=908 BORDER=1 BORDERCOLOR="#000000" CELLPADDING=2 CELLSPACING=0>
+			<COL WIDTH=324>
+			<COL WIDTH=578>
+			<TR VALIGN=TOP>
+				<TD WIDTH=324>
+					<P><FONT FACE="Helvetica, sans-serif">Reference Document</FONT></P>
+				</TD>
+				<TD WIDTH=578>
+					<P><FONT FACE="Helvetica, sans-serif">Location (i.e. URL, Paper,
+					owner, etc.)</FONT></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=324 HEIGHT=1>
+					<P><FONT FACE="Helvetica, sans-serif">[HHB1996]</FONT></P>
+				</TD>
+				<TD WIDTH=578>
+					<P><FONT FACE="Helvetica, sans-serif">Abdelsalam A. Helal,
+					Abdelsalam A. Heddaya and Bharat B. Bhargava (1996) <I>Replication
+					Techniques in Distributed Systems (Kluwer International Series
+					on Advances in Database Systems, 4)</I>, Kluwer Academic
+					Publishers, Dordrecht, Netherlands. </FONT>
+					</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=324 HEIGHT=1>
+					<P><FONT FACE="Helvetica, sans-serif">[KB1996]</FONT></P>
+				</TD>
+				<TD WIDTH=578>
+					<P><FONT FACE="Helvetica, sans-serif">Ken Birman (1996) <I>Building
+					Secure and Reliable Network Applications</I>, Manning,
+					Greenwich, CT</FONT></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=324 HEIGHT=1>
+					<P><FONT FACE="Helvetica, sans-serif">[KB-Horus]</FONT></P>
+				</TD>
+				<TD WIDTH=578>
+					<P><FONT FACE="Helvetica, sans-serif">http://www.cs.cornell.edu/Info/Projects/HORUS/index.html</FONT></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=324 HEIGHT=1>
+					<P><FONT FACE="Helvetica, sans-serif">[JGroups]</FONT></P>
+				</TD>
+				<TD WIDTH=578>
+					<P><FONT FACE="Helvetica, sans-serif">Http://www.jgroups.org</FONT></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=324 HEIGHT=1>
+					<P><FONT FACE="Helvetica, sans-serif">[T1995]</FONT></P>
+				</TD>
+				<TD WIDTH=578>
+					<P><FONT FACE="Helvetica, sans-serif">Andrew S. Tanenbaum (1995)
+					<I>Distributed Operating Systems</I>, Prentice Hall.</FONT></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=324>
+					<P><FONT FACE="Helvetica, sans-serif">[TS2002]</FONT></P>
+				</TD>
+				<TD WIDTH=578>
+					<P><FONT FACE="Helvetica, sans-serif">Andrew S. Tannenbaum and
+					Marten van Steen (2002) <I>Distributed Systems: Principles and
+					Paradigms</I>, Prentice Hall.</FONT></P>
+				</TD>
+			</TR>
+		</TABLE>
+	</DL>
+</DL>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Acknowledgements</FONT></FONT></P>
+<P><FONT FACE="Arial, sans-serif">We would like to express our
+sincere gratitude for the design contributions of our colleague
+</FONT><A HREF="http://weblogs.java.net/blog/mortazavi/"><FONT FACE="Arial, sans-serif">Masood
+Mortazavi</FONT></A><FONT FACE="Arial, sans-serif">, who help drive
+the initial design phases of this project. Masood's prior experiences
+significantly influenced our thought and learning processes in
+building this framework to its current state. </FONT>
+</P>
+<P><FONT FACE="Arial, sans-serif">We would also like to thank the Sun
+Java System Application Server Architecture (asarch) Committee for
+their support, critique and guidance in clarifying requirements from
+the Sun Java System Application Server perspectives. </FONT>
+</P>
+<P><FONT FACE="Arial, sans-serif">We would also like to thank the
+quality team at the application server group who built distributed
+testing environments, ran several test suites on our prototypes, and
+helped fix several significant issues that manifested only in
+specific distributed settings.</FONT></P>
+<P><BR><BR>
+</P>
+</BODY>
+</HTML>

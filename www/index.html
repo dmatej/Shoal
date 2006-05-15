@@ -1,238 +1,204 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
-<head>
-  <meta http-equiv="CONTENT-TYPE"
- content="text/html; charset=iso-8859-1">
-  <title></title>
-  <meta name="GENERATOR" content="StarOffice 8  (Solaris x86)">
-  <meta name="AUTHOR" content="Shreedhar Ganapathy">
-  <meta name="CREATED" content="20060425;11113700">
-  <meta name="CHANGEDBY" content="Shreedhar Ganapathy">
-  <meta name="CHANGED" content="20060505;13580100">
-</head>
-<body dir="ltr" lang="en-US">
-<p style="margin-top: 0.17in; page-break-after: avoid;"><font
- face="Helvetica, sans-serif"><font style="font-size: 16pt;" size="4"><b>Shoal
-&#8211; A Generic Clustering Framework</b></font></font></p>
-<p style="margin-top: 0.17in; page-break-after: avoid;"><font
- face="Helvetica, sans-serif"><font size="4"><b>About
-Shoal Framework</b></font></font></p>
-<p><font face="Arial, sans-serif">Shoal is a java based clustering
-framework
-that provides infrastructure to build fault tolerance, reliability and
-availability. The framework can be plugged into any product needing
-clustering and related distributed systems capabilities without tightly
-binding to a specific communications infrastructure. The framework
-can be plugged in as an in-process component. The framework will have
-two broad categories of public APIs, namely, a&nbsp; Client API, and a
-Group
-Communication Provider API. The Client API will allow in-process
-client components to be notified of cluster events and to send and
-receive messages to/from the group or individual members. The Group
-Communication Provider
-API provides for integration of any group communication technology such
-as <a href="http://www.jxta.org">JXTA</a>, <a
- href="http://www.jgroups.org">JGroups</a>, etc. as
-the underlying group communications provider. The Framework thus
-provides a layer of abstraction for consuming applications/products
-without tightly binding them to a specific group
-communication system semantics and implementation. This allows
-employing applications to simply
-call the framework's APIs for building clustering and related
-enterprise distributed systems characteristics. Shoal's design
-considerations, approach and programming model are discussed in the <a
- href="ShoalDesignDocument.html">Shoal Design Overview</a> document.
-Please read this document to get an indepth understanding of Shoal
-framework.<br>
-</font></p>
-<p><font face="Arial, sans-serif">Shoal is a part of the <a
- href="https://glassfish.dev.java.net/">GlassFish</a> Community.<br>
-</font></p>
-<p style="margin-top: 0.17in; page-break-after: avoid;"><font
- face="Helvetica, sans-serif"><font style="font-size: 16pt;" size="4"><b>Shoal
-Capabilities</b></font></font></p>
-<p><font face="Arial, sans-serif">The Shoal Framework,
-written in Java, can be used as an in-process component for cluster
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 8  (Solaris x86)">
+	<META NAME="AUTHOR" CONTENT="Shreedhar Ganapathy">
+	<META NAME="CREATED" CONTENT="20060505;14051600">
+	<META NAME="CHANGEDBY" CONTENT="Shreedhar Ganapathy">
+	<META NAME="CHANGED" CONTENT="20060515;14271500">
+	<STYLE>
+	<!--
+		@page { size: 8.5in 11in; margin: 0.79in }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4 STYLE="font-size: 16pt"><B>Shoal
+&ndash; A Generic Clustering Framework</B></FONT></FONT></P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>About
+Shoal Framework</B></FONT></FONT></P>
+<P><FONT FACE="Arial, sans-serif">Shoal is a java based clustering
+framework that provides infrastructure to build fault tolerance,
+reliability and availability. The framework can be plugged into any
+product needing clustering and related distributed systems
+capabilities without tightly binding to a specific communications
+infrastructure. The framework can be plugged in as an in-process
+component. The framework will have two broad categories of public
+APIs, namely, a&nbsp; Client API, and a Group Communication Provider
+API. The Client API will allow in-process client components to be
+notified of cluster events and to send and receive messages to/from
+the group or individual members. The Group Communication Provider API
+provides for integration of any group communication technology such
+as <A HREF="http://www.jxta.org/">JXTA</A>, <A HREF="http://www.jgroups.org/">JGroups</A>,
+etc. as the underlying group communications provider. The Framework
+thus provides a layer of abstraction for consuming
+applications/products without tightly binding them to a specific
+group communication system semantics and implementation. This allows
+employing applications to simply call the framework's APIs for
+building clustering and related enterprise distributed systems
+characteristics. Shoal's design considerations, approach and
+programming model are discussed in the <A HREF="ShoalDesignDocument.html">Shoal
+Design Overview</A> document. Please read this document to get an
+indepth understanding of Shoal framework.</FONT></P>
+<P><FONT FACE="Arial, sans-serif">Shoal is a part of the <A HREF="https://glassfish.dev.java.net/">GlassFish</A>
+Community.</FONT></P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4 STYLE="font-size: 16pt"><B>Shoal
+Capabilities</B></FONT></FONT></P>
+<P><FONT FACE="Arial, sans-serif">The Shoal Framework, written in
+Java, can be used as an in-process component for cluster
 communications and cluster event management. As an in-process
 component, Shoal's core service, the Group Management Service (GMS),
 provides the ability for the process (JVM) to become a communicating
 member of a predefined cluster. As a result, within each process,
 clients implementing Shoal's client API can get notifications of
 cluster events. By becoming a communicating cluster member, the
-process gets the ability to </font>
-</p>
-<ul>
-  <li>
-    <p><font face="Arial, sans-serif">be notified of
-members' joining, failures, and planned shutdowns among cluster members
-( see <a href="ShoalGroupEventNotifications.html"
- name="Shoal Group Event Notifications" target="_blank">Shoal Group
-Event Notifications</a>), </font></p>
-  </li>
-  <li>
-    <p><font face="Arial, sans-serif">be notified of the
-process's selection as a recovery member for any recovery operations on
-another member on occurrence that other member's failure. (see <a
- href="ShoalAutomatedDelegatedRecoveryInitiation.html"
- name="Shoal Automated Delegated Recovery Initiation" target="_blank">Shoal
-Automated Delegated Recovery Initiation</a>), </font></p>
-  </li>
-  <li>
-    <p><font face="Arial, sans-serif">check, while
-joining, if any other process in the cluster is performing any recovery
-operations on its resources (see <a
- href="ShoalAutomatedDelegatedRecoveryInitiation.html"
- name="Shoal Protective Fencing">Shoal Automated Delegated Recovery
-Initiation</a>),</font></p>
-  </li>
-  <li>
-    <p><font face="Arial, sans-serif">receive messages
-sent by one or more members directly to it or to the group as a whole
-(see <a href="ShoalMessaging.html" name="Shoal Messaging">Shoal
-Messaging</a>) and </font> </p>
-  </li>
-  <li>
-    <p><font face="Arial, sans-serif">send messages to
-the group as a whole or a particular member (see <a
- href="ShoalMessaging.html" name="Shoal Messaging">Shoal Messaging</a>)
-    </font></p>
-  </li>
-</ul>
-<p style="margin-top: 0.17in; page-break-after: avoid;"><font
- face="Arial, sans-serif"><font size="3"><b><font size="4"><font
- face="Helvetica, sans-serif">Membership
-in Multiple Groups</font></font></b> </font></font>
-</p>
-<p><font face="Arial, sans-serif">A single process can
-be a member of multiple groups to represent different groups. For
-example, the instance could participate in the pre-defined cluster
-that encompasses all cluster members while also participating in a
+process gets the ability to </FONT>
+</P>
+<UL>
+	<LI><P><FONT FACE="Arial, sans-serif">be notified of members'
+	joining, failures, and planned shutdowns among cluster members ( see
+	<A HREF="ShoalGroupEventNotifications.html" NAME="Shoal Group Event Notifications" TARGET="_blank">Shoal
+	Group Event Notifications</A>), </FONT>
+	</P>
+	<LI><P><FONT FACE="Arial, sans-serif">be notified of the process's
+	selection as a recovery member for any recovery operations on
+	another member on occurrence that other member's failure. (see <A HREF="ShoalAutomatedDelegatedRecoveryInitiation.html" NAME="Shoal Automated Delegated Recovery Initiation" TARGET="_blank">Shoal
+	Automated Delegated Recovery Initiation</A>), </FONT>
+	</P>
+	<LI><P><FONT FACE="Arial, sans-serif">check, while joining, if any
+	other process in the cluster is performing any recovery operations
+	on its resources (see <A HREF="ShoalAutomatedDelegatedRecoveryInitiation.html" NAME="Shoal Protective Fencing">Shoal
+	Automated Delegated Recovery Initiation</A>),</FONT></P>
+	<LI><P><FONT FACE="Arial, sans-serif">receive messages sent by one
+	or more members directly to it or to the group as a whole (see <A HREF="ShoalMessaging.html" NAME="Shoal Messaging">Shoal
+	Messaging</A>) and </FONT>
+	</P>
+	<LI><P><FONT FACE="Arial, sans-serif">send messages to the group as
+	a whole or a particular member (see <A HREF="ShoalMessaging.html" NAME="Shoal Messaging">Shoal
+	Messaging</A>) </FONT>
+	</P>
+	<LI><P><FONT FACE="Arial, sans-serif">share application state data
+	using GMS's Shared Cache implementation based on
+	DistributedStateCache interface. </FONT>
+	</P>
+</UL>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><B><FONT SIZE=4><FONT FACE="Helvetica, sans-serif">Membership
+in Multiple Groups</FONT></FONT></B> </FONT></FONT>
+</P>
+<P><FONT FACE="Arial, sans-serif">A single process can be a member of
+multiple groups to represent different groups. For example, the
+instance could participate in the pre-defined cluster that
+encompasses all cluster members while also participating in a
 different group, say, a replication group that represents a sub-group
 of members in that cluster to which this member would replicate its
 state to. For each such group, GroupManagementService instances will
 be created within the process and these will be independent of each
-other. </font>
-</p>
-<p style="margin-top: 0.17in; page-break-after: avoid;"><font
- face="Helvetica, sans-serif"><font size="4"><b>Core
-and Spectator Member Roles</b></font></font></p>
-<p><font face="Arial, sans-serif">A member can
-participate in a group either as a core member or as a spectator
-member. If configured to participate as a Core member, then that
-member's failure would be notified to all other members. If
-configured to participate as a Spectator, then the spectator member's
-failure will not be notified to all other members, however, the
-spectator member would receive all notifications pertaining to other
-Core members. This is useful for non-cluster processes such as an
-administration server, to be part of
+other. </FONT>
+</P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Core
+and Spectator Member Roles</B></FONT></FONT></P>
+<P><FONT FACE="Arial, sans-serif">A member can participate in a group
+either as a core member or as a spectator member. If configured to
+participate as a Core member, then that member's failure would be
+notified to all other members. If configured to participate as a
+Spectator, then the spectator member's failure will not be notified
+to all other members, however, the spectator member would receive all
+notifications pertaining to other Core members. This is useful for
+non-cluster processes such as an administration server, to be part of
 a defined group to get the advantages of the various notifications
 and messages described in the previous paragraph. Typically, this is
 useful for monitoring or administrative infrastructures in that the
 ability to communicate and receive notifications allows such
 non-cluster members to effect configuration changes based on certain
 group events and also send out meaningful messages to listening
-endpoints in the group.<br>
-</font></p>
-<p style="margin-top: 0.17in; page-break-after: avoid;"><font
- face="Helvetica, sans-serif"><font size="4"><b>Distributed
-State Cache</b></font></font></p>
-<p><font face="Arial, sans-serif">Shoal also provides the ability to
+endpoints in the group.</FONT></P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Distributed
+State Cache</B></FONT></FONT></P>
+<P><FONT FACE="Arial, sans-serif">Shoal also provides the ability to
 add distributed cache implementations by exposing an interface
-DistributedStateCache. A default implementation is provided by GMS for
-lightweight replicated caching.&nbsp; Shoal framework users have the
-opportunity to develop their own implementations of the
-DistributedStateCache for use within their clustering environment along
-with GMS.<br>
-</font></p>
-<p style="margin-top: 0.17in; page-break-after: avoid;"><font
- face="Helvetica, sans-serif"><font size="4"><b>Shoal GMS Use Cases</b></font></font></p>
-<p><font face="Arial, sans-serif">Some real use
-cases are listed here. Note that these are not exhaustive and the
-extent to which GMS could be used is only limited by imagination.</font><br>
-</p>
-<ul>
-  <li><font face="Arial, sans-serif">In a Java EE (J2EE) environment,
-transaction service reliability can be significantly improved in a
-cluster setting, by using delegated recovery initiation notification
-that automatically picks another cluster member to perform recovery
-operations and notifies that member's transaction service to recover
-transactions from the failed member's transaction logs.&nbsp; Contrast
-this with manual transaction recovery which depends on availability of
-administrative personnel to perform the job.</font></li>
-  <li><font face="Arial, sans-serif">Another example in the Java EE
-environment is IIOP Failover. With GMS, the ORB layer can now be
-dynamically notified of member failures, planned shutdowns and joins,
-thereby
-allowing the list of IOR addresses to be updated out-of-band to IIOP
-clients. This allows for better failover scenario compared to a static
-loadbalancer list wherein failover entails moving from one address to
-another until
-a live instance is found.</font></li>
-  <li><font face="Arial, sans-serif">The same idea as the IIOP Failover
-applies to Http-based software Loadbalancers. By having GMS as an
-inprocess component and partipating as a Spectator, the loadbalancer
-can determine availability or lack thereof of any member in the
-cluster. <br>
-    </font></li>
-  <li><font face="Arial, sans-serif">GMS provided Distributed State
-Cache can be used as an in-memory store for session data. The
-underlying group communication provider such as JXTA, JGroups, etc. can
-be tuned to run in a highly performant manner, enabling high
-availability of servers.</font></li>
-  <li><font face="Arial, sans-serif">Read-only and read-mostly beans on
-various instances in a cluster can be notified when a cache update is
-discovered by one of the instances. The notification can be done
-through GMS's messaging API. <br>
-    </font></li>
-  <li><font face="Arial, sans-serif">Monitoring Clients/Agents can now
-participate in the cluster as Spectator members and be notified of
-cluster instance lifecycle events. One can also build more monitoring
-information on top of GMS notifications in terms of load factors on an
-instance prior to failure so that appropriate service provisioning can
-be made. <br>
-    </font></li>
-  <li><font face="Arial, sans-serif">Dynamic Provisioning services can
-take advantage of GMS thereby taking appropriate actions of providing
-more resources on occurence of failures depending on load conditions. <br>
-    </font></li>
-</ul>
-<meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
-<title></title>
-<meta name="GENERATOR" content="StarOffice 8  (Solaris x86)">
-<meta name="AUTHOR" content="Shreedhar Ganapathy">
-<meta name="CREATED" content="20060505;14051600">
-<meta name="CHANGEDBY" content="Shreedhar Ganapathy">
-<meta name="CHANGED" content="20060512;19321400">
-<style>
-	<!--
-		@page { size: 8.5in 11in; margin: 0.79in }
-	-->
-	</style>
-<p
- style="margin-top: 0.17in; page-break-after: avoid; font-weight: bold;"><font
- color="#000000"><font face="Helvetica, sans-serif"><font size="4">Acknowledgements</font></font></font></p>
-<p><font color="#000000"><font face="Arial, sans-serif">We would like
-to acknowledge and thank the design contributions of our
-colleague </font><a href="http://weblogs.java.net/blog/mortazavi/"><font
- face="Arial, sans-serif">Masood
-Mortazavi</font></a><font face="Arial, sans-serif">, who played a major
-role in the initial design phases of this project. Masood's prior
-experiences influenced our thought and learning processes in
-building this framework to its current state. </font></font>
-</p>
-<p><font color="#000000"><font face="Arial, sans-serif">We would like
-to thank the Sun Java System Application Server Architecture
-(asarch) Committee for their support, critique and guidance in
-clarifying requirements from the Sun Java System Application Server
-perspectives. </font></font>
-</p>
-<p><font color="#000000"><font face="Arial, sans-serif">We would also
+DistributedStateCache. A default implementation is provided by GMS
+for lightweight replicated caching.&nbsp; Shoal framework users have
+the opportunity to develop their own implementations of the
+DistributedStateCache for use within their clustering environment
+along with GMS.</FONT></P>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Shoal
+GMS Use Cases</B></FONT></FONT></P>
+<P><FONT FACE="Arial, sans-serif">Some real use cases are listed
+here. Note that these are not exhaustive and the extent to which GMS
+could be used is only limited by imagination.</FONT></P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">In
+	a Java EE (J2EE) environment, transaction service reliability can be
+	significantly improved in a cluster setting, by using delegated
+	recovery initiation notification that automatically picks another
+	cluster member to perform recovery operations and notifies that
+	member's transaction service to recover transactions from the failed
+	member's transaction logs.&nbsp; Contrast this with manual
+	transaction recovery which depends on availability of administrative
+	personnel to perform the job.</FONT> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">Another
+	example in the Java EE environment is IIOP Failover. With GMS, the
+	ORB layer can now be dynamically notified of member failures,
+	planned shutdowns and joins, thereby allowing the list of IOR
+	addresses to be updated out-of-band to IIOP clients. This allows for
+	better failover scenario compared to a static loadbalancer list
+	wherein failover entails moving from one address to another until a
+	live instance is found.</FONT> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">The
+	same idea as the IIOP Failover applies to Http-based software
+	Loadbalancers. By having GMS as an inprocess component and
+	partipating as a Spectator, the loadbalancer can determine
+	availability or lack thereof of any member in the cluster. </FONT>
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">GMS
+	provided Distributed State Cache can be used as an in-memory store
+	for session data. The underlying group communication provider such
+	as JXTA, JGroups, etc. can be tuned to run in a highly performant
+	manner, enabling high availability of servers.</FONT> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">Read-only
+	and read-mostly beans on various instances in a cluster can be
+	notified when a cache update is discovered by one of the instances.
+	The notification can be done through GMS's messaging API. </FONT>
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">Monitoring
+	Clients/Agents can now participate in the cluster as Spectator
+	members and be notified of cluster instance lifecycle events. One
+	can also build more monitoring information on top of GMS
+	notifications in terms of load factors on an instance prior to
+	failure so that appropriate service provisioning can be made. </FONT>
+	</P>
+	<LI><P><FONT FACE="Arial, sans-serif">Dynamic Provisioning services
+	can take advantage of GMS thereby taking appropriate actions of
+	providing more resources on occurence of failures depending on load
+	conditions. </FONT>
+	</P>
+</UL>
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT COLOR="#000000"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Acknowledgements</B></FONT></FONT></FONT></P>
+<P><FONT COLOR="#000000"><FONT FACE="Arial, sans-serif">We would like
+to acknowledge and thank the design contributions of our colleague
+</FONT><A HREF="http://weblogs.java.net/blog/mortazavi/"><FONT FACE="Arial, sans-serif">Masood
+Mortazavi</FONT></A><FONT FACE="Arial, sans-serif">, who played a
+major role in the initial design phases of this project. Masood's
+prior experiences influenced our thought and learning processes in
+building this framework to its current state. </FONT></FONT>
+</P>
+<P><FONT COLOR="#000000"><FONT FACE="Arial, sans-serif">We would like
+to thank the Sun Java System Application Server Architecture (asarch)
+Committee for their support, critique and guidance in clarifying
+requirements from the Sun Java System Application Server
+perspectives. </FONT></FONT>
+</P>
+<P><FONT COLOR="#000000"><FONT FACE="Arial, sans-serif">We would also
 like to thank the quality team at the application server group who
 built distributed testing environments, ran several test suites on
-our development efforts, and helped fix several significant issues that
-manifested only in specific distributed settings.</font></font></p>
-<br>
-<br>
-<br>
-</body>
-</html>
+our development efforts, and helped fix several significant issues
+that manifested only in specific distributed settings.</FONT></FONT></P>
+<P><BR><BR><BR>
+</P>
+</BODY>
+</HTML>

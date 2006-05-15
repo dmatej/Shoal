@@ -153,16 +153,25 @@ extent to which GMS could be used is only limited by imagination.</font><br>
 transaction service reliability can be significantly improved in a
 cluster setting, by using delegated recovery initiation notification
 that automatically picks another cluster member to perform recovery
-operations from the failed member's transaction logs.&nbsp; Contrast
+operations and notifies that member's transaction service to recover
+transactions from the failed member's transaction logs.&nbsp; Contrast
 this with manual transaction recovery which depends on availability of
 administrative personnel to perform the job.</font></li>
   <li><font face="Arial, sans-serif">Another example in the Java EE
 environment is IIOP Failover. With GMS, the ORB layer can now be
-dynamically notified of failures, shutdowns and member joins thereby
+dynamically notified of member failures, planned shutdowns and joins,
+thereby
 allowing the list of IOR addresses to be updated out-of-band to IIOP
 clients. This allows for better failover scenario compared to a static
-list wherein failover entails moving from one address to another until
+loadbalancer list wherein failover entails moving from one address to
+another until
 a live instance is found.</font></li>
+  <li><font face="Arial, sans-serif">The same idea as the IIOP Failover
+applies to Http-based software Loadbalancers. By having GMS as an
+inprocess component and partipating as a Spectator, the loadbalancer
+can determine availability or lack thereof of any member in the
+cluster. <br>
+    </font></li>
   <li><font face="Arial, sans-serif">GMS provided Distributed State
 Cache can be used as an in-memory store for session data. The
 underlying group communication provider such as JXTA, JGroups, etc. can
@@ -175,7 +184,10 @@ through GMS's messaging API. <br>
     </font></li>
   <li><font face="Arial, sans-serif">Monitoring Clients/Agents can now
 participate in the cluster as Spectator members and be notified of
-cluster instance lifecycle events. <br>
+cluster instance lifecycle events. One can also build more monitoring
+information on top of GMS notifications in terms of load factors on an
+instance prior to failure so that appropriate service provisioning can
+be made. <br>
     </font></li>
   <li><font face="Arial, sans-serif">Dynamic Provisioning services can
 take advantage of GMS thereby taking appropriate actions of providing

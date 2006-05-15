@@ -7,7 +7,7 @@
 	<META NAME="AUTHOR" CONTENT="Shreedhar Ganapathy">
 	<META NAME="CREATED" CONTENT="20060505;14051600">
 	<META NAME="CHANGEDBY" CONTENT="Shreedhar Ganapathy">
-	<META NAME="CHANGED" CONTENT="20060515;11413700">
+	<META NAME="CHANGED" CONTENT="20060515;11455100">
 	<STYLE>
 	<!--
 		H2 { margin-left: 0.3in; margin-top: 0.1in; margin-bottom: 0.04in; page-break-before: auto; page-break-after: auto }
@@ -291,15 +291,19 @@ release semantics. </FONT>
 <P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
 <BR>
 </P>
+<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
+<BR>
+</P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><SPAN ID="Frame4" DIR="LTR" STYLE="float: left; width: 6.7in; height: 5.47in; border: none; padding: 0in; background: #ffffff">
 	<P STYLE="margin-top: 0.08in; margin-bottom: 0.08in"><IMG SRC="ShoalDesignDocument_html_2576af72.jpg" NAME="Graphic18" ALIGN=RIGHT WIDTH=100% BORDER=0><BR CLEAR=RIGHT><FONT SIZE=2><I><B>Illustration
 	2</B> </I><FONT FACE="Helvetica, sans-serif">Examples of GMS defined
 	Signal Types. GMS provides implementation of all Signal types.</FONT></FONT></P>
-</SPAN><BR CLEAR=LEFT><FONT FACE="Helvetica, sans-serif">For each
-Signal type (see Illustration 2), GMS includes abstract types
-(interfaces) for the corresponding ActionFactory and Action types
-(see Illustration 1).</FONT>
+</SPAN><BR CLEAR=LEFT><BR>
 </P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif">For
+each Signal type (see Illustration 2), GMS includes abstract types
+(interfaces) for the corresponding ActionFactory and Action types
+(see Illustration 1).</FONT></P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif">To
 use the GMS service, one needs to select and implement a type of
 ActionFactory and the corresponding type of Action. </FONT>
@@ -322,9 +326,6 @@ Action. If the user decides to return the same instance of Action
 from the factory method, this instance will effectively be accessed
 by multiple threads delivering signals. The user can also manage a
 pool of Actions in the ActionFactory. </FONT>
-</P>
-<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
-<BR>
 </P>
 <H2 CLASS="western" STYLE="margin-left: 0in"><FONT FACE="Arial, sans-serif">More
 on Signals</FONT></H2>
@@ -658,12 +659,9 @@ distributed processes to the group.</FONT></FONT></P>
 &quot;Identity Token&quot; is a String. </FONT></FONT>
 </P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; widows: 2; orphans: 2">
-<BR>
-</P>
-<P STYLE="text-indent: 0in; margin-bottom: 0in; widows: 2; orphans: 2">
 <FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS never changes any
 part of the &quot;Identity Token&quot; passed to it.</FONT></FONT></P>
-<P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
 <FONT FACE="Arial, sans-serif"><FONT SIZE=3>The &quot;identity token&quot;
 has other very important uses. </FONT></FONT>
 </P>
@@ -677,7 +675,7 @@ represent the failure in the remaining GMS instances. (This holds
 whether a FailureNotificationSignal <FONT COLOR="#000000">or a
 FailureRecoverySignal.</FONT>) </FONT></FONT>
 </P>
-<P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
+<P STYLE="text-indent: 0in; margin-bottom: 0in; widows: 2; orphans: 2">
 <BR>
 </P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
@@ -687,9 +685,6 @@ in the failure signal that is made available in all other server
 instances, one or more of which may be performing recovery operations
 or other actions in response to the observed failure.</FONT></FONT></P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
-<BR>
-</P>
-<P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
 <FONT FACE="Arial, sans-serif"><FONT SIZE=3>Note that Action
 implementations have access to the &quot;Identity Token&quot; of the
 failed server in the Signal that is passed in the consumeSignal
@@ -697,45 +692,8 @@ method.</FONT></FONT></P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
 <BR>
 </P>
-<P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif"><FONT SIZE=3>The startup of a GMS
-instance may take some time particularly when the server instance is
-in a state of re-incarnation, i.e. when it has started after an
-earlier failure. </FONT></FONT>
-</P>
-<P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
-<BR>
-</P>
-<P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Note that a server
-instance process will contain a number of services such as HTTP,
-RMI-IIOP, EJB, Txns, GMS, etc. Some of these services may have
-features that depend for their proper <SPAN LANG="en-US">functioning</SPAN>
-(or some aspect of their proper functioning) on the GMS.</FONT></FONT></P>
-<P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
-<BR>
-</P>
-<P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif"><FONT SIZE=3><I>Note:</I> There will
-be no particular bootstrap capability. (By &quot;bootstrap&quot;
-here, we mean specialized mechanisms that will need to be considered
-at the time of the GMS startup.) One may ask whether the GMS module
-should include a means for ignoring membership view changes at the
-time the cluster of application servers is being started. There may
-be a need to ignore any such initial oscillations in membership. In
-general, all services (i.e. facilities within a server, say the HTTP
-service, the RMI-IIOP service, etc.) which may depend on the GMS
-should start after the GMS has started. </FONT></FONT>
-</P>
-<P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
-<BR>
-</P>
-<P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
-<FONT COLOR="#000000"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=3>All
-action factories (see below for definition and use of action
-factories) should be registered after the successful start of the GMS
-and the successful start of the services that depend on it.</FONT></FONT></FONT></P>
-<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT COLOR="#000000"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Reference
+<P STYLE="text-indent: 0in; margin-bottom: 0in; widows: 2; orphans: 2">
+<FONT COLOR="#000000"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Reference
 Documents</FONT></FONT></FONT></P>
 <P STYLE="margin-left: 0.7in; margin-bottom: 0.04in; widows: 2; orphans: 2">
 <BR><BR>

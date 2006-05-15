@@ -642,53 +642,53 @@ corresponding facilities are:</FONT></P>
 <P STYLE="margin-bottom: 0in"></P>
 <P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Server/Member
 Identity Token</B></FONT></FONT></P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN STYLE="font-weight: medium">A
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">A
 process must start its GMS service prior to starting other services
-that may depend on it.</SPAN></FONT></FONT></P>
+that may depend on it.</FONT></P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif"><FONT SIZE=3>At start up, each process
+<FONT FACE="Arial, sans-serif">At start up, each process
 provides its own GMS instance with the &quot;Identity Token&quot;
-defined for that process instance. </FONT></FONT>
+defined for that process instance. </FONT>
 </P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif"><FONT SIZE=3>We assume this token to
+<FONT FACE="Arial, sans-serif">We assume this token to
 be the process's identification that distinguishes it from other
-distributed processes to the group.</FONT></FONT></P>
+distributed processes to the group.</FONT></P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Currently, we assume the
-&quot;Identity Token&quot; is a String. </FONT></FONT>
+<FONT FACE="Arial, sans-serif">Currently, we assume the
+&quot;Identity Token&quot; is a String. </FONT>
 </P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif"><FONT SIZE=3>GMS never changes any
-part of the &quot;Identity Token&quot; passed to it.</FONT></FONT></P>
+<FONT FACE="Arial, sans-serif">GMS never changes any
+part of the &quot;Identity Token&quot; passed to it.</FONT></P>
 <P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif"><FONT SIZE=3>The &quot;identity token&quot;
-has other very important uses. </FONT></FONT>
+<FONT FACE="Arial, sans-serif">The &quot;identity token&quot;
+has other very important uses. </FONT>
 </P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
 <BR>
 </P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif"><FONT SIZE=3>When a server/member
+<FONT FACE="Arial, sans-serif">When a server/member
 fails, its &quot;Identity Token&quot; is packed in the Signals that
 represent the failure in the remaining GMS instances. (This holds
-whether a FailureNotificationSignal <FONT COLOR="#000000">or a
-FailureRecoverySignal.</FONT>) </FONT></FONT>
+whether a FailureNotificationSignal or a
+FailureRecoverySignal.) </FONT>
 </P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; widows: 2; orphans: 2">
 <BR>
 </P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif"><FONT SIZE=3>For example, when a
+<FONT FACE="Arial, sans-serif">For example, when a
 server instance fails, GMS ensures that its identity token is packed
 in the failure signal that is made available in all other server
 instances, one or more of which may be performing recovery operations
-or other actions in response to the observed failure.</FONT></FONT></P>
+or other actions in response to the observed failure.</FONT></P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Note that Action
+<FONT FACE="Arial, sans-serif">Note that Action
 implementations have access to the &quot;Identity Token&quot; of the
 failed server in the Signal that is passed in the consumeSignal
-method.</FONT></FONT></P>
+method.</FONT></P>
 <P STYLE="text-indent: 0in; margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
 <BR>
 </P>

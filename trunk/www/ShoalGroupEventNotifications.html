@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 8  (Solaris x86)">
+	<META NAME="CREATED" CONTENT="20060505;13342600">
+	<META NAME="CHANGEDBY" CONTENT="Shreedhar Ganapathy">
+	<META NAME="CHANGED" CONTENT="20060515;11054900">
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Shoal
+Group Event Notifications</B></FONT></FONT></P>
+<P><FONT FACE="Arial, sans-serif">To better understand this document,
+read : </FONT><A HREF="ShoalDesignDocument.html"><FONT FACE="Arial, sans-serif">Shoal
+Design Document</FONT></A><FONT FACE="Arial, sans-serif"> </FONT>
+</P>
+<P><FONT FACE="Arial, sans-serif">Shoal's GroupManagementService
+(GMS) provides a client API that allows consuming client components
+within a process to receive callbacks when group events occur. The
+Group Events available from GMS are broadly of following types :</FONT></P>
+<UL>
+	<LI><P><FONT FACE="Arial, sans-serif">Suspect or in-doubt state of a
+	member</FONT></P>
+</UL>
+<UL>
+	<LI><P><FONT FACE="Arial, sans-serif">Failure of a member </FONT>
+	</P>
+	<LI><P><FONT FACE="Arial, sans-serif">Selection of a member for
+	initiating Recovery operations</FONT></P>
+	<LI><P><FONT FACE="Arial, sans-serif">Administratively Planned
+	Shutdown</FONT></P>
+</UL>
+<P><FONT FACE="Arial, sans-serif">These events are notified to
+consuming applications through client API, part of which is
+implemented by clients and part provided by GMS. Group Events are
+notified and handled through an Actuator-Sensor pattern (Reference:
+</FONT><A HREF="ShoalDesignDocument.html"><FONT FACE="Arial, sans-serif">Shoal
+Design Document </FONT></A><FONT FACE="Arial, sans-serif">). Each
+event is sensed by GMS and an object of Signal type is raised for
+notifying the client. The client registers interest in the group
+event by registering an implementation of an ActionFactory interface
+with a reference to an implementation of an Action interface.
+ActionFactory produces an Action and an Action consumes a Signal.
+Each group event is typified by a specific triplet of interface
+types. For instance, for the Failure event, the triplet interfaces of
+interest would be :</FONT></P>
+<UL>
+	<LI><P><FONT FACE="Arial, sans-serif">FailureNotificationActionFactory
+	(implemented by the client),</FONT></P>
+	<LI><P><FONT FACE="Arial, sans-serif">FailureNotificationAction
+	(implemented by client), and </FONT>
+	</P>
+	<LI><P><FONT FACE="Arial, sans-serif">FailureNotificationSignal
+	(implemented by GMS).</FONT></P>
+</UL>
+<P><FONT FACE="Arial, sans-serif">The following table summarizes the
+Event and corresponding client API to implement for the purpose of
+consuming the event, and how to register the same with GMS:</FONT></P>
+<DL>
+	<DL>
+		<DD>
+		<TABLE WIDTH=874 BORDER=0 CELLPADDING=4 CELLSPACING=0>
+			<COL WIDTH=143>
+			<COL WIDTH=231>
+			<COL WIDTH=183>
+			<COL WIDTH=285>
+			<THEAD>
+				<TR VALIGN=TOP>
+					<TH WIDTH=143>
+						<P><FONT FACE="Helvetica, sans-serif">Group Event</FONT></P>
+					</TH>
+					<TH WIDTH=231>
+						<P><FONT FACE="Helvetica, sans-serif">Client Implements</FONT></P>
+					</TH>
+					<TH WIDTH=183>
+						<P><FONT FACE="Helvetica, sans-serif">GMS implements</FONT></P>
+					</TH>
+					<TH WIDTH=285>
+						<P><FONT FACE="Helvetica, sans-serif">Client Registers through </FONT>
+						</P>
+					</TH>
+				</TR>
+			</THEAD>
+			<TBODY>
+				<TR VALIGN=TOP>
+					<TD WIDTH=143>
+						<P><FONT FACE="Helvetica, sans-serif">Failure </FONT>
+						</P>
+					</TD>
+					<TD WIDTH=231>
+						<P><FONT FACE="Helvetica, sans-serif">FailureNotificationActionFactory</FONT></P>
+						<P><FONT FACE="Helvetica, sans-serif">FailureNotificationAction</FONT></P>
+					</TD>
+					<TD WIDTH=183>
+						<P><FONT FACE="Helvetica, sans-serif">FailureNotificationSignal</FONT></P>
+					</TD>
+					<TD WIDTH=285>
+						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>GroupManagementService
+						gms = GMSFactory.getGMSModule(String groupName);</FONT></FONT></P>
+						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>gms.addFactory(FailureNotificationActionFactory);</FONT></FONT></P>
+					</TD>
+				</TR>
+				<TR VALIGN=TOP>
+					<TD WIDTH=143>
+						<P><FONT FACE="Helvetica, sans-serif">Indoubt/Suspect </FONT>
+						</P>
+					</TD>
+					<TD WIDTH=231>
+						<P><FONT FACE="Helvetica, sans-serif">FailureSuspectedActionFactory</FONT></P>
+						<P><FONT FACE="Helvetica, sans-serif">FailureSuspectedAction</FONT></P>
+					</TD>
+					<TD WIDTH=183>
+						<P><FONT FACE="Helvetica, sans-serif">FailureSuspectedSignal</FONT></P>
+					</TD>
+					<TD WIDTH=285>
+						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>GroupManagementService
+						gms = GMSFactory.getGMSModule(String groupName);</FONT></FONT></P>
+						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>gms</FONT>.addFactory(FailureSuspectedActionFactory)</FONT></P>
+					</TD>
+				</TR>
+				<TR VALIGN=TOP>
+					<TD WIDTH=143>
+						<P><FONT FACE="Helvetica, sans-serif">Recovery(reference </FONT><A HREF="https://shoal.dev.java.net/ShoalAutomatedDelegatedRecoveryInitiation.html" NAME="Shoal Automated Delegated Recovery Initiation" TARGET="_blank"><FONT FACE="Arial, sans-serif">Shoal
+						Automated Delegated Recovery Initiation</FONT><FONT FACE="Helvetica, sans-serif">)</FONT></A></P>
+					</TD>
+					<TD WIDTH=231>
+						<P><FONT FACE="Helvetica, sans-serif">FailureRecoveryActionFactory</FONT></P>
+						<P><FONT FACE="Helvetica, sans-serif">FailureRecoveryAction</FONT></P>
+					</TD>
+					<TD WIDTH=183>
+						<P><FONT FACE="Helvetica, sans-serif">FailureRecoverySignal</FONT></P>
+					</TD>
+					<TD WIDTH=285>
+						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>GroupManagementService
+						gms = GMSFactory.getGMSModule(String groupName);</FONT></FONT></P>
+						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>gms</FONT>.addFactory(FailureRecoveryActionFactory)</FONT></P>
+					</TD>
+				</TR>
+				<TR VALIGN=TOP>
+					<TD WIDTH=143>
+						<P><FONT FACE="Helvetica, sans-serif">Planned Shutdown</FONT></P>
+					</TD>
+					<TD WIDTH=231>
+						<P><FONT FACE="Helvetica, sans-serif">PlannedShutdownActionFactory</FONT></P>
+						<P><FONT FACE="Helvetica, sans-serif">PlannedShutdownAction</FONT></P>
+					</TD>
+					<TD WIDTH=183>
+						<P><FONT FACE="Helvetica, sans-serif">PlannedShutdownSignal</FONT></P>
+					</TD>
+					<TD WIDTH=285>
+						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>GroupManagementService
+						gms = GMSFactory.getGMSModule(String groupName);</FONT></FONT></P>
+						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>gms</FONT>.addFactory(PlannedShutdownActionFactory)</FONT></P>
+					</TD>
+				</TR>
+			</TBODY>
+		</TABLE>
+	</DL>
+</DL>
+<P><BR><BR>
+</P>
+<P><BR><BR>
+</P>
+<P><BR><BR>
+</P>
+</BODY>
+</HTML>

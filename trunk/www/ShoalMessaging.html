@@ -10,20 +10,20 @@
 </HEAD>
 <BODY LANG="en-US" DIR="LTR">
 <P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Shoal
-Messaging </B></FONT></FONT>
+Messaging </B></FONT>
 </P>
 <P STYLE="font-weight: medium"><FONT FACE="Helvetica, sans-serif">To
 better understand this document, please read <A HREF="ShoalDesignDocument.html">Shoal
 Design Document</A></FONT></P>
-<P><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Shoal's
+<P><FONT FACE="Arial, sans-serif">Shoal's
 GroupManagementService provides its clients a GroupHandle for sending
 messages to individual members, and to the entire group. In fact,
 components in a process can send messages to their respective
-counterpart components in the other group member processes.  </FONT></FONT>
+counterpart components in the other group member processes.  </FONT>
 </P>
 <P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Sending
-Messages</FONT></FONT></P>
-<P><FONT FACE="Arial, sans-serif"><FONT SIZE=3>For sending messages
+Messages</FONT></P>
+<P><FONT FACE="Arial, sans-serif">For sending messages
 in a scalable, and reliable manner, with delivery guarantees, GMS
 relies on the underlying Group Communication Provider to provide
 appropriate protocols for the same. GMS has identified <A HREF="http://www.jxta.org">Jxta</A>
@@ -31,75 +31,75 @@ and <A HREF="http://www.jgroups.org/">JGroups</A> open source
 packages as possible candidates with the requisite design center, and
 core performance to that provide such reliability and performance
 guarantees.  Both JXTA and JGroups support messaging using
-UDP/Multicast and TCP transports. </FONT></FONT>
+UDP/Multicast and TCP transports. </FONT>
 </P>
-<P><FONT FACE="Arial, sans-serif"><FONT SIZE=3>In order to send
+<P><FONT FACE="Arial, sans-serif">In order to send
 messages to the group or an individual target member, GMS clients use
-the GroupHandle object. The API specification is as follows:</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">    <FONT FACE="Arial, sans-serif"><FONT SIZE=3>/**</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
+the GroupHandle object. The API specification is as follows:</FONT></P>
+<P STYLE="margin-bottom: 0in">    <FONT FACE="Arial, sans-serif">/**</FONT></P>
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
 Sends  a message to  all members of the Group. Expects a target
-component name  and a byte  array as parameter</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
+component name  and a byte  array as parameter</FONT></P>
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
 carrying the payload. Specifying a null component name would result
-in the message being delivered to all registered</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
-components in the target member instance. </FONT></FONT>
+in the message being delivered to all registered</FONT></P>
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
+components in the target member instance. </FONT>
 </P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
-@param targetComponentName</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
-@param message</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*/</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">    <FONT FACE="Arial, sans-serif"><FONT SIZE=3>void
-sendMessage(String targetComponentName, byte[] message);</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">    <FONT FACE="Arial, sans-serif"><FONT SIZE=3>/**</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
+@param targetComponentName</FONT></P>
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
+@param message</FONT></P>
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*/</FONT></P>
+<P STYLE="margin-bottom: 0in">    <FONT FACE="Arial, sans-serif">void
+sendMessage(String targetComponentName, byte[] message);</FONT></P>
+<P STYLE="margin-bottom: 0in">    <FONT FACE="Arial, sans-serif">/**</FONT></P>
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
 Sends a message to a single member of the group. Expects  a
-targetServerToken representing the recipient </FONT></FONT>
+targetServerToken representing the recipient </FONT>
 </P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
 member's id, the target component name in the target recipient
-member,  and a byte array as parameter carrying </FONT></FONT>
+member,  and a byte array as parameter carrying </FONT>
 </P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
 the payload. Specifying a null component name would result in the
-message being delivered to all registered </FONT></FONT>
+message being delivered to all registered </FONT>
 </P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
-components in the target member instance. </FONT></FONT>
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
+components in the target member instance. </FONT>
 </P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
-@param targetServerToken</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
-@param targetComponentName</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*
-@param message</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif"><FONT SIZE=3>*/</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">    <FONT FACE="Arial, sans-serif"><FONT SIZE=3>void
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
+@param targetServerToken</FONT></P>
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
+@param targetComponentName</FONT></P>
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*
+@param message</FONT></P>
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Arial, sans-serif">*/</FONT></P>
+<P STYLE="margin-bottom: 0in">    <FONT FACE="Arial, sans-serif">void
 sendMessage(String targetServerToken, String targetComponentName,
-byte[] message); </FONT></FONT>
+byte[] message); </FONT>
 </P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Receiving
-Messages </FONT></FONT>
+Messages </FONT>
 </P>
-<P STYLE="margin-bottom: 0in; font-weight: medium"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>In
+<P STYLE="margin-bottom: 0in; font-weight: medium"><FONT FACE="Arial, sans-serif">In
 order to setup a component (GMS client) to receive a message sent by
 another group member's component, the recipient component should
 register its MessageActionFactory implementation with GMS by calling
-as follows :</FONT></FONT></P>
+as follows :</FONT></P>
 <P STYLE="margin-bottom: 0in; font-weight: medium"><BR>
 </P>
-<P STYLE="margin-bottom: 0in; font-weight: medium"><FONT FACE="Courier New"><FONT SIZE=3>GroupManagementService
-gms = GMSFactory.getGMSModule(groupName);</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in; font-weight: medium"><FONT FACE="Courier New"><FONT SIZE=3>gms.addActionFactory(MessageActionFactory);</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; font-weight: medium"><FONT FACE="Courier New">GroupManagementService
+gms = GMSFactory.getGMSModule(groupName);</FONT></P>
+<P STYLE="margin-bottom: 0in; font-weight: medium"><FONT FACE="Courier New">gms.addActionFactory(MessageActionFactory);</FONT></P>
 <P STYLE="margin-bottom: 0in; font-weight: medium"><BR>
 </P>
-<P STYLE="margin-bottom: 0in; font-weight: medium"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>This
+<P STYLE="margin-bottom: 0in; font-weight: medium"><FONT FACE="Arial, sans-serif">This
 is similar to the failure notification construct, in that, GMS
 clients implement two interfaces, namely, <FONT FACE="Courier New">MessageActionFactory</FONT>
 and <FONT FACE="Courier New">MessageAction</FONT> in order to receive
@@ -108,7 +108,7 @@ to determine the component to which the message was addressed to, and
 then invokes the appropriate instance of <FONT FACE="Courier New">MessageActionFactory</FONT>
 implementation to call its <FONT FACE="Courier New">produceAction()
 </FONT>method passing in a <FONT FACE="Courier New">MessageSignal</FONT>
-instance.  </FONT></FONT>
+instance.  </FONT>
 </P>
 <P STYLE="margin-bottom: 0in; font-weight: medium"><BR>
 </P>

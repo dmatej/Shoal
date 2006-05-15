@@ -44,7 +44,7 @@ selected. </FONT>
 </P>
 <P><FONT FACE="Arial, sans-serif">The client invokes the registration
 API by doing the following :</FONT></P>
-<P STYLE="margin-top: 0.17in; margin-bottom: 0.2in; page-break-after: avoid">
+<P>
 <FONT FACE="courier new">GroupManagementService gms =
 GMSFactory.getGMSModule(groupName);<BR>gms.addActionFactory(FailureRecoveryActionFactory);<BR><BR></FONT><B><FONT SIZE=4><FONT FACE="Helvetica, sans-serif">When
 Failure Occurs</FONT></FONT></B><BR><FONT FACE="Arial, sans-serif">GMS's
@@ -66,8 +66,6 @@ member that was next in the list to the failed member, is selected
 for recovery operations. This makes it a more deterministic, simple
 bit scalable solution for recovery operations. </FONT>
 </P>
-<P><BR><BR>
-</P>
 <P><FONT FACE="Arial, sans-serif">Note that the implementation of
 <FONT FACE="courier new">FailureRecoveryAction</FONT>'s
 <FONT FACE="courier new">consumeSignal()</FONT> method has to follow
@@ -82,11 +80,11 @@ the <FONT FACE="Courier New">consumeSignal() </FONT>implementation
 should call <FONT FACE="Courier New">Signal.release() </FONT>which
 results in the fence being lowered. </FONT>
 </P>
-<P STYLE="margin-top: 0.17in; margin-bottom: 0.2in; page-break-after: avoid">
+<P>
 <FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Failure Fencing
 Explained</B> </FONT></FONT>
 </P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>When
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">When
 a remote/delegate member is performing recovery operations on a
 failed member's resources, this operation has to be protected from
 contention or race conditions. The contention or race condition could
@@ -97,10 +95,9 @@ protocol that allows processes to raise a protective fence until
 recovery operations are complete, at which point, the fence is
 lowered by the recovery member. The lowering of the fence is
 automatically done when <FONT FACE="Courier New">consumeSignal()</FONT><FONT FACE="Helvetica, sans-serif">implementation
-calls <FONT FACE="Courier New">FailureRecoverySignal.release()</FONT>.</FONT></FONT></FONT></P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
-</P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>When
+calls <FONT FACE="Courier New">FailureRecoverySignal.release()</FONT>.</FONT></FONT></P>
+
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">When
 a failed member restarts, the protocol requires that the member check
 with the group as to whether any other member is performing recovery
 operations on its resources. This portion of the protocol is termed
@@ -109,7 +106,7 @@ operations on its resources. This portion of the protocol is termed
 </P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
 </P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>The
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">The
 client in the restarting failed member, may have predetermined
 policies for handling such situations. One policy example could be to
 continue its startup without reclaiming control over the resources,
@@ -119,19 +116,9 @@ or lowered. Typically, clients can call the <FONT FACE="Courier New">GroupHandle
 API to make such a determination. Another policy example would be to
 block start up until the recovery operations are completed and
 continue startup after regaining control of resources. This is left
-to the client's implementation. </FONT></FONT>
+to the client's implementation. </FONT>
 </P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
-</P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
-</P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
-</P>
-<P><BR><BR>
-</P>
-<P><BR><BR>
-</P>
-<P><BR><BR>
 </P>
 </BODY>
 </HTML>

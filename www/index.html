@@ -40,18 +40,7 @@ reliability and availability.</FONT></P>
   provides for integration of any group communication service provider technologies such
   as <A HREF="http://www.jxta.org/">JXTA</A>, <A HREF="http://www.jgroups.org/">JGroups</A>,
   etc.</FONT></P>
-<P class="style10"><FONT FACE="Arial, sans-serif"> The Framework
-  thus provides a layer of abstraction for consuming
-  applications/products without tightly binding them to a specific
-  group communication system's semantics and implementation. This allows
-  employing applications to simply call the framework's APIs for
-  building clustering and related enterprise distributed systems
-  characteristics. </FONT></P>
-<P class="style10"><FONT FACE="Arial, sans-serif">Shoal's design considerations, approach and
-  programming model are discussed in the <A HREF="ShoalDesignDocument.html">Shoal
-    Design Overview</A> document. Please read this document to get an
-  indepth understanding of Shoal framework.</FONT></P>
-<P class="style10"><FONT FACE="Arial, sans-serif">Shoal is a part of the <A HREF="https://glassfish.dev.java.net/">GlassFish</A>
+<P class="style10"><FONT FACE="Arial, sans-serif"> </FONT><FONT FACE="Arial, sans-serif">Shoal is a part of the <A HREF="https://glassfish.dev.java.net/">GlassFish</A>
 Community.</FONT></P>
 <h4> Shoal Details</h4>
 <p class="style8">Read the <a href="ShoalOverview.html" class="style5">Shoal Overview</a> document for details on Shoal's functionalities. There are document references in there that dive deeper into the architecture and event model.</P>
@@ -59,6 +48,21 @@ Community.</FONT></P>
   <p class="style8">Get Shoal binaries and the dependent Group Communication Provider library (currently JXTA) from <a href="https://shoal.dev.java.net/servlets/ProjectDocumentList?folderID=6264&expandFolder=6264&folderID=6264">here</a>.</p>
   <h4>How to build Shoal sources </h4>
   <p class="style8">Read the <a href="https://shoal.dev.java.net/servlets/ProjectDocumentView?documentID=43252&noNav=true">build Instructions</a> for building shoal sources.</p>
+  <h4>How to integrate and run Shoal</h4>  
+  <p class="style8">To view an example of how Shoal can be integrated into your product, </p>
+  <ul class="style8">
+    <li>checkout the sources from CVS and look for the demo code located shoal/gms/tests/com/sun/enterprise/ee/cms/tests, or</li>
+    <li> browse the demo code in the CVS respository <a href="https://shoal.dev.java.net/source/browse/shoal/gms/tests/com/sun/enterprise/ee/cms/tests/">here</a></li>
+    <li>in the demo, an ApplicationServer (named only for demo purposes) starts GMS services, and then starts two other Application Server components (again simply named as EJBContainer and TransactionService for demo purposes). The components are consumers of GMS events and register for events of their interest. </li>
+  </ul>
+  <p class="style8">To run the demo </p>
+  <ul>
+    <li class="style8">On Linux, Unix or MacOs X platforms, run the script &quot;rungmsdemo.sh&quot; located at shoal/gms</li>
+    <li class="style8">On Windows platform, run the batch script &quot;rungmsdemo.bat&quot; located at shoal/gms  </li>
+    <li class="style8">In order to see this in a group setting, ensure that you start at least two terminals and run the demo code in these terminals. </li>
+    <li class="style8">The scripts expect on command line, parameters in the following order : &lt;instance_name&gt;, &lt;group_name&gt;, &lt;member_type&gt;(CORE or SPECTATOR), &lt;demo_life_in_milliseconds&gt;, &lt;log_level&gt; (one of INFO, FINE, FINER, FINEST) </li>
+    <li class="style8">The &lt;instance_name&gt; parameter in each terminal/process should be unique. The &lt;group_name&gt; should be the same in order for members to join the same group and experience Shoal's functionalities </li>
+  </ul>
 <h4>How to Contribute</h4>
 
   <p class="style8">We welcome community participation and contributions to this project. Here are ways to contribute: </p>

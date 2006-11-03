@@ -11,204 +11,88 @@
 	<STYLE>
 	<!--
 		@page { size: 8.5in 11in; margin: 0.79in }
+.style5 {font-family: Arial, Helvetica, sans-serif; font-size: 10pt; }
+.style6 {font-family: Verdana, Arial, Helvetica, sans-serif}
+.style8 {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; }
+.style10 {font-size: 10pt}
 	-->
 	</STYLE>
 </HEAD>
 <BODY LANG="en-US" DIR="LTR">
-<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4 STYLE="font-size: 16pt"><B>Shoal
-&ndash; A Generic Clustering Framework</B></FONT></FONT></P>
-<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>About
-Shoal Framework</B></FONT></FONT></P>
-<P><FONT FACE="Arial, sans-serif">Shoal is a java based clustering
+<h1 class="style6">Shoal&ndash; A Generic Clustering Framework</h1>
+<h4>About Shoal Framework</h4>
+<P class="style10"><FONT FACE="Arial, sans-serif">Shoal is a java based clustering
 framework that provides infrastructure to build fault tolerance,
-reliability and availability. The framework can be plugged into any
-product needing clustering and related distributed systems
-capabilities without tightly binding to a specific communications
-infrastructure. The framework can be plugged in as an in-process
-component. The framework will have two broad categories of public
-APIs, namely, a&nbsp; Client API, and a Group Communication Provider
-API. The Client API will allow in-process client components to be
-notified of cluster events and to send and receive messages to/from
-the group or individual members. The Group Communication Provider API
-provides for integration of any group communication technology such
-as <A HREF="http://www.jxta.org/">JXTA</A>, <A HREF="http://www.jgroups.org/">JGroups</A>,
-etc. as the underlying group communications provider. The Framework
-thus provides a layer of abstraction for consuming
-applications/products without tightly binding them to a specific
-group communication system semantics and implementation. This allows
-employing applications to simply call the framework's APIs for
-building clustering and related enterprise distributed systems
-characteristics. Shoal's design considerations, approach and
-programming model are discussed in the <A HREF="ShoalDesignDocument.html">Shoal
-Design Overview</A> document. Please read this document to get an
-indepth understanding of Shoal framework.</FONT></P>
-<P><FONT FACE="Arial, sans-serif">Shoal is a part of the <A HREF="https://glassfish.dev.java.net/">GlassFish</A>
+reliability and availability.</FONT></P>
+<P class="style10"><FONT FACE="Arial, sans-serif"> The framework can be plugged into any
+  product needing clustering and related distributed systems
+  capabilities without tightly binding to a specific communications
+  infrastructure. </FONT></P>
+<P class="style10"><FONT FACE="Arial, sans-serif">The framework can be plugged in as an in-process
+  component. </FONT></P>
+<P class="style10"><FONT FACE="Arial, sans-serif">The framework will have two broad categories of public
+  APIs, namely, a&nbsp; Client API, and a Group Communication Provider
+  SPI. </FONT></P>
+<P class="style10"><FONT FACE="Arial, sans-serif">The Client API will allow in-process client components to be
+  notified of cluster events and to send and receive messages to/from
+  the group or individual members. </FONT></P>
+<P class="style10"><FONT FACE="Arial, sans-serif">The Group Communication Provider SPI
+  provides for integration of any group communication service provider technologies such
+  as <A HREF="http://www.jxta.org/">JXTA</A>, <A HREF="http://www.jgroups.org/">JGroups</A>,
+  etc.</FONT></P>
+<P class="style10"><FONT FACE="Arial, sans-serif"> The Framework
+  thus provides a layer of abstraction for consuming
+  applications/products without tightly binding them to a specific
+  group communication system's semantics and implementation. This allows
+  employing applications to simply call the framework's APIs for
+  building clustering and related enterprise distributed systems
+  characteristics. </FONT></P>
+<P class="style10"><FONT FACE="Arial, sans-serif">Shoal's design considerations, approach and
+  programming model are discussed in the <A HREF="ShoalDesignDocument.html">Shoal
+    Design Overview</A> document. Please read this document to get an
+  indepth understanding of Shoal framework.</FONT></P>
+<P class="style10"><FONT FACE="Arial, sans-serif">Shoal is a part of the <A HREF="https://glassfish.dev.java.net/">GlassFish</A>
 Community.</FONT></P>
-<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4 STYLE="font-size: 16pt"><B>Shoal
-Capabilities</B></FONT></FONT></P>
-<P><FONT FACE="Arial, sans-serif">The Shoal Framework, written in
-Java, can be used as an in-process component for cluster
-communications and cluster event management. As an in-process
-component, Shoal's core service, the Group Management Service (GMS),
-provides the ability for the process (JVM) to become a communicating
-member of a predefined cluster. As a result, within each process,
-clients implementing Shoal's client API can get notifications of
-cluster events. By becoming a communicating cluster member, the
-process gets the ability to </FONT>
-</P>
-<UL>
-	<LI><P><FONT FACE="Arial, sans-serif">be notified of members'
-	joining, failures, and planned shutdowns among cluster members ( see
-	<A HREF="ShoalGroupEventNotifications.html" NAME="Shoal Group Event Notifications" TARGET="_blank">Shoal
-	Group Event Notifications</A>), </FONT>
-	</P>
-	<LI><P><FONT FACE="Arial, sans-serif">be notified of the process's
-	selection as a recovery member for any recovery operations on
-	another member on occurrence that other member's failure. (see <A HREF="ShoalAutomatedDelegatedRecoveryInitiation.html" NAME="Shoal Automated Delegated Recovery Initiation" TARGET="_blank">Shoal
-	Automated Delegated Recovery Initiation</A>), </FONT>
-	</P>
-	<LI><P><FONT FACE="Arial, sans-serif">check, while joining, if any
-	other process in the cluster is performing any recovery operations
-	on its resources (see <A HREF="ShoalAutomatedDelegatedRecoveryInitiation.html" NAME="Shoal Protective Fencing">Shoal
-	Automated Delegated Recovery Initiation</A>),</FONT></P>
-	<LI><P><FONT FACE="Arial, sans-serif">receive messages sent by one
-	or more members directly to it or to the group as a whole (see <A HREF="ShoalMessaging.html" NAME="Shoal Messaging">Shoal
-	Messaging</A>) and </FONT>
-	</P>
-	<LI><P><FONT FACE="Arial, sans-serif">send messages to the group as
-	a whole or a particular member (see <A HREF="ShoalMessaging.html" NAME="Shoal Messaging">Shoal
-	Messaging</A>) </FONT>
-	</P>
-	<LI><P><FONT FACE="Arial, sans-serif">share application state data
-	using GMS's Shared Cache implementation based on
-	DistributedStateCache interface. </FONT>
-	</P>
-</UL>
-<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><B><FONT SIZE=4><FONT FACE="Helvetica, sans-serif">Membership
-in Multiple Groups</FONT></FONT></B> </FONT></FONT>
-</P>
-<P><FONT FACE="Arial, sans-serif">A single process can be a member of
-multiple groups to represent different groups. For example, the
-instance could participate in the pre-defined cluster that
-encompasses all cluster members while also participating in a
-different group, say, a replication group that represents a sub-group
-of members in that cluster to which this member would replicate its
-state to. For each such group, GroupManagementService instances will
-be created within the process and these will be independent of each
-other. </FONT>
-</P>
-<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Core
-and Spectator Member Roles</B></FONT></FONT></P>
-<P><FONT FACE="Arial, sans-serif">A member can participate in a group
-either as a core member or as a spectator member. If configured to
-participate as a Core member, then that member's failure would be
-notified to all other members. If configured to participate as a
-Spectator, then the spectator member's failure will not be notified
-to all other members, however, the spectator member would receive all
-notifications pertaining to other Core members. This is useful for
-non-cluster processes such as an administration server, to be part of
-a defined group to get the advantages of the various notifications
-and messages described in the previous paragraph. Typically, this is
-useful for monitoring or administrative infrastructures in that the
-ability to communicate and receive notifications allows such
-non-cluster members to effect configuration changes based on certain
-group events and also send out meaningful messages to listening
-endpoints in the group.</FONT></P>
-<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Distributed
-State Cache</B></FONT></FONT></P>
-<P><FONT FACE="Arial, sans-serif">Shoal also provides the ability to
-add distributed cache implementations by exposing an interface
-DistributedStateCache. A default implementation is provided by GMS
-for lightweight replicated caching.&nbsp; Shoal framework users have
-the opportunity to develop their own implementations of the
-DistributedStateCache for use within their clustering environment
-along with GMS.</FONT></P>
-<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Shoal
-GMS Use Cases</B></FONT></FONT></P>
-<P><FONT FACE="Arial, sans-serif">Some real use cases are listed
-here. Note that these are not exhaustive and the extent to which GMS
-could be used is only limited by imagination.</FONT></P>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">In
-	a Java EE (J2EE) environment, transaction service reliability can be
-	significantly improved in a cluster setting, by using delegated
-	recovery initiation notification that automatically picks another
-	cluster member to perform recovery operations and notifies that
-	member's transaction service to recover transactions from the failed
-	member's transaction logs.&nbsp; Contrast this with manual
-	transaction recovery which depends on availability of administrative
-	personnel to perform the job.</FONT> 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">Another
-	example in the Java EE environment is IIOP Failover. With GMS, the
-	ORB layer can now be dynamically notified of member failures,
-	planned shutdowns and joins, thereby allowing the list of IOR
-	addresses to be updated out-of-band to IIOP clients. This allows for
-	better failover scenario compared to a static loadbalancer list
-	wherein failover entails moving from one address to another until a
-	live instance is found.</FONT> 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">The
-	same idea as the IIOP Failover applies to Http-based software
-	Loadbalancers. By having GMS as an inprocess component and
-	partipating as a Spectator, the loadbalancer can determine
-	availability or lack thereof of any member in the cluster. </FONT>
-	</P>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">GMS
-	provided Distributed State Cache can be used as an in-memory store
-	for session data. The underlying group communication provider such
-	as JXTA, JGroups, etc. can be tuned to run in a highly performant
-	manner, enabling high availability of servers.</FONT> 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">Read-only
-	and read-mostly beans on various instances in a cluster can be
-	notified when a cache update is discovered by one of the instances.
-	The notification can be done through GMS's messaging API. </FONT>
-	</P>
-	<LI><P STYLE="margin-bottom: 0in"><FONT FACE="Arial, sans-serif">Monitoring
-	Clients/Agents can now participate in the cluster as Spectator
-	members and be notified of cluster instance lifecycle events. One
-	can also build more monitoring information on top of GMS
-	notifications in terms of load factors on an instance prior to
-	failure so that appropriate service provisioning can be made. </FONT>
-	</P>
-	<LI><P><FONT FACE="Arial, sans-serif">Dynamic Provisioning services
-	can take advantage of GMS thereby taking appropriate actions of
-	providing more resources on occurence of failures depending on load
-	conditions. </FONT>
-	</P>
-</UL>
-<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT COLOR="#000000"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Acknowledgements</B></FONT></FONT></FONT></P>
-<P><FONT COLOR="#000000"><FONT FACE="Arial, sans-serif">We would like
-to acknowledge and thank the design contributions of our colleague
-</FONT><A HREF="http://weblogs.java.net/blog/mortazavi/"><FONT FACE="Arial, sans-serif">Masood
-Mortazavi</FONT></A><FONT FACE="Arial, sans-serif">, who played a
-major role in the initial design phases of this project. Masood's
-prior experiences influenced our thought and learning processes in
-building this framework to its current state. </FONT></FONT>
-</P>
-<P><FONT COLOR="#000000"><FONT FACE="Arial, sans-serif">We would like
-to thank the Sun Java System Application Server Architecture (asarch)
-Committee for their support, critique and guidance in clarifying
-requirements from the Sun Java System Application Server
-perspectives. </FONT></FONT>
-</P>
-<P><FONT COLOR="#000000"><FONT FACE="Arial, sans-serif">We would also
-like to thank the quality team at the application server group who
-built distributed testing environments, ran several test suites on
-our development efforts, and helped fix several significant issues
-that manifested only in specific distributed settings.</FONT></FONT></P>
-<P><BR><BR><BR>
-</P>
-<!-- Start of StatCounter Code -->
-<script type="text/javascript" language="javascript">
+<h4> Shoal Details</h4>
+<p class="style8">Read the <a href="ShoalOverview.html" class="style5">Shoal Overview</a> document for details on Shoal's functionalities. There are document references in there that dive deeper into the architecture and event model.</P>
+  <h4>Download Shoal</h4>
+  <p class="style8">Get Shoal binaries and the dependent Group Communication Provider library (currently JXTA) from <a href="https://shoal.dev.java.net/servlets/ProjectDocumentList?folderID=6264&expandFolder=6264&folderID=6264">here</a>.</p>
+  <h4>How to build Shoal sources </h4>
+  <p class="style8">Read the <a href="https://shoal.dev.java.net/servlets/ProjectDocumentView?documentID=43252&noNav=true">build Instructions</a> for building shoal sources.</p>
+<h4>How to Contribute</h4>
+
+  <p class="style8">We welcome community participation and contributions to this project. Here are ways to contribute: </p>
+    <ul class="style8">
+      <li>
+        <p>Become a Developer Contributor</p>
+      </li>
+      <li>
+        <p>Become a Content Contributor for the site, documentation, programmer's guides, etc. </p>
+      </li>
+      <li>
+        <p>Submit Bugs on the Issue Tracker or Bug Fixes</p>
+      </li>
+      <li>
+        <p>Help Spread the Word by communicating the value that Project Shoal brings. <BR>
+          <!-- Start of StatCounter Code -->
+        </p>
+      </li>
+    </ul>
+    <p class="style8">
+      <script type="text/javascript" language="javascript">
 var sc_project=1946047; 
 var sc_invisible=1; 
 var sc_partition=17; 
 var sc_security="757c102e"; 
-</script>
-
-<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c18.statcounter.com/counter.php?sc_project=1946047&java=0&security=757c102e&invisible=1" alt="statistics" border="0"></a> </noscript>
-<!-- End of StatCounter Code -->
+      </script>
+      
+      <script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+        </p>
+  <noscript>
+    <p><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c18.statcounter.com/counter.php?sc_project=1946047&java=0&security=757c102e&invisible=1" alt="statistics" border="0"></a> </p>
+  </noscript>
+    <p>
+      <!-- End of StatCounter Code -->
+    </p>
 </BODY>
 </HTML>

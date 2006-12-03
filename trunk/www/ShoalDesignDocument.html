@@ -2,12 +2,15 @@
 <HTML>
 <HEAD>
 	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
-	<TITLE></TITLE>
+	<TITLE>Shoal Design Document</TITLE>
 	<META NAME="GENERATOR" CONTENT="StarOffice 8  (Solaris x86)">
 	<META NAME="AUTHOR" CONTENT="Shreedhar Ganapathy">
 	<META NAME="CREATED" CONTENT="20060505;14051600">
 	<META NAME="CHANGEDBY" CONTENT="Shreedhar Ganapathy">
 	<META NAME="CHANGED" CONTENT="20060515;11455100">
+<meta name="keywords" content="shoal, glassfish, clustering, java ee, java, jxta, peer-to-peer, p2p, enterprise, group communication, jgroups, j2ee, framework, generic, pluggable, service provider, java-enterprise, networking, routing, multicast, reliable, replication, high availability, in-memory, fault tolerance, scalability, discovery, peer, peergroup, membership, groups, group management, distributed systems, distributed cache, cache, messaging, events, notifications, rendezvous">
+<meta name="description" content="Shoal - A Generic Dynamic Clustering Framework for Group Membership, Reliability, Fault Tolerance and High Availability Systems"
+	
 	<STYLE>
 	<!--
 		H2 { margin-left: 0.3in; margin-top: 0.1in; margin-bottom: 0.04in; page-break-before: auto; page-break-after: auto }
@@ -40,9 +43,7 @@ framework in some detail.</FONT></P>
 Shoal Framework is an independent module whose instances may be
 embedded and started by processes that require group management
 services such as:</FONT></P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
-</P>
-<UL>
+<UL style="margin-bottom: 0in">
 	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Ability
 	to participate in a process group/cluster</FONT></P>
 	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Receive
@@ -54,9 +55,7 @@ services such as:</FONT></P>
 	Fencing Service</FONT></P>
 	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Group
 	Messaging Service</FONT></P>
-</UL>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
-</P>
+      </UL>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Shoal's
 core service, the GroupManagementService (GMS) provides the basis for
 employing applications to consume its services through APIs. GMS
@@ -64,10 +63,7 @@ provides APIs to integrate any group communications infrastructure.
 Initially, Shoal's GMS will have two group communications provider
 implementations, one based on <A HREF="http://www.jxta.org/">Jxta</A>
 peer-to-peer technology, and another based on the <A HREF="http://www.jgroups.org/">JGroups</A>
-toolkit. </FONT>
-</P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
-</P>
+toolkit.</FONT></P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Side
 Note:</FONT></P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">To
@@ -96,41 +92,33 @@ Features</B></FONT></FONT></P>
 	</P>
 </UL>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Shoal
-provides a simple, easy-to-use API for consuming applications.</FONT></P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+provides a simple, easy-to-use API for consuming applications.</FONT><BR>
 </P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">The
 features of the Shoal's GMS can be broken into three large classes:</FONT></P>
-<UL>
+<UL style="margin-bottom: 0in">
 	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Features
 	that provide a group sensory-action theme. (GMS &ldquo;senses&rdquo;
 	group events raised from the group communication infrastructure,
 	packs relevant events into Signals and and initiates &ldquo;actions.&rdquo;)
 	</FONT>
 	</P>
-</UL>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
-</P>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Features
+      </UL>
+<UL style="margin-bottom: 0in">
+	<LI>
+	  <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Features
 	that provide a group communications theme. (GMS provides a &ldquo;handle&rdquo;
 	to the group for light-weight messaging. When messages are received
 	GMS packs them into message signals and delivers them to &ldquo;actions&rdquo;.)</FONT></P>
-</UL>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
-</P>
+  </UL>
 <UL>
 	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Features
 	that provide Shared or Distributed Storage theme. (GMS provides a
 	DistributedStateCache interface along with an implementation that
 	allows for dynamic shared storage of data.)</FONT></P>
 </UL>
-<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Not
+<P STYLE="margin-top: 0.17in; page-break-after: avoid; margin-bottom: 0in;"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Not
 Supported Features</B></FONT></FONT></P>
-<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
-<FONT FACE="Arial, sans-serif">Shoal's GMS does not support any
-special handling of cascading failures. </FONT>
-</P>
 <P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
 <FONT FACE="Arial, sans-serif">Shoal's GMS does not detect subsystem
 failures within a process or server instance.</FONT></P>
@@ -147,11 +135,7 @@ provider mechanism. Typically, failure detection is based on a
 limited concept of failure, focusing on &ldquo;unreachability&rdquo;.
 &ldquo;Unreachability&rdquo; in GMS finds its more crisp definition
 in the underlying group communication provider's failure detection
-protocol. </FONT>
-</P>
-<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
-<BR>
-</P>
+protocol. </FONT></P>
 <P STYLE="margin-bottom: 0in; font-weight: medium; widows: 2; orphans: 2">
 <FONT FACE="Arial, sans-serif">For example, failure detection
 time-out parameters can play a role in determining whether a server
@@ -162,8 +146,6 @@ failure detection in GMS have been judiciously selected to have the
 right heuristics such that a failure detection is realistic.
 Nevertheless, the distinction among failures and the source of
 failures remain well beyond the scope of this version of Shoal.</FONT></P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
-</P>
 <P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Design
 Approach</B></FONT></FONT></P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">The
@@ -179,16 +161,11 @@ infrastructure in each member process.</FONT></P>
 <FONT FACE="Arial, sans-serif">GMS performs minimal analysis on these
 group events and packages them as signals to be handed to higher
 layers. Thereby, GMS &ldquo;actuates&rdquo; higher layer actions.</FONT></P>
-<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
-</P>
 <P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Design
 Principles</B></FONT></FONT></P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Design
 principle for this module included the following:</FONT></P>
-<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
-<BR>
-</P>
-<UL>
+<UL style="margin-bottom: 0in">
 	<LI><P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">Our
 	approach is based on simplicity (using <A HREF="http://pespmc1.vub.ac.be/OCCAMRAZ.html">Occam's
 	Razor</A> principle) and on incremental but consistent evolution of
@@ -211,9 +188,6 @@ principle for this module included the following:</FONT></P>
 	sensor/actuator calls, the GMS user operates with programming
 	objects in the same address space.)</FONT></P>
 </UL>
-<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
-<BR>
-</P>
 <P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4>Programing
 Model</FONT></FONT></P>
 <P STYLE="margin-bottom: 0in"><FONT FACE="Helvetica, sans-serif">Shoal's
@@ -221,9 +195,7 @@ GMS programming model is based on the paradigm of Signal, Action and
 ActionFactory for group sensory (notifications) theme, and provides a
 Group Handle for the communications theme (sending messages to
 individual members or the group) and the storage theme
-(DistributedStateCache implementation). </FONT>
-</P>
-<P STYLE="margin-bottom: 0in"><BR>
+(DistributedStateCache implementation).</FONT><BR>
 </P>
 <P STYLE="margin-bottom: 0in"><FONT FACE="Helvetica, sans-serif">An
 ActionFactory produces a specific Action. An Action consumes a
@@ -232,8 +204,6 @@ remedial action on account of the Signal, denoting a group event. GMS
 clients implement specific ActionFactory types and Action types
 depending upon the group event of interest. GMS provides
 implementations of all Signal types (see illustration 1 below).</FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
 <P STYLE="margin-bottom: 0in"><FONT FACE="Helvetica, sans-serif">Each
 employing application process (or server instance) has its own
 instance of GMS per group/cluster. GMS is initialized through the
@@ -249,27 +219,15 @@ allowing that member to take full advantage of group membership. A
 CORE member on the other hand is a member whose failure is a
 significant incident warranting action either limited to failure
 notification or extending to selecting a recovery server for such a
-failure. </FONT>
-</P>
-<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
-<BR>
-</P>
+failure.</FONT></P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif">Each
 server process may include services (e.g., in an application server
 Transaction Service, Timer Service, EJB and Web Containers, RMI-IIOP
-Service, etc.) which may depend on GMS for the services it provides. </FONT>
-</P>
-<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
-<BR>
-</P>
+Service, etc.) which may depend on GMS for the services it provides. </FONT></P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif">The
 services that may have dependencies on the GMS, will interact with
 GMS through registration of callback factories (i.e., instances of
-valid &quot;ActionFactory&quot; types). </FONT>
-</P>
-<P STYLE="margin-left: 0.8in; margin-bottom: 0in; widows: 2; orphans: 2">
-<BR>
-</P>
+valid &quot;ActionFactory&quot; types). </FONT></P>
 <P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Helvetica, sans-serif">These
 callback factories must be provided in accordance with the GMS
 programming model. </FONT>

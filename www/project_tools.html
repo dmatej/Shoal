@@ -116,7 +116,38 @@ var info = {
   This includes the theme engine script.
 -->
 <script src="https://glassfish-theme.dev.java.net/theme.js"></script>
+<script>
+addLoadEvent(function() {
+	var html = [];
 
+	function addIcon(href,image,text) {
+		html.push("<div align=center style='float:right; margin:0.5em;'><a href='");
+		html.push(href);
+		html.push("'><img border=0 alt='");
+		html.push(text);
+		html.push("' src='/image/");
+		html.push(image);
+		html.push("'/></a><br><a href='");
+		html.push(href);
+		html.push("'>");
+		html.push(text);
+		html.push("</a></div>");
+	}
+
+	// added in the reverse order
+	addIcon("/public/devindex.html","srcbrowse.gif","Get Involved");
+	addIcon("/public/users.html","communities.gif","Get Started");
+	addIcon("/public/downloadsindex.html","download.gif","Download");
+
+	var div = document.createElement("div");
+	div.innerHTML = html.join('');
+	div.style.float = "right";
+	div.style.marginTop = "1em";
+
+	var logobox = document.getElementById("logo-box");
+	logobox.parentNode.insertBefore(div,logobox);
+});
+</script>
 <!--
   If your project uses a site traffic tracker like Google Analytics, this is a good place
   to inject it.

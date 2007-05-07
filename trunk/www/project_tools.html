@@ -12,16 +12,42 @@
   to create submenus.
 -->
 <ul>
+	<!-- menubar for the main site -->
+	<ul id="main-menubar">
+    <li>
+      <a href="/files/documents/5135/57393/shoal-0.9_05072007.zip" match="/downloads/">Downloads</a>
+    <li>
+      <a href="/servlets/ProjectNewsList">Announcements</a>
+
+    <li>
+      <a href="/servlets/ProjectMailingListList">Mailing lists</a>
+    <li>
+      <a href="#" match="/public/users.html">Using Shoal</a>
+      <ul>
+
+        <li>
+          <a href="/public/faq/index.html" match="/public/faq/.*">GlassFish FAQ</a>
+        <li>
+          <a href="http://wiki.glassfish.java.net/">GlassFish Wiki</a>
+        <li>
+          <a href="/javaee5/docs/DocsIndex.html">Documentation</a>
+        <li>
+          <a href="/nonav/javaee5/api/index.html">Javadocs</a>
+        <li>
+          <a href="mailto:users@shoal.dev.java.net">Send us feedback</a>
+      </ul>
+    <li>
+
   <li>
     <!--
       This HTML is injected in all the pages within your project, so all the hyperlinks
       must be either absolute or start with '/'.
-      
+
       The current page in the navigation bar is shown highlighted to let users know where
       he/she is. This is primarily done by the exact match between "window.location.href"
       and the link target, but the A tag can also have the optional "match" attribute,
       whose value is regular expression that indicates what pages the link should highlight.
-      
+
       For example, the following match attribute says "overview" should be the current
       page even if you are in sub.html. This is useful for grouping a large number of pages
       under a single navigation item.
@@ -51,10 +77,10 @@
 	  </ul>
     <li><a href="http://www.sun.com/">sun.com</a>
   </ul>
-  
+
   <li>
     <a href="/servlets/ProjectNewsList">News</a>
-  
+
   <li><a href="#">Support</a>
   <ul>
     <li><a href="/servlets/ProjectMailingListList">Mailing List</a>
@@ -82,10 +108,10 @@ var info = {
   This script includes the zone definition, which determines the
   list of the "siblings" projects you see in the left navigation bar.
   Your project should be listed among one of them.
-  
+
   This example uses the ws/xml zone, but pick up the right zone that matches your project.
 -->
-<script src="https://glassfish-theme.dev.java.net/zone-ws.js"></script>
+<script src="/zone.js"></script>
 <!--
   This includes the theme engine script.
 -->

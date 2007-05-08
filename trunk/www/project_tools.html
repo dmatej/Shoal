@@ -14,76 +14,28 @@
 <ul>
 	<!-- menubar for the main site -->
 	<ul id="main-menubar">
-    <li>
+  <li>
+      <!--
+        This HTML is injected in all the pages within your project, so all the hyperlinks
+        must be either absolute or start with '/'.
+
+        The current page in the navigation bar is shown highlighted to let users know where
+        he/she is. This is primarily done by the exact match between "window.location.href"
+        and the link target, but the A tag can also have the optional "match" attribute,
+        whose value is regular expression that indicates what pages the link should highlight.
+
+        For example, the following match attribute says "overview" should be the current
+        page even if you are in sub.html. This is useful for grouping a large number of pages
+        under a single navigation item.
+      -->
+      <a href="/" match="/|/sub.html">Overview</a>
+  <li>
       <a href="/files/documents/5135/57393/shoal-0.9_05072007.zip" match="/downloads/">Downloads</a>
     <li>
       <a href="/servlets/ProjectNewsList">Announcements</a>
 
     <li>
       <a href="/servlets/ProjectMailingListList">Mailing lists</a>
-    <li>
-      <a href="#" match="/public/users.html">Using Shoal</a>
-      <ul>
-
-        <li>
-          <a href="/public/faq/index.html" match="/public/faq/.*">GlassFish FAQ</a>
-        <li>
-          <a href="http://wiki.glassfish.java.net/">GlassFish Wiki</a>
-        <li>
-          <a href="/javaee5/docs/DocsIndex.html">Documentation</a>
-        <li>
-          <a href="/nonav/javaee5/api/index.html">Javadocs</a>
-        <li>
-          <a href="mailto:users@shoal.dev.java.net">Send us feedback</a>
-      </ul>
-    <li>
-
-  <li>
-    <!--
-      This HTML is injected in all the pages within your project, so all the hyperlinks
-      must be either absolute or start with '/'.
-
-      The current page in the navigation bar is shown highlighted to let users know where
-      he/she is. This is primarily done by the exact match between "window.location.href"
-      and the link target, but the A tag can also have the optional "match" attribute,
-      whose value is regular expression that indicates what pages the link should highlight.
-
-      For example, the following match attribute says "overview" should be the current
-      page even if you are in sub.html. This is useful for grouping a large number of pages
-      under a single navigation item.
-    -->
-    <a href="/" match="/|/sub.html">Overview</a>
-  <li>
-    <a href="/source/browse/glassfish-theme/trunk/www/project_tools.html?view=markup">Sample</a>
-  <!--
-    If the parent LI of a submenu doesn't have a dedicated page like this,
-    just use '#' as the href. This makes this submenu expandable by clicking on it.
-  -->
-  <li><a href="#">Test</a>
-  <ul>
-    <li><a href="/a.html">doc A</a>
-    <li><a href="/b.html">doc B</a>
-    <li><a href="/c.html">doc C</a>
-    <!--
-      When the parent LI of a submenu has a link, its children only expands when
-      the user is inside this menu.
-    -->
-    <li><a href="/d.html">doc D</a>
-	  <ul>
-	    <li><a href="/d1">doc D1</a>
-	    <li><a href="/d2">doc D2</a>
-	    <li><a href="/d3">doc D3</a>
-	    <li><a href="/d4">doc D4</a>
-	  </ul>
-    <li><a href="http://www.sun.com/">sun.com</a>
-  </ul>
-
-  <li>
-    <a href="/servlets/ProjectNewsList">News</a>
-
-  <li><a href="#">Support</a>
-  <ul>
-    <li><a href="/servlets/ProjectMailingListList">Mailing List</a>
     <!--
       The following shows how to embed something other than a link to the menu bar.
     -->
@@ -92,6 +44,23 @@
       <form name="ProjectIssuesForm" method="get" action="/issues/show_bug.cgi" style="margin-left:2em">
         <input type="submit" value="Go to" /> # <input name="id" size="3" />
       </form>
+    <li>
+      <a href="#">Using Shoal</a>
+      <ul>
+        <li>
+          <a href="ShoalOverview.html">What is Shoal?</a>
+        <li>
+          <a href="http://www.glassfishwiki.org/gfwiki/attach/UserExperienceMeeting/ShoalJXTAOverview.pdf">Shoal Overview Presentation</a>
+        <li>
+          <a href="/servlets/ProjectDocumentView?documentID=43252&noNav=true">Build Instructions</a>
+        <li>
+          <a href="/nonav/docs/api/">Javadocs</a>
+        <li>
+          <a href="mailto:users@shoal.dev.java.net">Send us feedback</a>
+      </ul>
+    <li>
+  <li>
+    <a href="/servlets/ProjectNewsList">News</a>
   </ul>
 </ul>
 <!--
@@ -101,7 +70,7 @@
 <script>
 var info = {
 	title: "Project Shoal",
-	logo: "Shoal_244_179.JPG"
+	logo: "Shoal_244_179.PNG"
 }
 </script>
 <!--

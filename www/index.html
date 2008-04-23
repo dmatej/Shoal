@@ -42,9 +42,8 @@ for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
 <div
  style="border: 1px solid rgb(170, 170, 170); padding: 5px; background: rgb(238, 238, 238) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; width: auto; margin-top: 1em;">
   <center>
-  <b>Useful Links</b>
+  <h3 class="style6">Useful Links</h3>
 </center>
-<br>
 <div
  style="border: 1px solid rgb(170, 170, 170); padding: 5px; background: rgb(200, 200, 230) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; width: auto; margin-top: 1em;">
               <p><center><b><a href="http://download.java.net/glassfish/shoal/promoted/shoal-1.1_03242008.zip">Download Shoal 1.1 Release </a></b></p></center>
@@ -65,6 +64,7 @@ for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
        <blockquote>
          <p><a href="http://weblogs.java.net/blog/hamada">Mohamed Abdelaziz's blog</a></p>
          <p><a href="http://blogs.sun.com/shreedhar/tags/shoal">Shreedhar Ganapathy's blog </a></p>
+         <p><a href="http://blogs.sun.com/sheetal/">Sheetal Vartak's blog </a></p>
          <p><a href="http://blogs.sun.com/tra/entry/glassfish_%2B_jxta_%3D_shoal">Bernard Traversat's blog</a></p>
 
        </blockquote>
@@ -84,61 +84,36 @@ for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
 <br>
 <div class="app">
 <h3 class="style6"> Shoal Details</h3>
-<p class="style8">For a quick introduction, go through the <a href="http://www.glassfishwiki.org/gfwiki/attach/UserExperienceMeeting/ShoalJXTAOverview.pdf">Shoal Overview Presentation</a>. For further details, read the <a href="ShoalOverview.html" class="style5">Shoal Overview</a> document for details on Shoal's functionalities. There are document references in there that dive deeper into the architecture and event model.</p>
+<p class="style8">For a quick introduction, go through the <a href="http://www.glassfishwiki.org/gfwiki/attach/UserExperienceMeeting/ShoalJXTAOverview.pdf">Shoal Overview Presentation</a>. </p>
+<p>For deeper details, read the <a href="ShoalOverview.html" class="style5">Shoal Overview</a> document for details on Shoal's functionalities, architecture and event model.</p>
 <p>A couple of Shoal community users have written a very nice introductory article <a href="http://today.java.net/pub/a/today/2007/12/11/clustering-with-shoal-framework.html">on Shoal clustering</a> at Java.net</P>
-<p class="style8">Shoal's Javadoc is located<span class="style11"> <a href="https://shoal.dev.java.net/nonav/docs/api/">here</a></span>.</P>
-</div>
-<div class="app">
-  <h3 class="style6">Download Shoal</h3>
-  <p class="style8">Get Shoal binaries and the dependent Group Communication Provider library (currently JXTA) from <a href="https://shoal.dev.java.net/downloadsindex.html">here</a>.</p>
-
+<p> Article on <a href="http://www.infoq.com/news/2008/02/shoal-clustering-framework">InfoQ about Shoal Clustering</a></p>
 </div>
 
 <div class="app">
-  <h3 class="style6">How to integrate and run Shoal (Sample Code) </h3>
-  <p class="style8">To view an example of how Shoal can be integrated into your product, </p>
-  <ul class="style8">
-    <li><a href="https://shoal.dev.java.net/servlets/ProjectDocumentView?documentID=43252&noNav=true">checkout</a> the sources from CVS and look for the demo code located at shoal/gms/tests/com/sun/enterprise/ee/cms/tests, or</li>
-    <li> browse the demo code in the CVS respository <a href="https://shoal.dev.java.net/source/browse/shoal/gms/tests/com/sun/enterprise/ee/cms/tests/">here</a></li>
-    <li>in the demo, an ApplicationServer (named only for demo purposes) starts GMS services, and then starts two other Application Server Components (again simply named as EJBContainer and TransactionService for demo purposes). The components are consumers of GMS events and register for events of their interest. </li>
-  </ul>
-  <p class="style8">To run the demo </p>
-  <ul>
-    <li class="style8">On Linux, Unix or MacOs X platforms, run the script &quot;rungmsdemo.sh&quot; located at shoal/gms</li>
-    <li class="style8">On Windows platform, run the batch script &quot;rungmsdemo.bat&quot; located at shoal/gms  </li>
-    <li class="style8">In order to see this in a group setting, ensure that you start at least two terminals and run the demo code in these terminals. </li>
-    <li class="style8">The scripts expect on command line, parameters in the following order : &lt;instance_name&gt;, &lt;group_name&gt;, &lt;member_type&gt;(CORE or SPECTATOR), &lt;demo_life_in_milliseconds&gt;, &lt;log_level&gt; (one of INFO, FINE, FINER, FINEST) </li>
-    <li class="style8">The &lt;instance_name&gt; parameter in each terminal/process should be unique. The &lt;group_name&gt; should be the same in order for members to join the same group and experience Shoal's functionalities </li>
-  </ul>
+<table border="0" align="center" width="75%"><tr>
+<td><b><a href="https://shoal.dev.java.net/downloadsindex.html">Download Shoal</a></b></td>
+<td><b><a href="https://shoal.dev.java.net/ShoalIntegration.html">How to Integrate Shoal in your App</a></b></td</tr>
+<tr><td>&nbsp;</td></tr><tr>
+<td><b><a href="https://shoal.dev.java.net/servlets/ProjectDocumentView?documentID=43252&noNav=true">How to Build Shoal Sources</a></b></td>
+<td><b><a href="https://shoal.dev.java.net/nonav/docs/api/">Shoal Javadocs</a></b><td></tr></table>
 </div>
+<br>
 <div class="app">
-<h3 class="style6">How to Contribute</h3>
+<h3 class="style6">Projects or Companies Using Shoal</h3>
+<p>Based on our download metrics and user alias postings, use of Shoal is growing and we have tracked this data on the <b><a href="http://wikis.sun.com/display/shoal/Known+Shoal+Clustering+User+Companies+or+Projects">Shoal Wiki Page</a></b>.</p>
+<p>We encourage you to add a link to your project or company to this Wiki page to enable us to track Shoal's adoption and community growth.</p>
+<p>We welcome your testimonials about your use of Shoal along with a brief description of your project in the wiki page.</p>
+</div>
+
+<div class="app">
+<h3 class="style6">How to Contribute to Shoal</h3>
 
   <p class="style8">We welcome community participation and contributions to this project. </p>
   <p class="style8">Click <b><a href="https://shoal.dev.java.net/servlets/ProjectMembershipRequest">here</a></b> to make a role request </p>
   <p class="style8">Here are ways to contribute (For more details  <a href="https://shoal.dev.java.net/public/contribute.html"><strong>look here</strong></a>): </p>
-  <ul class="style8">
-      <li>
-        <p>Become a Developer Contributor </p>
-      </li>
-      <li>
-        <p>Become a Content Contributor for the site, documentation, programmer's guides, etc. </p>
-      </li>
-      <li>
-        <p>Submit Bugs on the Issue Tracker or Bug Fixes by requesting for the Observer role. </p>
-      </li>
-      <li>
-        <p>Help Spread the Word by becoming a Shoal Ambassador to communicate the value that Project Shoal brings to various types of use cases <BR>
-
-        </p>
-      </li>
-</ul>
 </div>
 
-<div class="app">
-  <h3 class="style6">How to build Shoal sources </h3>
-  <p class="style8">Read the <a href="https://shoal.dev.java.net/servlets/ProjectDocumentView?documentID=43252&noNav=true">build Instructions</a> for building shoal sources.</p>
-</div>
           <!-- Start of StatCounter Code -->
 		      <p class="style8">
       <script type="text/javascript" language="javascript">

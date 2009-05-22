@@ -1,32 +1,15 @@
-<!DOCTYPE html PUBLIC "-//Tigris//DTD XHTML 1.0 Transitional//EN" "http://style.tigris.org/nonav/tigris_transitional.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
 	<TITLE>Project Shoal - A Dynamic Java Clustering Framework</TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 9  (Unix)">
 	<META NAME="AUTHOR" CONTENT="Shreedhar Ganapathy">
-<meta name="keywords" content="shoal, glassfish, clustering, java ee, java, jxta, peer-to-peer, p2p, enterprise, group communication, jgroups, j2ee, framework, generic, pluggable, service provider, java-enterprise, networking, routing, multicast, reliable, replication, high availability, in-memory, fault tolerance, scalability, discovery, peer, peergroup, membership, groups, group management, distributed systems, distributed cache, cache, messaging, events, notifications, rendezvous">
-<meta name="description" content="Shoal - A Generic Dynamic Clustering Framework for Group Membership, Reliability, Fault Tolerance and High Availability Systems"/>
-
-	<STYLE>
-	  	#apphead {
-  			display: none;
-	  	}
-
-		#subprojects {
-  			display: none;
-	  	}
-	  	.app H3 {
-  			clear: none;
-	  	}
-	  	.axial {
-  			display: none;
-  		}
-
-
-	</STYLE>
-</HEAD>
-<BODY>
-<script>
+	<META NAME="CREATED" CONTENT="0;0">
+	<META NAME="CHANGED" CONTENT="20090522;12303600">
+	<META NAME="DESCRIPTION" CONTENT="Shoal - A Generic Dynamic Clustering Framework for Group Membership, Reliability, Fault Tolerance and High Availability Systems">
+	<META NAME="KEYWORDS" CONTENT="shoal, glassfish, clustering, java ee, java, jxta, peer-to-peer, p2p, enterprise, group communication, jgroups, j2ee, framework, generic, pluggable, service provider, java-enterprise, networking, routing, multicast, reliable, replication, high availability, in-memory, fault tolerance, scalability, discovery, peer, peergroup, membership, groups, group management, distributed systems, distributed cache, cache, messaging, events, notifications, rendezvous">
+	<SCRIPT>
 // kill "description" h3 bar
 ld = document.getElementById("longdescription");
 for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
@@ -35,105 +18,142 @@ for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
     break;
   }
 }
-</script>
-
-<div style="border-left: 1em solid white; float: right;">
-<div
- style="border: 1px solid rgb(170, 170, 170); padding: 5px; background: rgb(238, 238, 238) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; width: auto; margin-top: 1em;">
-  <center>
-  <h3 class="style6">Useful Links</h3>
-</center>
-<div
- style="border: 1px solid rgb(170, 170, 170); padding: 5px; background: rgb(200, 200, 230) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; width: auto; margin-top: 1em;">
-              <p><center><b><a href="http://download.java.net/glassfish/shoal/promoted/shoal-1.1_10212008.zip">Download Shoal 1.1 (work in progress) </a></b></p></center>
-              <p><center><b><a href="http://download.java.net/glassfish/shoal/promoted/shoal-1.0ur_11142007.zip">Download Shoal 1.0 Update Release </a></b></p></center>
-</div><br>
-
-       <p><b><a href="http://today.java.net/pub/a/today/2007/12/11/clustering-with-shoal-framework.html">Shoal Article Contributed by Community Members</a></b></p>
-       <p><b><a href="Scalable_Dynamic_Clustering.pdf">Shoal Scalable Dynamic Clustering Whitepaper </a></b></p>
-       <p><b><a href="http://blogs.sun.com/shreedhar/entry/shoal_clustering_101">Shoal Clustering Users Guide </a></p></b><br>
-       <p><b><a href="/servlets/ProjectDocumentView?documentID=43252&noNav=true">Build Instructions</a></b></p>
-       <p><b><a href="/public/contribute.html">Join Shoal</a></b></p>
-       <p><strong>Shoal Blogs</strong>
-       </p>
-       <blockquote>
-         <p><a href="http://weblogs.java.net/blog/hamada">Mohamed Abdelaziz's blog</a></p>
-         <p><a href="http://blogs.sun.com/shreedhar/tags/shoal">Shreedhar Ganapathy's blog </a></p>
-         <p><a href="http://blogs.sun.com/sheetal/">Sheetal Vartak's blog </a></p>
-         <p><a href="http://blogs.sun.com/tra/entry/glassfish_%2B_jxta_%3D_shoal">Bernard Traversat's blog</a></p>
-
-       </blockquote>
-
-       <p><a href="http://jxta.dev.java.net"><img src="sun_jxta.gif"></a></p>
-</div>
-</div>
-<div class="app">
-  <h1>Welcome to Shoal &ndash; A  Dynamic Clustering Framework</h1>
-      <P class="style10"><FONT FACE="Arial, sans-serif">Shoal is a java based scalable dynamic clustering
-        framework that provides infrastructure to build fault tolerance, reliability and availability.</FONT></P>
-      <P class="style10"><FONT FACE="Arial, sans-serif"> The framework can be plugged into any
-        product needing clustering and related distributed systems capabilities without tightly binding to a specific communications
-        infrastructure. </FONT></P>
-
-    <p>Shoal is dual licensed under the <a href="/public/LICENSE.txt">CDDL version 1.0 and GPL v2 license with Classpath Exception </a>
-<br>
-<div class="app">
-<h3 class="style6"> Shoal Details</h3>
-<p class="style8">For a quick introduction, go through the <a href="http://www.glassfishwiki.org/gfwiki/attach/UserExperienceMeeting/ShoalJXTAOverview.pdf">Shoal Overview Presentation</a>. </p>
-<p>For deeper details, read the <a href="ShoalOverview.html" class="style5">Shoal Overview</a> document for details on Shoal's functionalities, architecture and event model.</p>
-<p>A couple of Shoal community users have written a very nice introductory article <a href="http://today.java.net/pub/a/today/2007/12/11/clustering-with-shoal-framework.html">on Shoal clustering</a> at Java.net</P>
-<p> Article on <a href="http://www.infoq.com/news/2008/02/shoal-clustering-framework">InfoQ about Shoal Clustering</a></p>
-</div>
-<br>
-<div class="app">
-<hr>
-<table border="0" align="center" width="60%"><tr>
-<td><b><a href="https://shoal.dev.java.net/downloadsindex.html">Download Shoal</a></b></td>
-<td><b><a href="https://shoal.dev.java.net/ShoalIntegration.html">How to Integrate Shoal in your App</a></b></td</tr>
-<tr><td>&nbsp;</td></tr><tr>
-<td><b><a href="https://shoal.dev.java.net/servlets/ProjectDocumentView?documentID=43252&noNav=true">How to Build Shoal Sources</a></b></td>
-<td><b><a href="https://shoal.dev.java.net/nonav/docs/api/">Shoal Javadocs</a></b><td></tr></table>
-<hr>
-</div>
-<br>
-<div class="app">
-<h3 class="style6">Projects or Companies Using Shoal</h3>
-<p>Based on our download metrics and user alias postings, use of Shoal is growing and we have tracked this data on the <b><a href="http://wikis.sun.com/display/shoal/Known+Shoal+Clustering+User+Companies+or+Projects">Shoal Wiki Page</a></b>.</p>
-<p>We encourage you to add a link to your project or company to this Wiki page to enable us to track Shoal's adoption and community growth.</p>
-<p>We welcome your testimonials about your use of Shoal along with a brief description of your project in the wiki page.</p>
-</div>
-
-<div class="app">
-<h3 class="style6">How to Contribute to Shoal</h3>
-
-  <p class="style8">We welcome community participation and contributions to this project. </p>
-  <p class="style8">Click <b><a href="https://shoal.dev.java.net/servlets/ProjectMembershipRequest">here</a></b> to make a role request </p>
-  <p class="style8">Here are ways to contribute (For more details  <a href="https://shoal.dev.java.net/public/contribute.html"><strong>look here</strong></a>): </p>
-</div>
-
-          <!-- Start of StatCounter Code -->
-		      <p class="style8">
-      <script type="text/javascript" language="javascript">
+</SCRIPT>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<H3 ALIGN=CENTER STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><SPAN STYLE="background: #eeeeee">Useful
+Links</SPAN></H3>
+<P ALIGN=CENTER STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><A HREF="http://download.java.net/glassfish/shoal/promoted/shoal-1.1_04202009.zip"><B><SPAN STYLE="background: #c8c8e6">Download
+Shoal 1.1 (work in progress) </SPAN></B></A>
+</P>
+<P ALIGN=CENTER STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><A HREF="http://download.java.net/glassfish/shoal/promoted/shoal-1.0ur_11142007.zip"><B><SPAN STYLE="background: #c8c8e6">Download
+Shoal 1.0 Update Release </SPAN></B></A>
+</P>
+<P STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><BR><BR>
+</P>
+<P STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><A HREF="http://today.java.net/pub/a/today/2007/12/11/clustering-with-shoal-framework.html"><B><SPAN STYLE="background: #eeeeee">Shoal
+Article Contributed by Community Members</SPAN></B></A></P>
+<P STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><A HREF="Scalable_Dynamic_Clustering.pdf"><B><SPAN STYLE="background: #eeeeee">Shoal
+Scalable Dynamic Clustering Whitepaper </SPAN></B></A>
+</P>
+<P STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><A HREF="http://blogs.sun.com/shreedhar/entry/shoal_clustering_101"><B><SPAN STYLE="background: #eeeeee">Shoal
+Clustering Users Guide </SPAN></B></A>
+</P>
+<P STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><BR><BR>
+</P>
+<P STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><A HREF="/servlets/ProjectDocumentView%3FdocumentID=43252&amp;noNav=true"><B><SPAN STYLE="background: #eeeeee">Build
+Instructions</SPAN></B></A></P>
+<P STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><A HREF="/public/contribute.html"><B><SPAN STYLE="background: #eeeeee">Join
+Shoal</SPAN></B></A></P>
+<P STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><STRONG><SPAN STYLE="background: #eeeeee">Shoal
+Blogs</SPAN></STRONG><SPAN STYLE="background: #eeeeee"> </SPAN>
+</P>
+<BLOCKQUOTE STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><A HREF="http://weblogs.java.net/blog/hamada"><SPAN STYLE="background: #eeeeee">Mohamed
+Abdelaziz's blog</SPAN></A></BLOCKQUOTE>
+<BLOCKQUOTE STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><A HREF="http://blogs.sun.com/shreedhar/tags/shoal"><SPAN STYLE="background: #eeeeee">Shreedhar
+Ganapathy's blog </SPAN></A>
+</BLOCKQUOTE>
+<BLOCKQUOTE STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><A HREF="http://blogs.sun.com/sheetal/"><SPAN STYLE="background: #eeeeee">Sheetal
+Vartak's blog </SPAN></A>
+</BLOCKQUOTE>
+<BLOCKQUOTE STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><A HREF="http://blogs.sun.com/tra/entry/glassfish_%2B_jxta_%3D_shoal"><SPAN STYLE="background: #eeeeee">Bernard
+Traversat's blog</SPAN></A></BLOCKQUOTE>
+<P STYLE="border: 1px solid #aaaaaa; padding: 0.1cm"><SPAN STYLE="background: #eeeeee"><A HREF="http://jxta.dev.java.net/"><FONT COLOR="#000080"><IMG SRC="sun_jxta.gif" NAME="graphics1" ALIGN=BOTTOM WIDTH=142 HEIGHT=63 BORDER=2></FONT></A></SPAN></P>
+<H1>Welcome to Shoal – A Dynamic Clustering Framework</H1>
+<P><FONT FACE="Arial, sans-serif">Shoal is a java based scalable
+dynamic clustering framework that provides infrastructure to build
+fault tolerance, reliability and availability.</FONT></P>
+<P><FONT FACE="Arial, sans-serif">The framework can be plugged into
+any product needing clustering and related distributed systems
+capabilities without tightly binding to a specific communications
+infrastructure. </FONT>
+</P>
+<P>Shoal is dual licensed under the <A HREF="/public/LICENSE.txt">CDDL
+version 1.0 and GPL v2 license with Classpath Exception </A>
+</P>
+<H3>Shoal Details</H3>
+<P>For a quick introduction, go through the <A HREF="http://www.glassfishwiki.org/gfwiki/attach/UserExperienceMeeting/ShoalJXTAOverview.pdf">Shoal
+Overview Presentation</A>. 
+</P>
+<P>For deeper details, read the <A HREF="ShoalOverview.html">Shoal
+Overview</A> document for details on Shoal's functionalities,
+architecture and event model.</P>
+<P>A couple of Shoal community users have written a very nice
+introductory article <A HREF="http://today.java.net/pub/a/today/2007/12/11/clustering-with-shoal-framework.html">on
+Shoal clustering</A> at Java.net</P>
+<P>Article on <A HREF="http://www.infoq.com/news/2008/02/shoal-clustering-framework">InfoQ
+about Shoal Clustering</A></P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<HR>
+<CENTER>
+	<TABLE WIDTH=60% BORDER=0 CELLPADDING=3 CELLSPACING=2>
+		<TR>
+			<TD>
+				<P><A HREF="https://shoal.dev.java.net/downloadsindex.html"><B>Download
+				Shoal</B></A></P>
+			</TD>
+			<TD>
+				<P><A HREF="https://shoal.dev.java.net/ShoalIntegration.html"><B>How
+				to Integrate Shoal in your App</B></A> 
+				</P>
+			</TD>
+			<TD VALIGN=TOP></TD>
+		</TR>
+		<TR>
+			<TD>
+				<P>&nbsp;</P>
+			</TD>
+			<TD VALIGN=TOP></TD>
+			<TD VALIGN=TOP></TD>
+		</TR>
+		<TR>
+			<TD>
+				<P><A HREF="https://shoal.dev.java.net/servlets/ProjectDocumentView?documentID=43252&amp;noNav=true"><B>How
+				to Build Shoal Sources</B></A></P>
+			</TD>
+			<TD>
+				<P><A HREF="https://shoal.dev.java.net/nonav/docs/api/"><B>Shoal
+				Javadocs</B></A></P>
+			</TD>
+			<TD></TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<HR>
+<P><BR><BR>
+</P>
+<H3>Projects or Companies Using Shoal</H3>
+<P>Based on our download metrics and user alias postings, use of
+Shoal is growing and we have tracked this data on the <A HREF="http://wikis.sun.com/display/shoal/Known+Shoal+Clustering+User+Companies+or+Projects"><B>Shoal
+Wiki Page</B></A>.</P>
+<P>We encourage you to add a link to your project or company to this
+Wiki page to enable us to track Shoal's adoption and community
+growth.</P>
+<P>We welcome your testimonials about your use of Shoal along with a
+brief description of your project in the wiki page.</P>
+<H3>How to Contribute to Shoal</H3>
+<P>We welcome community participation and contributions to this
+project. 
+</P>
+<P>Click <A HREF="https://shoal.dev.java.net/servlets/ProjectMembershipRequest"><B>here</B></A>
+to make a role request 
+</P>
+<P>Here are ways to contribute (For more details <STRONG><A HREF="https://shoal.dev.java.net/public/contribute.html">look
+here</A></STRONG>): 
+</P>
+<P><!-- Start of StatCounter Code --><SCRIPT LANGUAGE="javascript">
 var sc_project=1946047;
 var sc_invisible=1;
 var sc_partition=17;
 var sc_security="757c102e";
-      </script>
-
-      <script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script></p>
-  <noscript>
-    <p><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c18.statcounter.com/counter.php?sc_project=1946047&java=0&security=757c102e&invisible=1" alt="statistics" border="0"></a> </p>
-  </noscript>
-    <p>
-      <!-- End of StatCounter Code -->
-    </p>
-<!-- google analytics code -->
-<script src="https://ssl.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
+      
+</SCRIPT><SCRIPT LANGUAGE="javascript" SRC="http://www.statcounter.com/counter/counter.js"></SCRIPT><noscript><A HREF="http://www.statcounter.com/" TARGET="_blank"><IMG SRC="http://c18.statcounter.com/counter.php?sc_project=1946047&amp;java=0&amp;security=757c102e&amp;invisible=1" NAME="graphics2" ALT="statistics" ALIGN=BOTTOM WIDTH=1 HEIGHT=1 BORDER=0></A>
+</P>
+<P></noscript><!-- End of StatCounter Code --><!-- google analytics code --><SCRIPT SRC="https://ssl.google-analytics.com/urchin.js"></SCRIPT><SCRIPT>
 _uacct = "UA-917902-1";
 urchinTracker();
-</script>
-<!-- end google analytics code -->
+</SCRIPT><!-- end google analytics code --><BR><BR>
+</P>
 </BODY>
 </HTML>

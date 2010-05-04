@@ -1,45 +1,59 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
-	<TITLE>Shoal Java Clustering Framework Group Event Notifications</TITLE>
-	<META NAME="GENERATOR" CONTENT="StarOffice 8  (Solaris x86)">
-	<META NAME="CREATED" CONTENT="20060505;13342600">
-	<META NAME="CHANGEDBY" CONTENT="Shreedhar Ganapathy">
-	<META NAME="CHANGED" CONTENT="20060515;11054900">
-<meta name="keywords" content="shoal, glassfish, clustering, java ee, java, jxta, peer-to-peer, p2p, enterprise, group communication, jgroups, j2ee, framework, generic, pluggable, service provider, java-enterprise, networking, routing, multicast, reliable, replication, high availability, in-memory, fault tolerance, scalability, discovery, peer, peergroup, membership, groups, group management, distributed systems, distributed cache, cache, messaging, events, notifications, rendezvous">
-<meta name="description" content="Shoal - A Generic Dynamic Clustering Framework for Group Membership, Reliability, Fault Tolerance and High Availability Systems"
-<script defer="defer" id="snap_preview_anywhere" type="text/javascript" src="http://spa.snap.com/snap_preview_anywhere.js?ap=1&amp;key=903354f56e911022a1f63b07a41ba43e&amp;sb=1&amp;domain=https://shoal.dev.java.net"></script>	
-</HEAD>
-<BODY LANG="en-US" DIR="LTR">
-<P STYLE="margin-top: 0.17in; page-break-after: avoid"><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Shoal
-Group Event Notifications</B></FONT></FONT></P>
-<P><FONT FACE="Arial, sans-serif">To better understand this document,
-read : </FONT><A HREF="ShoalDesignDocument.html"><FONT FACE="Arial, sans-serif">Shoal
-Design Document</FONT></A><FONT FACE="Arial, sans-serif"> </FONT>
-</P>
-<P><FONT FACE="Arial, sans-serif">Shoal's GroupManagementService
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE"
+ content="text/html; charset=iso-8859-1">
+  <title>Shoal Java Clustering Framework Group Event Notifications</title>
+  <meta name="GENERATOR" content="StarOffice 8  (Solaris x86)">
+  <meta name="CREATED" content="20060505;13342600">
+  <meta name="CHANGEDBY" content="Shreedhar Ganapathy">
+  <meta name="CHANGED" content="20060515;11054900">
+  <meta name="keywords"
+ content="shoal, glassfish, clustering, java ee, java, jxta, peer-to-peer, p2p, enterprise, group communication, jgroups, j2ee, framework, generic, pluggable, service provider, java-enterprise, networking, routing, multicast, reliable, replication, high availability, in-memory, fault tolerance, scalability, discovery, peer, peergroup, membership, groups, group management, distributed systems, distributed cache, cache, messaging, events, notifications, rendezvous">
+  <meta name="description"
+ content="Shoal - A Generic Dynamic Clustering Framework for Group Membership, Reliability, Fault Tolerance and High Availability Systems">
+  <script defer="defer" id="snap_preview_anywhere"
+ type="text/javascript" src="snap_preview_anywhere.js"></script>
+</head>
+<body dir="ltr" lang="en-US">
+<p style="margin-top: 0.17in; page-break-after: avoid;"><font
+ face="Helvetica, sans-serif"><font size="4"><b>Shoal
+Group Event Notifications</b></font></font></p>
+<p><font face="Arial, sans-serif">To better understand this document,
+read : </font><a href="ShoalDesignDocument.html"><font
+ face="Arial, sans-serif">Shoal
+Design Document</font></a><font face="Arial, sans-serif"> </font>
+</p>
+<p><font face="Arial, sans-serif">Shoal's GroupManagementService
 (GMS) provides a client API that allows consuming client components
 within a process to receive callbacks when group events occur. The
-Group Events available from GMS are broadly of following types :</FONT></P>
-<UL>
-	<LI><P><FONT FACE="Arial, sans-serif">Suspect or in-doubt state of a
-	member</FONT></P>
-</UL>
-<UL>
-	<LI><P><FONT FACE="Arial, sans-serif">Failure of a member </FONT>
-	</P>
-	<LI><P><FONT FACE="Arial, sans-serif">Selection of a member for
-	initiating Recovery operations</FONT></P>
-	<LI><P><FONT FACE="Arial, sans-serif">Administratively Planned
-	Shutdown</FONT></P>
-</UL>
-<P><FONT FACE="Arial, sans-serif">These events are notified to
+Group Events available from GMS are broadly of following types :</font></p>
+<ul>
+  <li>
+    <p><font face="Arial, sans-serif">Suspect or in-doubt state of a
+member</font></p>
+  </li>
+</ul>
+<ul>
+  <li>
+    <p><font face="Arial, sans-serif">Failure of a member </font> </p>
+  </li>
+  <li>
+    <p><font face="Arial, sans-serif">Selection of a member for
+initiating Recovery operations</font></p>
+  </li>
+  <li>
+    <p><font face="Arial, sans-serif">Administratively Planned Shutdown</font></p>
+  </li>
+  <li><font face="Arial, sans-serif">Group Leader change notification<br>
+    </font></li>
+</ul>
+<p><font face="Arial, sans-serif">These events are notified to
 consuming applications through client API, part of which is
 implemented by clients and part provided by GMS. Group Events are
 notified and handled through an Actuator-Sensor pattern (Reference:
-</FONT><A HREF="ShoalDesignDocument.html"><FONT FACE="Arial, sans-serif">Shoal
-Design Document </FONT></A><FONT FACE="Arial, sans-serif">). Each
+</font><a href="ShoalDesignDocument.html"><font face="Arial, sans-serif">Shoal
+Design Document </font></a><font face="Arial, sans-serif">). Each
 event is sensed by GMS and an object of Signal type is raised for
 notifying the client. The client registers interest in the group
 event by registering an implementation of an ActionFactory interface
@@ -47,126 +61,177 @@ with a reference to an implementation of an Action interface.
 ActionFactory produces an Action and an Action consumes a Signal.
 Each group event is typified by a specific triplet of interface
 types. For instance, for the Failure event, the triplet interfaces of
-interest would be :</FONT></P>
-<UL>
-	<LI><P><FONT FACE="Arial, sans-serif">FailureNotificationActionFactory
-	(implemented by the client),</FONT></P>
-	<LI><P><FONT FACE="Arial, sans-serif">FailureNotificationAction
-	(implemented by client), and </FONT>
-	</P>
-	<LI><P><FONT FACE="Arial, sans-serif">FailureNotificationSignal
-	(implemented by GMS).</FONT></P>
-</UL>
-<P><FONT FACE="Arial, sans-serif">The following table summarizes the
+interest would be :</font></p>
+<ul>
+  <li>
+    <p><font face="Arial, sans-serif">FailureNotificationActionFactory
+(implemented by the client),</font></p>
+  </li>
+  <li>
+    <p><font face="Arial, sans-serif">FailureNotificationAction
+(implemented by client), and </font> </p>
+  </li>
+  <li>
+    <p><font face="Arial, sans-serif">FailureNotificationSignal
+(implemented by GMS).</font></p>
+  </li>
+</ul>
+<p><font face="Arial, sans-serif">The following table summarizes the
 Event and corresponding client API to implement for the purpose of
-consuming the event, and how to register the same with GMS:</FONT></P>
-<DL>
-	<DL>
-		<DD>
-		<TABLE WIDTH=874 BORDER=0 CELLPADDING=4 CELLSPACING=0>
-			<COL WIDTH=143>
-			<COL WIDTH=231>
-			<COL WIDTH=183>
-			<COL WIDTH=285>
-			<THEAD>
-				<TR VALIGN=TOP>
-					<TH WIDTH=143>
-						<P><FONT FACE="Helvetica, sans-serif">Group Event</FONT></P>
-					</TH>
-					<TH WIDTH=231>
-						<P><FONT FACE="Helvetica, sans-serif">Client Implements</FONT></P>
-					</TH>
-					<TH WIDTH=183>
-						<P><FONT FACE="Helvetica, sans-serif">GMS implements</FONT></P>
-					</TH>
-					<TH WIDTH=285>
-						<P><FONT FACE="Helvetica, sans-serif">Client Registers through </FONT>
-						</P>
-					</TH>
-				</TR>
-			</THEAD>
-			<TBODY>
-				<TR VALIGN=TOP>
-					<TD WIDTH=143>
-						<P><FONT FACE="Helvetica, sans-serif">Failure </FONT>
-						</P>
-					</TD>
-					<TD WIDTH=231>
-						<P><FONT FACE="Helvetica, sans-serif">FailureNotificationActionFactory</FONT></P>
-						<P><FONT FACE="Helvetica, sans-serif">FailureNotificationAction</FONT></P>
-					</TD>
-					<TD WIDTH=183>
-						<P><FONT FACE="Helvetica, sans-serif">FailureNotificationSignal</FONT></P>
-					</TD>
-					<TD WIDTH=285>
-						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>GroupManagementService
-						gms = GMSFactory.getGMSModule(String groupName);</FONT></FONT></P>
-						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>gms.addFactory(FailureNotificationActionFactory);</FONT></FONT></P>
-					</TD>
-				</TR>
-				<TR VALIGN=TOP>
-					<TD WIDTH=143>
-						<P><FONT FACE="Helvetica, sans-serif">Indoubt/Suspect </FONT>
-						</P>
-					</TD>
-					<TD WIDTH=231>
-						<P><FONT FACE="Helvetica, sans-serif">FailureSuspectedActionFactory</FONT></P>
-						<P><FONT FACE="Helvetica, sans-serif">FailureSuspectedAction</FONT></P>
-					</TD>
-					<TD WIDTH=183>
-						<P><FONT FACE="Helvetica, sans-serif">FailureSuspectedSignal</FONT></P>
-					</TD>
-					<TD WIDTH=285>
-						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>GroupManagementService
-						gms = GMSFactory.getGMSModule(String groupName);</FONT></FONT></P>
-						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>gms</FONT>.addFactory(FailureSuspectedActionFactory)</FONT></P>
-					</TD>
-				</TR>
-				<TR VALIGN=TOP>
-					<TD WIDTH=143>
-						<P><FONT FACE="Helvetica, sans-serif">Recovery(reference </FONT><A HREF="https://shoal.dev.java.net/ShoalAutomatedDelegatedRecoveryInitiation.html" NAME="Shoal Automated Delegated Recovery Initiation" TARGET="_blank"><FONT FACE="Arial, sans-serif">Shoal
-						Automated Delegated Recovery Initiation</FONT><FONT FACE="Helvetica, sans-serif">)</FONT></A></P>
-					</TD>
-					<TD WIDTH=231>
-						<P><FONT FACE="Helvetica, sans-serif">FailureRecoveryActionFactory</FONT></P>
-						<P><FONT FACE="Helvetica, sans-serif">FailureRecoveryAction</FONT></P>
-					</TD>
-					<TD WIDTH=183>
-						<P><FONT FACE="Helvetica, sans-serif">FailureRecoverySignal</FONT></P>
-					</TD>
-					<TD WIDTH=285>
-						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>GroupManagementService
-						gms = GMSFactory.getGMSModule(String groupName);</FONT></FONT></P>
-						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>gms</FONT>.addFactory(FailureRecoveryActionFactory)</FONT></P>
-					</TD>
-				</TR>
-				<TR VALIGN=TOP>
-					<TD WIDTH=143>
-						<P><FONT FACE="Helvetica, sans-serif">Planned Shutdown</FONT></P>
-					</TD>
-					<TD WIDTH=231>
-						<P><FONT FACE="Helvetica, sans-serif">PlannedShutdownActionFactory</FONT></P>
-						<P><FONT FACE="Helvetica, sans-serif">PlannedShutdownAction</FONT></P>
-					</TD>
-					<TD WIDTH=183>
-						<P><FONT FACE="Helvetica, sans-serif">PlannedShutdownSignal</FONT></P>
-					</TD>
-					<TD WIDTH=285>
-						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>GroupManagementService
-						gms = GMSFactory.getGMSModule(String groupName);</FONT></FONT></P>
-						<P><FONT FACE="Courier New, sans-serif"><FONT SIZE=3>gms</FONT>.addFactory(PlannedShutdownActionFactory)</FONT></P>
-					</TD>
-				</TR>
-			</TBODY>
-		</TABLE>
-	</DL>
-</DL>
-<P><BR><BR>
-</P>
-<P><BR><BR>
-</P>
-<P><BR><BR>
-</P>
+consuming the event, and how to register the same with GMS:</font></p>
+<dl>
+  <dl>
+    <dd>
+      <table border="0" cellpadding="4" cellspacing="0" width="874">
+        <col width="143"> <col width="231"> <col width="183"> <col
+ width="285"> <thead> <tr valign="top">
+          <th width="143">
+          <p><font face="Helvetica, sans-serif">Group Event</font></p>
+          </th>
+          <th width="231">
+          <p><font face="Helvetica, sans-serif">Client Implements</font></p>
+          </th>
+          <th width="183">
+          <p><font face="Helvetica, sans-serif">GMS implements</font></p>
+          </th>
+          <th width="285">
+          <p><font face="Helvetica, sans-serif">Client Registers
+through </font> </p>
+          </th>
+        </tr>
+        </thead> <tbody>
+          <tr valign="top">
+            <td width="143">
+            <p><font face="Helvetica, sans-serif">Failure </font> </p>
+            </td>
+            <td width="231">
+            <p><font face="Helvetica, sans-serif">FailureNotificationActionFactory</font></p>
+            <p><font face="Helvetica, sans-serif">FailureNotificationAction</font></p>
+            </td>
+            <td width="183">
+            <p><font face="Helvetica, sans-serif">FailureNotificationSignal</font></p>
+            </td>
+            <td width="285">
+            <p><font face="Courier New, sans-serif"><font size="3">GroupManagementService
+gms = GMSFactory.getGMSModule(String groupName);</font></font></p>
+            <p><font face="Courier New, sans-serif"><font size="3">gms.addFactory(FailureNotificationActionFactory);</font></font></p>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td width="143">
+            <p><font face="Helvetica, sans-serif">Indoubt/Suspect </font>
+            </p>
+            </td>
+            <td width="231">
+            <p><font face="Helvetica, sans-serif">FailureSuspectedActionFactory</font></p>
+            <p><font face="Helvetica, sans-serif">FailureSuspectedAction</font></p>
+            </td>
+            <td width="183">
+            <p><font face="Helvetica, sans-serif">FailureSuspectedSignal</font></p>
+            </td>
+            <td width="285">
+            <p><font face="Courier New, sans-serif"><font size="3">GroupManagementService
+gms = GMSFactory.getGMSModule(String groupName);</font></font></p>
+            <p><font face="Courier New, sans-serif"><font size="3">gms</font>.addFactory(FailureSuspectedActionFactory)</font></p>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td width="143">
+            <p><font face="Helvetica, sans-serif">Recovery(reference </font><a
+ href="https://shoal.dev.java.net/ShoalAutomatedDelegatedRecoveryInitiation.html"
+ name="Shoal Automated Delegated Recovery Initiation" target="_blank"><font
+ face="Arial, sans-serif">Shoal Automated Delegated Recovery Initiation</font><font
+ face="Helvetica, sans-serif">)</font></a></p>
+            </td>
+            <td width="231">
+            <p><font face="Helvetica, sans-serif">FailureRecoveryActionFactory</font></p>
+            <p><font face="Helvetica, sans-serif">FailureRecoveryAction</font></p>
+            </td>
+            <td width="183">
+            <p><font face="Helvetica, sans-serif">FailureRecoverySignal</font></p>
+            </td>
+            <td width="285">
+            <p><font face="Courier New, sans-serif"><font size="3">GroupManagementService
+gms = GMSFactory.getGMSModule(String groupName);</font></font></p>
+            <p><font face="Courier New, sans-serif"><font size="3">gms</font>.addFactory(FailureRecoveryActionFactory)</font></p>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td width="143">
+            <p><font face="Helvetica, sans-serif">Planned Shutdown</font></p>
+            </td>
+            <td width="231">
+            <p><font face="Helvetica, sans-serif">PlannedShutdownActionFactory</font></p>
+            <p><font face="Helvetica, sans-serif">PlannedShutdownAction</font></p>
+            </td>
+            <td width="183">
+            <p><font face="Helvetica, sans-serif">PlannedShutdownSignal</font></p>
+            </td>
+            <td width="285">
+            <p><font face="Courier New, sans-serif"><font size="3">GroupManagementService
+gms = GMSFactory.getGMSModule(String groupName);</font></font></p>
+            <p><font face="Courier New, sans-serif"><font size="3">gms</font>.addFactory(PlannedShutdownActionFactory)</font></p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+            <p>GroupLeadershipNotification</p>
+            </td>
+            <td>GroupLeadershipActionFactory<br>
+GroupLeadershipAction</td>
+            <td>GroupLeadershipSignal</td>
+            <td>
+            <p><font face="Courier New, sans-serif"><font size="3">GroupManagementService
+gms = GMSFactory.getGMSModule(String groupName);</font></font></p>
+            <p><font face="Courier New, sans-serif"><font size="3">gms</font>.addFactory(GroupLeadershipActionFactory)</font></p>
+            </td>
+          </tr>
+          <tr>
+            <td>Join Notification</td>
+            <td>JoinNotificationActionFactory<br>
+JoinNotificationAction</td>
+            <td>JoinNotificationSignal</td>
+            <td>
+            <p><font face="Courier New, sans-serif"><font size="3">GroupManagementService
+gms = GMSFactory.getGMSModule(String groupName);</font></font></p>
+            <p><font face="Courier New, sans-serif"><font size="3">gms</font>.addFactory(JoinNotificationActionFactory)</font></p>
+            </td>
+          </tr>
+          <tr>
+            <td>Joined and Ready Notification</td>
+            <td>JoinedAndReadyNotificationActionFactory<br>
+JoinedAndReadyNotificationAction</td>
+            <td>JoinedAndReadySignal</td>
+            <td>
+            <p><font face="Courier New, sans-serif"><font size="3">GroupManagementService
+gms = GMSFactory.getGMSModule(String groupName);</font></font></p>
+            <p><font face="Courier New, sans-serif"><font size="3">gms</font>.addFactory(JoinedAndReadyActionFactory)</font></p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </dd>
+  </dl>
+</dl>
+<p></p>
+<p style="font-weight: bold;">Convenience Interface</p>
+<p>As a convenience to GMS clients, default implementations of the
+above ActionFactory and Action interface types have been provided as
+part of the shoal libraries under the <a
+ href="https://shoal.dev.java.net/nonav/docs/api/com/sun/enterprise/ee/cms/impl/client/package-frame.html">com.sun.enterprise.ee.cms.impl.client
+package</a>.&nbsp;&nbsp;</p>
+<p>To take advantage of these implementations of these client
+interfaces, you will need to implement an interface <a
+ href="https://shoal.dev.java.net/nonav/docs/api/com/sun/enterprise/ee/cms/core/CallBack.html">CallBack#processNotification(Signal)</a>
+to access the Signal's APIs. &nbsp;This avoids the need to implement
+the above-mentioned ActionFactory and Action interfaces.&nbsp;</p>
+<p></p>
+<p><br>
+<br>
+</p>
+<p><br>
+<br>
+</p>
 <!-- Start of StatCounter Code -->
 <script type="text/javascript" language="javascript">
 var sc_project=1946047; 
@@ -174,16 +239,17 @@ var sc_invisible=1;
 var sc_partition=17; 
 var sc_security="757c102e"; 
 </script>
-
-<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c18.statcounter.com/counter.php?sc_project=1946047&java=0&security=757c102e&invisible=1" alt="statistics" border="0"></a> </noscript>
+<script type="text/javascript" language="javascript" src="counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img
+src="http://c18.statcounter.com/counter.php?sc_project=1946047&java=0&security=757c102e&invisible=1"
+alt="statistics" border="0"></a> </noscript>
 <!-- End of StatCounter Code -->
 <!-- google analytics code -->
-<script src="https://ssl.google-analytics.com/urchin.js" type="text/javascript">
+<script src="urchin.js" type="text/javascript">
 </script>
 <script type="text/javascript">
 _uacct = "UA-917902-1";
 urchinTracker();
-</script>	
-<!-- end google analytics code -->
-</BODY>
-</HTML>
+</script><!-- end google analytics code -->
+</body>
+</html>

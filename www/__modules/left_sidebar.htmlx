@@ -23,7 +23,7 @@ logo: "http://shoal.java.net/Shoal_244_179.JPG"
 <div id="navcol">
 <dl id="projecttools" class="navgroup" style="text-align: left;">
  <dt id="current-zone" class="depth0">
- <a href="https://glassfish.java.net/">GlassFish Community</a>
+ <a href="http://shoal.java.net/">Shoal</a>
  </dt>
  <dd class="depth0 parent parent" id="menubar">
 <!--

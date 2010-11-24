@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
   <script>document.getElementById("main").parentNode.style.display="none";</script>
@@ -7,7 +7,7 @@
   </style>
   <title></title>
 </head>
-<body>
+<body> -->
 <!-- hide the contents while the theme engine kicks in and does the work --><!--
 This is where your menu starts. id='menubar' is mandatory.
 Notice that there's no closing tag for this <dd>, and there's extra </dd> at the
@@ -17,20 +17,20 @@ top of the file. This is how it should be, due to the place where this gets inje
 var info = {
 title: "Shoal",
 logo: "http://shoal.java.net/Shoal_244_179.JPG"
-< }
-< </script>&lt;
-&lt;
-<div id="navcol">&lt;
+}
+</script>
+
+<div id="navcol">
 <dl id="projecttools" class="navgroup" style="text-align: left;">
-&lt; <dt id="current-zone" class="depth0">
-&lt; <a href="https://glassfish.java.net/">GlassFish Community</a>
-&lt; </dt>
-&lt; <dd class="depth0 parent parent" id="menubar">
+ <dt id="current-zone" class="depth0">
+ <a href="https://glassfish.java.net/">GlassFish Community</a>
+ </dt>
+ <dd class="depth0 parent parent" id="menubar">
 <!--
 DD contains single UL which generates the whole menu. UL/LI can have a nested structure
 to create submenus.
 -->
-    <ul>
+<!--    <ul>  -->
 <!-- menubar for the main site -->
       <ul id="main-menubar">
         <li><!--
@@ -130,8 +130,8 @@ to inject it.
 _uacct = "UA-1273798-1";
 urchinTracker();
 </script>
---></dd>
+--><!--</dd>
 </dl>
 </div>
 </body>
-</html>
+</html>-->

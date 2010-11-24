@@ -117,7 +117,7 @@ The title is mandatory, but the logo is optional.
     <script>
 var info = {
 title: "Project Shoal",
-logo: "https://shoal.dev.java.net/Shoal_244_179_0.JPG"
+logo: "http://shoal.java.net/Shoal_244_179_0.JPG"
 }
     </script>
     <script src="http://glassfish-theming.java.net/zone-core.js"></script>

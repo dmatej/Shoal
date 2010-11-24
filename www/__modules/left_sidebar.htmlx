@@ -120,7 +120,7 @@ title: "Project Shoal",
 logo: "https://shoal.dev.java.net/Shoal_244_179_0.JPG"
 }
     </script>
-    <script src="http://glassfish-theming.java.net/zone-webtier.js"></script>
+    <script src="http://glassfish-theming.java.net/zone-core.js"></script>
     <script src="http://glassfish-theming.java.net/theme.js"></script><!--
 If your project uses a site traffic tracker like Google Analytics, this is a good place
 to inject it.

@@ -1,27 +1,31 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License. You can obtain
- * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
- * Header, with the fields enclosed by brackets [] replaced by your own
- * identifying information: "Portions Copyrighted [year]
- * [name of copyright owner]"
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
  *
  * Contributor(s):
- *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -85,9 +89,11 @@ public class GMSClientService implements Runnable, CallBack{
         gms.addActionFactory(new PlannedShutdownActionFactoryImpl(this));
         gms.addActionFactory(new JoinNotificationActionFactoryImpl(this));
         gms.addActionFactory(new FailureNotificationActionFactoryImpl(this));
-        gms.addActionFactory(serviceName,
-                             new FailureRecoveryActionFactoryImpl(this));
-        gms.addActionFactory(new MessageActionFactoryImpl(this), serviceName);
+        if (memberToken != null && memberToken.compareTo("server") != 0) {
+            gms.addActionFactory(serviceName,
+                                 new FailureRecoveryActionFactoryImpl(this));
+            gms.addActionFactory(new MessageActionFactoryImpl(this), serviceName);
+        }
         gms.addActionFactory(new JoinedAndReadyNotificationActionFactoryImpl(this));
     }
 
@@ -98,19 +104,21 @@ public class GMSClientService implements Runnable, CallBack{
     
     public void run() {
         GroupHandle gh = gms.getGroupHandle();
-        while((gh.isFenced( serviceName, memberToken))){
-            try {
-                logger.log(Level.FINEST, "Waiting for fence to be lowered");
-                sleep(2000);
-            }
-            catch ( InterruptedException e ) {
-                logger.log(Level.WARNING, "Thread interrupted:"+
-                        e.getLocalizedMessage());
-            }
-        }
-        logger.log(Level.INFO, serviceName+":"+memberToken+
-                               ": is not fenced now, starting GMSclient:"+
-                               serviceName);
+
+        // don't test fencing anymore.
+//        while((gh.isFenced( serviceName, memberToken))){
+//            try {
+//                logger.log(Level.FINEST, "Waiting for fence to be lowered");
+//                sleep(2000);
+//            }
+//            catch ( InterruptedException e ) {
+//                logger.log(Level.WARNING, "Thread interrupted:"+
+//                        e.getLocalizedMessage());
+//            }
+//        }
+//        logger.log(Level.INFO, serviceName+":"+memberToken+
+//                               ": is not fenced now, starting GMSclient:"+
+//                               serviceName);
         logger.log(Level.INFO, "DUMPING:"+
                    gms.getAllMemberDetails(IIOP_MEMBER_DETAILS_KEY));
 /*        final Thread thisThread = Thread.currentThread();
@@ -143,8 +151,12 @@ public class GMSClientService implements Runnable, CallBack{
 
     public synchronized void processNotification(final Signal notification){
         final String serverToken;
+        final GroupHandle gh = gms.getGroupHandle();
+        if (notification.getMemberToken().equals("admincli")) {
+            return;
+        }
         logger.log(Level.FINEST, new StringBuffer().append(serviceName)
-                .append(": Notification Received from:")
+                .append(": Notification Received for:")
                 .append(notification.getMemberToken())
                 .append(":[")
                 .append(notification.toString())
@@ -153,18 +165,9 @@ public class GMSClientService implements Runnable, CallBack{
         if( notification instanceof FailureRecoverySignal)
         {
             try {
-                notification.acquire();
                 extractMemberDetails( notification, notification.getMemberToken() );
                 sleep(MILLIS);
-                notification.release();
-            }
-            catch ( SignalAcquireException e ) {
-                logger.log(Level.WARNING, e.getLocalizedMessage());
-            }
-            catch ( SignalReleaseException e ) {
-                logger.log(Level.INFO, e.getLocalizedMessage());
-            }
-            catch ( InterruptedException e ) {
+            } catch ( InterruptedException e ) {
                 logger.log(Level.INFO, e.getLocalizedMessage());
             }
         }
@@ -172,21 +175,49 @@ public class GMSClientService implements Runnable, CallBack{
         {
             serverToken =
                     notification.getMemberToken();
-            logger.info("Received JoinNotificationSignal for member "+serverToken+
-             " with state set to "+((JoinNotificationSignal)notification).getMemberState().toString());
+            logger.info("Received JoinNotificationSignal for member " + serverToken + " componentService:" + this.serviceName +
+                    " with state set to " + ((JoinNotificationSignal) notification).getMemberState().toString());
+
             extractMemberDetails( notification, serverToken );
 
-        }
-        else if(notification instanceof JoinedAndReadyNotificationSignal ||
-                notification instanceof FailureNotificationSignal ||
-                notification instanceof PlannedShutdownSignal ||
-                notification instanceof FailureSuspectedSignal)
-        {
+        } else if (notification instanceof JoinedAndReadyNotificationSignal) {
             serverToken =
                     notification.getMemberToken();
-            logger.info("Received "+ notification.toString() +" for member "+serverToken);
-            extractMemberDetails( notification, serverToken );
+            JoinedAndReadyNotificationSignal jrSignal = (JoinedAndReadyNotificationSignal) notification;
+            logger.info("Received " + notification.toString() + " for member " + serverToken);
+            logger.info("JoinedAndReady for member:" + serverToken + ":" + serviceName +
+                    " getPreviousAliveAndReadyCoreView()=" + gh.getPreviousAliveAndReadyCoreView() +
+                    " getCurrentAliveAndReadyCoreView()=" + gh.getCurrentAliveAndReadyCoreView());
+            logger.info("JoinedAndReady for member:" + serverToken + ":" + serviceName +
+                    " signal.getPreviousView()=" + jrSignal.getPreviousView() +
+                    " signal.getCurrentView()=" + jrSignal.getCurrentView());
+            try {
+                gms.getGroupHandle().sendMessage(serverToken, serviceName, "hello".getBytes());
+                logger.log(Level.INFO, "send hello from member: " + gms.getInstanceName() + " to joinedandready instance: " + serverToken + " succeeded.");
+            } catch (GMSException e) {
+                logger.log(Level.WARNING, "failed to send hello message to newly joined member:" + serverToken + " trying one more time", e);
+                try {
+                    gms.getGroupHandle().sendMessage(serverToken, serviceName, "hello".getBytes());
+                    logger.log(Level.INFO, "retry send hello from member: " + gms.getInstanceName() + " to joinedandready instance: " + serverToken + " succeeded.");
+                } catch (GMSException ee) {
+                    logger.log(Level.WARNING, "retried: failed to send hello message to newly joined member:" + serverToken, ee);
+                }
+            }
 
+            extractMemberDetails(notification, serverToken);
+
+        }
+        else if ( notification instanceof FailureNotificationSignal || notification instanceof PlannedShutdownSignal) {
+            AliveAndReadySignal arSignal = (AliveAndReadySignal)notification;
+            serverToken = notification.getMemberToken();
+            logger.info("Received "+ notification.toString() +" for member "+serverToken);
+            logger.info(notification.getClass().getSimpleName() + " for member:" + serverToken +
+                    " getPreviousAliveAndReadCoreView()=" + gh.getPreviousAliveAndReadyCoreView()+
+                    " currentCoreView()=" + gh.getCurrentAliveAndReadyCoreView());
+            logger.info(notification.getClass().getSimpleName() + " for member:" + serverToken +
+                    " signal.getPreviousView()=" + arSignal.getPreviousView() +
+                    " getCurrentView()=" + arSignal.getCurrentView());
+            extractMemberDetails( notification, serverToken );
         }
     }
 

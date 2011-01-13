@@ -1,0 +1,11 @@
+com.sun.enterprise.ee.cms.core
+com.sun.enterprise.ee.cms.impl.base
+com.sun.enterprise.ee.cms.impl.client
+com.sun.enterprise.ee.cms.impl.common
+com.sun.enterprise.ee.cms.logging
+com.sun.enterprise.ee.cms.spi
+com.sun.enterprise.ee.cms.tests
+com.sun.enterprise.ee.cms.tests.checkgroupshutdown
+com.sun.enterprise.ee.cms.tests.core
+com.sun.enterprise.ee.cms.tests.multigroupjoin
+com.sun.enterprise.ee.cms.tests.p2pmessagesend

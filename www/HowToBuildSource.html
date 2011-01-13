@@ -1,0 +1,60 @@
+<h2>Shoal GMS Build Instructions</h2>
+<hr>
+<p>Included are all the steps required to obtain and
+build Shoal GMS 
+sourecs. The prerequisites are:</p>
+
+   <ul><li>Java SE JDK 6.0 or higher</li>
+   <li>Ant 1.6.5+</li>
+   <li>Subversion (svn client) </li>
+   <li>Maven 2.2.1 (or higher)(optional - only to build OSGI shoal-gms-api.jar and shoal-gms-impl.jar</li>
+</ul>
+<p>With the above prerequisites installed and available
+in your system 
+environment, create a Shoal GMS workspace:</p>
+
+<code>  % mkdir shoal</code><br>
+<code>  % cd shoal</code><br><br>
+
+<p>Next, to check out the trunk source code and
+developer tests for 
+Shoal :</p>
+
+<code>  % svn checkout https://svn.java.net/svn/shoal~svn/trunk shoal  --username 
+<i>java.net-userid</i></code><br>
+
+<p>Or to check out a branch of the workspace source
+code and 
+developer tests for Shoal :</p>
+
+<code>  % svn checkout 
+https://svn.java.net/svn/shoal~svn/branches/SHOAL_1_1_ABSTRACTING_TRANSPORT/shoal
+ --username <i>java.net.userid</i></code><br>
+
+
+<p>After checking out the sources, cd to the gms
+directory and you 
+can execute any of the following commands.</p>
+
+<code>ant or ant all</code><br>
+to delete existing built classes and jars and to build
+sources and 
+assemble jars<br><br>
+
+<code>ant clean</code><br>
+to only clean the built classes and assembled jars<br><br>
+
+<code>ant compile</code><br>
+to only compile sources and place built classes in the
+build 
+directory<br><br>
+
+<code>ant assemble</code><br>
+to only build jar from already built sources. The built
+jar "shoal-
+gms.jar" is placed in dist directory.<br><br>
+
+
+<p>You can refresh your local workspace using :</p>
+
+<code>  % svn update .</code><br>

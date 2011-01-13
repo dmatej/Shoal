@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//Tigris//DTD XHTML 1.0 Transitional//EN" "http://style.tigris.org/nonav/tigris_transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE"
+ content="text/html; charset=iso-8859-1">
+  <title>Project Shoal - A Dynamic
+Java Clustering Framework</title>
+  <meta name="AUTHOR" content="Shreedhar Ganapathy">
+  <meta name="keywords"
+ content="shoal, glassfish, clustering, java ee, java, jxta, peer-to-peer, p2p, enterprise, group communication, jgroups, j2ee, framework, generic, pluggable, service provider, java-enterprise, networking, routing, multicast, reliable, replication, high availability, in-memory, fault tolerance, scalability, discovery, peer, peergroup, membership, groups, group management, distributed systems, distributed cache, cache, messaging, events, notifications, rendezvous">
+  <meta name="description"
+ content="Shoal - A Generic Dynamic Clustering Framework for Group Membership, Reliability, Fault Tolerance and High Availability Systems">
+  <style>
+#apphead {
+display: none;
+}
+#subprojects {
+display: none;
+}
+.app H3 {
+clear: none;
+}
+.axial {
+display: none;
+}
+  </style>
+  <script defer="defer" id="snap_preview_anywhere"
+ type="text/javascript"
+ src="http://spa.snap.com/snap_preview_anywhere.js?ap=1&amp;key=903354f56e911022a1f63b07a41ba43e&amp;sb=1&amp;domain=https://shoal.dev.java.net"></script>
+</head>
+<body>
+<script>
+// kill "description" h3 bar
+ld = document.getElementById("longdescription");
+for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
+if(n.nodeType==1 && n.innerHTML=="Description" ) {
+n.parentNode.removeChild(n);
+break;
+}
+}
+</script>
+<div class="app">
+<h3 class="style6">How to
+integrate and run Shoal (Sample Code) </h3>
+<h3 class="style8">Simple
+Example</h3>
+Take a look at this simple example code to see how Shoal can be used to
+get cluster lifecycle notifications in your app. <b><a
+ href="/SimpleShoalGMSSample.java">Simple Sample
+Source Code</a></b>.
+Compile and run this class with the shoal-gms.jar and the jxta.jar in
+your classpath on two or more terminals.
+<h3 class="style6">A
+different example using an Application Server type construct </h3>
+To view this example and run it, follow these steps:
+<ul class="style8">
+  <li><a
+ href="https://shoal.dev.java.net/servlets/ProjectDocumentView?documentID=43252&amp;noNav=true">checkout</a>
+the sources from CVS and look for the demo code located at
+shoal/gms/tests/com/sun/enterprise/ee/cms/tests, or</li>
+  <li> browse the demo code in the
+CVS respository <a
+ href="https://shoal.dev.java.net/source/browse/shoal/gms/tests/com/sun/enterprise/ee/cms/tests/">here</a></li>
+  <li>in the demo, an
+ApplicationServer (named only for demo purposes) starts GMS services,
+and then starts two other Application Server Components (again simply
+named as EJBContainer and TransactionService for demo purposes). The
+components are consumers of GMS events and register for events of their
+interest. </li>
+</ul>
+<p class="style8">To run
+the demo </p>
+<ul>
+  <li class="style8">On
+Linux, Unix or MacOs X platforms, run the script "rungmsdemo.sh"
+located at shoal/gms</li>
+  <li class="style8">On
+Windows platform, run the batch script "rungmsdemo.bat" located at
+shoal/gms </li>
+  <li class="style8">In
+order to see this in a group setting, ensure that you start at least
+two terminals and run the demo code in these terminals. </li>
+  <li class="style8">The
+scripts expect on command line, parameters in the following order :
+&lt;instance_name&gt;, &lt;group_name&gt;,
+&lt;member_type&gt;(CORE or SPECTATOR),
+&lt;demo_life_in_milliseconds&gt;, &lt;log_level&gt;
+(one of INFO, FINE, FINER, FINEST) </li>
+  <li class="style8">The
+&lt;instance_name&gt; parameter in each terminal/process should
+be unique. The &lt;group_name&gt; should be the same in order
+for members to join the same group and experience Shoal's
+functionalities
+  </li>
+</ul>
+</div>
+</body>
+</html>

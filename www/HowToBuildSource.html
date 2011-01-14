@@ -56,6 +56,7 @@ gms.jar" is placed in dist directory.<br><br>
 
 <code>  % svn update .</code><br>
 <h2>Building and Running Shoal GMS developer tests</h2>
+<hr>
 <i>Work in progress</i>
 <p>
 In addition to junit test for shoal, there is a semi automated testing mechanism to run developer level 
@@ -69,7 +70,7 @@ The test command is in shoal/gms and is called runsimulatecluster.sh.
 Note that the shoal-gms-test.jar is built as part of ant build.
 Below is the usage command to illustrate the different options for the test driver.
 </p>
-<code>
+<pre>
 $ runsimulatecluster.sh -h
 usage:
    single machine:
@@ -82,15 +83,15 @@ usage:
      runsimulatecluster.sh 5 -bia 129.168.1.4 rejoin
      runsimulatecluster.sh -d -g testgroup
      runsimulatecluster.sh -d -g testgroup rejoin
-</code>
+</pre>
 
-Test Scenarios
+<h4>Test Scenarios<\h4>
 <ul> 
 <li><i>default</i>- start all instances in group and then stop all instances in group</li>
 <li><b>add</b>- start all but one instance in group, wait for all instances to start, then start last instance</li>
 <li><b>stop</b>- start all instances in group, stop an instance (ensure all instances see stop) then stop group</li>
 <li><b>kill</b>- same as stop but substitute kill</li>
-<li><b>rejoin</b>- start all instances in group, kill an instance and restart quicker than gms heartbeat failure detection can detect the failure.  The joined and ready notification should contain subevent Rejoin to denote that the instance restarted without ever being reported as failed. Note that the default gms heartbeat failure detection time is 8 seconds.
+<li><b>rejoin</b>- start all instances in group, kill an instance and restart quicker than gms heartbeat failure detection can detect the failure.  The joined and ready notification should contain subevent Rejoin to denote that the instance restarted without ever being reported as failed. Note that the default gms heartbeat failure detection time is 8 seconds.</li>
 <\ul> 
 
 <p>

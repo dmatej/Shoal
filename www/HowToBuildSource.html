@@ -1,3 +1,25 @@
+<!DOCTYPE html PUBLIC "-//Tigris//DTD XHTML 1.0 Transitional//EN" "http://style.tigris.org/nonav/tigris_transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE"
+ content="text/html; charset=iso-8859-1">
+  <title>Shoal Build and Test Instuctionsk</title>
+<!--<style>
+#apphead {
+display: none;
+}
+#subprojects {
+display: none;
+}
+.app H3 {
+clear: none;
+}
+.axial {
+display: none;
+}
+</style>-->
+</head>
+<body>
 <h2>Shoal GMS Build Instructions</h2>
 <hr>
 <p>Included are all the steps required to obtain and
@@ -55,6 +77,7 @@ gms.jar" is placed in dist directory.<br><br>
 <p>You can refresh your local workspace using :</p>
 
 <code>  % svn update .</code><br>
+<br>
 <h2>Building and Running Shoal GMS developer tests</h2>
 <hr>
 <i>Work in progress</i>
@@ -85,14 +108,14 @@ usage:
      runsimulatecluster.sh -d -g testgroup rejoin
 </pre>
 
-<h4>Test Scenarios<\h4>
+<h4>Test Scenarios</h4>
 <ul> 
 <li><i>default</i>- start all instances in group and then stop all instances in group</li>
 <li><b>add</b>- start all but one instance in group, wait for all instances to start, then start last instance</li>
 <li><b>stop</b>- start all instances in group, stop an instance (ensure all instances see stop) then stop group</li>
 <li><b>kill</b>- same as stop but substitute kill</li>
 <li><b>rejoin</b>- start all instances in group, kill an instance and restart quicker than gms heartbeat failure detection can detect the failure.  The joined and ready notification should contain subevent Rejoin to denote that the instance restarted without ever being reported as failed. Note that the default gms heartbeat failure detection time is 8 seconds.</li>
-<\ul> 
+</ul> 
 
 <p>
 After running one or more test scenarios, the server log files can be found under LOGS/simulateCluster_<i>scenarioname</i>.
@@ -105,17 +128,18 @@ reports if the test passed or failed.
 <p>
 Note that the shoal gms developer tests are not built as part of maven and only exist after running ant.
 </p>
-
+<br>
+<br>
 <h2>Shoal Build Instructions using Maven</h2>
 <hr>
 <p>
 cd into shoal directory and run mvn install.
 This will build and run the junit test for both gms and cache.
-<code>
+<pre>
 shoal/gmscache/target/shoal-cache.jar
 shoal/gms/api/target/shoal-gms-api.jar
 shoal/gms/impl/target/shoal-gms-impl.jar*
-</code>
+</pre>
 
 <p>
 * - Only works with Grizzly 1.9.24 and not JXTA 2.5. JXTA 2.5 is not OSGI compatible.
@@ -123,3 +147,5 @@ shoal/gms/impl/target/shoal-gms-impl.jar*
 <p>
 Note that the shoal gms developer tests are not built as part of maven and only exist after running ant.
 </p>
+</body>
+</html>

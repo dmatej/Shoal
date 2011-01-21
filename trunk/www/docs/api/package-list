@@ -9,3 +9,14 @@ com.sun.enterprise.ee.cms.tests.checkgroupshutdown
 com.sun.enterprise.ee.cms.tests.core
 com.sun.enterprise.ee.cms.tests.multigroupjoin
 com.sun.enterprise.ee.cms.tests.p2pmessagesend
+com.sun.enterprise.gms.tools
+com.sun.enterprise.mgmt
+com.sun.enterprise.mgmt.transport
+com.sun.enterprise.mgmt.transport.grizzly
+com.sun.enterprise.mgmt.transport.jxta
+com.sun.enterprise.shoal
+com.sun.enterprise.shoal.groupleadertest
+com.sun.enterprise.shoal.jointest
+com.sun.enterprise.shoal.memberdetailstest
+com.sun.enterprise.shoal.messagesenderreceivertest
+com.sun.enterprise.shoal.multithreadmessagesendertest

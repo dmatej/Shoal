@@ -33,20 +33,20 @@ namely, a&nbsp; Client API, and a Group Communication Provider API. The
 Client API will allow in-process client components to be notified of
 cluster events and to send and receive messages to/from the group or
 individual members. The Group Communication Provider API provides for
-integration of any group communication technology such as <a
- href="http://www.jxta.org/">JXTA</a>, <a
+integration of any group transport technology such as <a
+ href="http://www.jxta.org/">Grizzly</a>, <a
  href="http://www.jgroups.org/">JGroups</a>, etc. as the underlying
-group communications provider. The default transport provider for Shoal
-GMS is the <a href="http://grizzly.java.net">Grizzly NIO framework</a>.
-The Framework thus provides a layer of abstraction for consuming
-applications/products without tightly binding them to a specific group
-communication system semantics and implementation. This allows
-employing applications to simply call the framework's APIs for building
-clustering and related enterprise distributed systems characteristics.
-Shoal's design considerations, approach and programming model are
-discussed in the <a href="ShoalDesignDocument.html">Shoal Design
-Overview</a> document. Please read this document to get an indepth
-understanding of Shoal framework.</font></p>
+group communications provider. Our default transport provider for Shoal
+1.5.29 is based on Grizzly version 1.9.28. The Framework thus provides
+a layer of abstraction for consuming applications/products without
+tightly binding them to a specific group communication system semantics
+and implementation. This allows employing applications to simply call
+the framework's APIs for building clustering and related enterprise
+distributed systems characteristics. Shoal's design considerations,
+approach and programming model are discussed in the <a
+ href="ShoalDesignDocument.html">Shoal Design Overview</a> document.
+Please read this document to get an indepth understanding of Shoal
+framework.</font></p>
       <p><font face="Arial, sans-serif">Shoal is a part of the <a
  href="https://glassfish.dev.java.net/">GlassFish</a> Community.</font></p>
       </td>
@@ -56,7 +56,10 @@ understanding of Shoal framework.</font></p>
  href="http://www.glassfishwiki.org/gfwiki/attach/UserExperienceMeeting/ShoalJXTAKitchen11022006.pdf">Shoal
 Overview Presentation </a></li>
         <li><a href="http://blogs.sun.com/main/tags/shoal">Shoal Blog
-Entries</a></li>
+Entries</a>
+          <ul>
+          </ul>
+        </li>
       </ul>
       </td>
     </tr>
@@ -152,7 +155,7 @@ used is only limited by imagination.</font></p>
 <ul>
   <li>
     <p style="margin-bottom: 0in;"><font face="Arial, sans-serif">In a
-Java EE environment, transaction service reliability can be
+Java EE (J2EE) environment, transaction service reliability can be
 significantly improved in a cluster setting, by using delegated
 recovery initiation notification that automatically picks another
 cluster member to perform recovery operations and notifies that
@@ -190,13 +193,14 @@ Clients/Agents can now participate in the cluster as Spectator members
 and be notified of cluster instance lifecycle events. One can also
 build more monitoring information on top of GMS notifications in terms
 of load factors on an instance prior to failure so that appropriate
-service provisioning can be made.</font></p>
+service provisioning can be made. </font> </p>
   </li>
-  <li><font face="Arial, sans-serif">GMS's Master Node protocol and
-Group Leadership Change notification can be effectively leveraged to
-build a map-reduce application using the core members as slaves of the
-master to create a master-worker grid. <br />
-    </font></li>
+  <li>
+    <p><font face="Arial, sans-serif">Dynamic Provisioning services can
+take advantage of GMS thereby taking appropriate actions of providing
+more resources on occurence of failures depending on load conditions. </font>
+    </p>
+  </li>
 </ul>
 <p style="margin-top: 0.17in; page-break-after: avoid;"><font
  color="#000000"><font face="Helvetica, sans-serif"><font size="4"><b>Acknowledgements</b></font></font></font></p>

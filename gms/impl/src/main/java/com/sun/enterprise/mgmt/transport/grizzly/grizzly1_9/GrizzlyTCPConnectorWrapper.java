@@ -38,14 +38,16 @@
  * holder.
  */
 
-package com.sun.enterprise.mgmt.transport.grizzly;
+package com.sun.enterprise.mgmt.transport.grizzly.grizzly1_9;
 
 import com.sun.enterprise.mgmt.transport.*;
+import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyNetworkManager;
 import com.sun.grizzly.ConnectorHandler;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.IOEvent;
 import com.sun.grizzly.util.OutputWriter;
 import com.sun.enterprise.ee.cms.impl.base.PeerID;
+import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyPeerID;
 import com.sun.grizzly.AbstractConnectorHandler;
 import com.sun.grizzly.CallbackHandler;
 import com.sun.grizzly.Context;
@@ -56,7 +58,6 @@ import java.io.Serializable;
 import java.net.SocketAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
-import java.util.Date;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -65,7 +66,7 @@ import java.util.logging.Level;
  */
 public class GrizzlyTCPConnectorWrapper extends AbstractMessageSender {
 
-    private static final Logger LOG = GrizzlyUtil.getLogger();
+    private final Logger LOG = GrizzlyNetworkManager.getLogger();
     private final Controller controller;
     private final long writeTimeout; // ms
     private final InetSocketAddress localSocketAddress; // todo not used
@@ -91,7 +92,7 @@ public class GrizzlyTCPConnectorWrapper extends AbstractMessageSender {
         } else {
             throw new IOException( "peer ID must be GrizzlyPeerID type" );
         }
-        
+
         return send(remoteSocketAddress, null, message, peerID);
         }
 
@@ -171,7 +172,7 @@ public class GrizzlyTCPConnectorWrapper extends AbstractMessageSender {
         public CloseControlCallbackHandler(ConnectorHandler connectorHandler) {
             this.connectorHandler = connectorHandler;
         }
-        
+
         @Override
         public void onConnect(IOEvent<Context> ioEvent) {
             SelectionKey key = ioEvent.attachment().getSelectionKey();

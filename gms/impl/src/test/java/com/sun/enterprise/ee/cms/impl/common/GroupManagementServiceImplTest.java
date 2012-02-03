@@ -200,8 +200,12 @@ public class GroupManagementServiceImplTest extends TestCase {
             gms.getGroupHandle().sendMessage(instanceName, "testTargetComponent", tooBigPayload);
             assertTrue("Failed.  Should have thrown GMSException caused by MessageIOException sending too big a message payload", false);
         } catch (GMSException ge) {
-            log.log(Level.INFO, "handled expected exception GMSException caused by ", ge.getCause().getClass().getName() + ": " + ge.getCause().getMessage());
-            assertTrue("Passed sending too big a message test. Handled expected exception.", ge.getCause() instanceof MessageIOException);
+            //log.log(Level.WARNING, "following exception thrown attempting to write too big of a message", ge);
+            Throwable causeException = ge.getCause();
+            String causeExceptionName = causeException == null ? "<noCauseException>" : causeException.getClass().getName();
+            String causeMsg = causeException == null ? "" : causeException.getMessage();
+            log.log(Level.INFO, "handled expected exception GMSException caused by " + causeExceptionName + ":" + causeMsg);
+            assertTrue("Passed sending too big a message test. Handled expected exception.", causeException instanceof MessageIOException);
         } catch (Throwable t) {
             log.log(Level.WARNING, "unexpected exception sending too big of a message", t);
             assertTrue("Failed", false);

@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.shoal</groupId>
         <artifactId>shoal</artifactId>
-        <version>1.5.36-SNAPSHOT</version>
+        <version>1.6.19-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -83,6 +83,11 @@
             <artifactId>grizzly-framework</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>${grizzly2.group.id}</groupId>
+            <version>${grizzly2.version}</version>
+            <artifactId>grizzly-framework</artifactId>
+       </dependency>
 
         <dependency>
             <groupId>${junit.group.id}</groupId>

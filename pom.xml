@@ -53,13 +53,13 @@
     <groupId>org.shoal</groupId>
     <artifactId>shoal</artifactId>
     <packaging>pom</packaging>
-    <version>1.5.36-SNAPSHOT</version>
+    <version>1.6.19-SNAPSHOT</version>
     <name>shoal</name>
     <url>http://java.net/projects/shoal</url>
 
     <scm>
-        <connection>scm:svn:svn+ssh://janey@svn.java.net/shoal~svn/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://janey@svn.java.net/shoal~svn/trunk</developerConnection>
+        <connection>scm:svn:svn+ssh://janey@svn.java.net/shoal~svn/branches/gms-transport-modules</connection>
+        <developerConnection>scm:svn:svn+ssh://janey@svn.java.net/shoal~svn/branches/gms-transport-modules</developerConnection>
         <url>http://java.net/projects/shoal/sources/svn/show</url>
     </scm>
 
@@ -114,12 +114,15 @@
 
     <properties>
         <grizzly.group.id>com.sun.grizzly</grizzly.group.id>
-        <grizzly.version>1.9.24</grizzly.version>
+        <grizzly.version>1.9.36</grizzly.version>
+
+        <grizzly2.group.id>org.glassfish.grizzly</grizzly2.group.id>
+        <grizzly2.version>2.2.1</grizzly2.version>
 
         <junit.group.id>junit</junit.group.id>
         <junit.version>3.8.1</junit.version>
 
-        <ha.api.version>3.1.7</ha.api.version>
+        <ha.api.version>3.1.8</ha.api.version>
 
         <!-- Set sourceEncoding property to eliminate warning with
              "File encoding not set" when running FindBugs plugin.
@@ -171,6 +174,15 @@
                 </configuration>                                                      
             </plugin>                    
         </plugins>
+        <!-- explicitly define this extension to resolve invalid checksums -->
+        <!-- See:  http://jira.codehaus.org/browse/MNG-4301 -->
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>1.0-beta-2</version>                                                               
+           </extension>              
+        </extensions>
     </build>
 
     <reporting>
@@ -199,7 +211,16 @@
                 <version>${grizzly.version}</version>
                 <artifactId>grizzly-framework</artifactId>
             </dependency>
-
+            <dependency>
+                <groupId>${grizzly.group.id}</groupId>
+                <version>${grizzly.version}</version>
+                <artifactId>grizzly-http</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>${grizzly2.group.id}</groupId>
+                <version>${grizzly2.version}</version>
+                <artifactId>grizzly-framework</artifactId>
+            </dependency>
             <dependency>
                 <groupId>${junit.group.id}</groupId>
                 <artifactId>junit</artifactId>
@@ -227,4 +248,5 @@
             <url>http://maven.glassfish.org/content/groups/glassfish</url>
         </repository>
     </repositories>
+
 </project>

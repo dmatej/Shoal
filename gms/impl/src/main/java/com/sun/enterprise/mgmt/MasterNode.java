@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,14 +40,12 @@
 
 package com.sun.enterprise.mgmt;
 
-import static com.sun.enterprise.mgmt.ClusterViewEvents.*;
 import com.sun.enterprise.ee.cms.core.GMSConstants;
+import static com.sun.enterprise.ee.cms.core.ServiceProviderConfigurationKeys.DISCOVERY_URI_LIST;
+import static com.sun.enterprise.ee.cms.core.ServiceProviderConfigurationKeys.VIRTUAL_MULTICAST_URI_LIST;
 import com.sun.enterprise.ee.cms.core.GMSMember;
 import com.sun.enterprise.ee.cms.core.RejoinSubevent;
-import com.sun.enterprise.ee.cms.impl.base.GMSThreadFactory;
-import com.sun.enterprise.ee.cms.impl.base.PeerID;
-import com.sun.enterprise.ee.cms.impl.base.SystemAdvertisement;
-import com.sun.enterprise.ee.cms.impl.base.Utility;
+import com.sun.enterprise.ee.cms.impl.base.*;
 import com.sun.enterprise.ee.cms.impl.common.GMSContext;
 import com.sun.enterprise.ee.cms.impl.common.GMSContextFactory;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
@@ -62,12 +60,15 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.sun.enterprise.mgmt.ClusterViewEvents.*;
 
 /**
  * Master Node defines a protocol by which a set of nodes connected to a JXTA infrastructure group
@@ -104,6 +105,8 @@ class MasterNode implements MessageListener, Runnable {
     private static final Logger mcastLogger = GMSLogDomain.getMcastLogger();
     private static final Logger masterLogger = GMSLogDomain.getMasterNodeLogger();
     private static final Logger monitorLogger = GMSLogDomain.getMonitorLogger();
+    private static final Logger nomLog = GMSLogDomain.getNoMCastLogger();
+
     private final ClusterManager manager;
 
     private boolean masterAssigned = false;
@@ -162,6 +165,7 @@ class MasterNode implements MessageListener, Runnable {
     private ReliableMulticast reliableMulticast;
     private final ExecutorService checkForMissedMasterMsgSingletonExecutor;
     final TreeSet<ProcessedMasterViewId> processedChangeEvents = new TreeSet<ProcessedMasterViewId>();
+    final boolean NON_MULTICAST;
 
 
     /**
@@ -174,7 +178,8 @@ class MasterNode implements MessageListener, Runnable {
      */
     MasterNode(final ClusterManager manager,
                final long timeout,
-               final int interval) {
+               final int interval,
+               Map props) {
         localNodeID = manager.getPeerID();
         if (timeout > 0) {
             this.timeout = timeout;
@@ -187,6 +192,14 @@ class MasterNode implements MessageListener, Runnable {
         outstandingMasterNodeMessages = new TreeSet<MasterNodeMessageEvent>();
         checkForMissedMasterMsgSingletonExecutor =
             Executors.newSingleThreadExecutor(new GMSThreadFactory("GMS-validateMasterChangeEvents-Group-" + manager.getGroupName() + "-thread"));
+        String value = (String)props.get(DISCOVERY_URI_LIST.toString());
+        boolean NON_MULTICAST_VALUE = value != null;
+        if (! NON_MULTICAST_VALUE) {
+            // check VIRTUAL_MULTICAST_URI_LIST for jxta implementation.
+            value = (String)props.get(VIRTUAL_MULTICAST_URI_LIST.toString());
+            NON_MULTICAST_VALUE = value != null;
+        }
+        NON_MULTICAST = NON_MULTICAST_VALUE;
     }
 
     /**
@@ -200,6 +213,24 @@ class MasterNode implements MessageListener, Runnable {
 
     public long getMasterViewID() {
         return masterViewID.get();
+    }
+
+    static public long getStartTime(SystemAdvertisement adv) {
+        long result = 0L;
+        try {
+           result = Long.parseLong(adv.getCustomTagValue(CustomTagNames.START_TIME.toString()));
+        } catch (NoSuchFieldException ignore) {}
+        return result;
+    }
+
+    /**
+     * Returns true if current master is truely senior to new possible master represented by newAdv.
+     * @param currentAdv
+     * @param newAdv
+     * @return
+     */
+    static public boolean isSeniorMember(SystemAdvertisement currentAdv, SystemAdvertisement newAdv) {
+        return getStartTime(currentAdv) < getStartTime(newAdv);
     }
 
     /**
@@ -224,8 +255,9 @@ class MasterNode implements MessageListener, Runnable {
             send(systemAdv.getID(), systemAdv.getName(),
                     createMasterCollisionMessage());
 
-            //TODO add code to ensure whether this node should remain as master or resign (basically noop)
-            if (manager.getPeerID().compareTo(systemAdv.getID()) >= 0) {
+            //TODO add code to ensure whether this node should remain as master or resign
+            //if (manager.getPeerID().compareTo(systemAdv.getID()) >= 0) {
+            if (isSeniorMember(manager.getSystemAdvertisement(), systemAdv)) {
                 masterLogger.log(Level.FINE, "Affirming Master Node role");
             } else {
                 masterLogger.log(Level.FINE, "Resigning Master Node role in anticipation of a master node announcement");
@@ -345,6 +377,7 @@ class MasterNode implements MessageListener, Runnable {
         masterViewID.set(clusterViewManager.getMasterViewID());
         final long timeToWait = timeout;
         LOG.log(Level.FINER, "Attempting to discover a master node");
+
         Message query = createMasterQuery();
         send(null, null, query);
         if (LOG.isLoggable(Level.FINER)) {
@@ -756,6 +789,10 @@ class MasterNode implements MessageListener, Runnable {
             } else if (LOG.isLoggable(Level.FINER)) {
                 LOG.log(Level.FINER, "Node " + adv.getName() + " is already in the view. Hence not sending ADD_EVENT.");
             }
+        } else if (masterAssigned && NON_MULTICAST) {
+
+            // forward master node query to Master.
+            send(getMasterNodeID(), "", msg);
         }
         //for issue 484
         //when the master is killed and restarted very quickly
@@ -881,6 +918,9 @@ class MasterNode implements MessageListener, Runnable {
         final Object msgElement = msg.getMessageElement(NODEQUERY);
 
         if (msgElement == null || adv == null) {
+            if (LOG.isLoggable(Level.FINER)) {
+                LOG.log(Level.FINER, "WARNING: returning without processing in processNodeResponse msgElement=" + msgElement + " adv=" + adv);
+            }
             return false;
         }
         if (LOG.isLoggable(Level.FINE)) {
@@ -908,10 +948,11 @@ class MasterNode implements MessageListener, Runnable {
             if (LOG.isLoggable(Level.FINER)) {
                 LOG.log(Level.FINER, "Sending Node response to  :" + adv.getName());
             }
-            // Part of fix for BugDB 13375653. Broadcast node response. to all nodes.
-            // TCP connnection between isolated instance and master does not repair in time to
-            // receive this message.
-            //send(adv.getID(), null, response);
+
+           // Part of fix for BugDB 13375653. Broadcast node response. to all nodes.
+           // TCP connnection between isolated instance and master does not repair in time to
+           // receive this message.
+           //send(adv.getID(), null, response);
             send(null, null, response);
         }
         return true;
@@ -936,9 +977,9 @@ class MasterNode implements MessageListener, Runnable {
         }
         if (isMaster() && masterAssigned) {
             if (LOG.isLoggable(Level.FINE)) {
-                LOG.log(Level.FINE, MessageFormat.format("Received a Node Response from Name :{0} ID :{1}", adv.getName(), adv.getID()));
+                LOG.log(Level.FINE, MessageFormat.format("Received a Node Response from Name :{0} ID :{1} isAdvAddedToView :{2}", adv.getName(), adv.getID(), isAdvAddedToView));
             }
-            //if(isAdvAddedToView) {
+            if(isAdvAddedToView) {
                 final ClusterViewEvent cvEvent = new ClusterViewEvent(ADD_EVENT, adv);
                 Message responseMsg = createMasterResponse(false, localNodeID);
                 synchronized(masterViewID) {
@@ -947,9 +988,9 @@ class MasterNode implements MessageListener, Runnable {
                 }
                 clusterViewManager.notifyListeners(cvEvent);
                 sendNewView(null, cvEvent, responseMsg, false);
-            //} else if (LOG.isLoggable(Level.FINER)) {
-            //    LOG.log(Level.FINER, "Node " + adv.getName() + " is already in the view. Hence not sending ADD_EVENT.");
-            //}
+            } else if (LOG.isLoggable(Level.FINE)) {
+                LOG.log(Level.FINE, "Node " + adv.getName() + " is already in the view. Hence not sending ADD_EVENT.");
+            }
         } else if (LOG.isLoggable(Level.FINE)) {
             LOG.log(Level.FINE,  "Received a node response from " + adv.getName() + " id:" + adv.getID());
         }

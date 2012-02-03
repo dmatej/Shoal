@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -80,12 +80,14 @@ public abstract class AbstractNetworkManager implements NetworkManager {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void start() throws IOException {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void stop() throws IOException {
         messageListeners.clear();
     }
@@ -93,6 +95,7 @@ public abstract class AbstractNetworkManager implements NetworkManager {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addMessageListener( final MessageListener messageListener ) {
         if( messageListener != null )
             messageListeners.add( messageListener );
@@ -101,6 +104,7 @@ public abstract class AbstractNetworkManager implements NetworkManager {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeMessageListener( final MessageListener messageListener ) {
         if( messageListener != null )
             messageListeners.remove( messageListener );
@@ -109,6 +113,7 @@ public abstract class AbstractNetworkManager implements NetworkManager {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void receiveMessage( Message message, Map piggyback ) {
         PeerID sourcePeerID = null;
         PeerID targetPeerID = null;
@@ -145,7 +150,10 @@ public abstract class AbstractNetworkManager implements NetworkManager {
         }
         if (messageEventNotProcessed) {
             if (LOG.isLoggable(Level.FINER)) {
-                LOG.finer("No message listener for messageEvent: " + messageEvent.toString() + " Message :" + message + " MessageFrom: " + sourcePeerID + " MessageTo:" + targetPeerID);
+                LOG.log(Level.FINER, "No message listener for messageEvent: {0} "
+                        + "Message :{1} MessageFrom: {2} MessageTo:{3}",
+                        new Object[]{messageEvent.toString(), message,
+                        sourcePeerID, targetPeerID});
             }
         }
         try {
@@ -158,6 +166,7 @@ public abstract class AbstractNetworkManager implements NetworkManager {
     /**
      * {@inheritDoc}
      */
+    @Override
     public PeerID getLocalPeerID() {
         return localPeerID;
     }
@@ -171,8 +180,8 @@ public abstract class AbstractNetworkManager implements NetworkManager {
         while (iter.hasNext())  {
             try {
                 networkManager = iter.next().getClass().newInstance();
-                if (transport.compareToIgnoreCase(GMSConstants.GRIZZLY_GROUP_COMMUNICATION_PROVIDER) == 0) {
-                    if (networkManager.getClass().getName().contains("Grizzly")) {
+                if (transport.startsWith("grizzly")) {
+                    if (networkManager.getClass().getName().contains(transport)) {
                         // found service that matches group communication provider.
                         break;
                     }
@@ -183,7 +192,12 @@ public abstract class AbstractNetworkManager implements NetworkManager {
                     }
                 }
             } catch (Throwable t) {
-                LOG.log(Level.WARNING, "error instantiating NetworkManager service", t);
+
+                // only a SEVERE error if no implementation of service is available.
+                // for example in glassfish 3.1.x, there is no grizzly 2.o jars.
+                if (LOG.isLoggable(Level.FINE)) {
+                    LOG.log(Level.FINE, "error instantiating NetworkManager service", t);
+                }
             }
         }
         if (networkManager == null) {
@@ -213,8 +227,11 @@ public abstract class AbstractNetworkManager implements NetworkManager {
         }
         if (networkManager == null) {
             String classname = null;
-            if (transport.compareToIgnoreCase(GMSConstants.GRIZZLY_GROUP_COMMUNICATION_PROVIDER) == 0) {
-                classname = "com.sun.enterprise.mgmt.transport.grizzly.GrizzlyNetworkManager";
+            final String GRIZZLY_TRANSPORT_BASE_DIR = "com.sun.enterprise.mgmt.transport.grizzly.";
+            if (transport.startsWith("grizzly2")) {
+                classname = GRIZZLY_TRANSPORT_BASE_DIR + transport + ".GrizzlyNetworkManager2";
+            } else if (transport.startsWith("grizzly1_9")) {
+                classname = GRIZZLY_TRANSPORT_BASE_DIR + transport + ".GrizzlyNetworkManager1_9";
             } else {
                 classname = "com.sun.enterprise.mgmt.transport.jxta.JxtaNetworkManager";
             }
@@ -243,13 +260,16 @@ public abstract class AbstractNetworkManager implements NetworkManager {
         return LOG;
     }
 
-    public synchronized void initialize( final String groupName, final String instanceName, final Map properties ) throws IOException  {
+    @Override
+    public synchronized void initialize( final String groupName,
+            final String instanceName, final Map properties )
+            throws IOException {
         int maxMsgLength =  Utility.getIntProperty( ServiceProviderConfigurationKeys.MAX_MESSAGE_LENGTH.toString(),
                                                     MessageImpl.DEFAULT_MAX_TOTAL_MESSAGE_LENGTH,
                                                     properties );
         MessageImpl.setMaxMessageLength(maxMsgLength);
         if (LOG.isLoggable(Level.CONFIG))  {
-            LOG.config("GMS MAX_MESSAGE_LENGTH=" + maxMsgLength);
+            LOG.log(Level.CONFIG, "GMS MAX_MESSAGE_LENGTH={0}", maxMsgLength);
         }
     }
 }

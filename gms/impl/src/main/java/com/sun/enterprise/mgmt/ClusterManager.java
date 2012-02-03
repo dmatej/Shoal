@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -156,7 +156,7 @@ public class ClusterManager implements MessageListener {
             this.masterNode = null;
         } else {
             this.clusterViewManager = new ClusterViewManager(getSystemAdvertisement(), this, viewListeners);
-            this.masterNode = new MasterNode(this, getDiscoveryTimeout(props), 1);
+            this.masterNode = new MasterNode(this, getDiscoveryTimeout(props), 1, props);
         }
 
         this.healthMonitor = new HealthMonitor(this,
@@ -538,7 +538,7 @@ public class ClusterManager implements MessageListener {
         if (bindInterfaceAddress != null && !bindInterfaceAddress.equals("")) {
             InetAddress inetAddress = null;
             try {
-                inetAddress = InetAddress.getByName( bindInterfaceAddress );
+                inetAddress = NetworkUtility.resolveBindInterfaceName( bindInterfaceAddress );
                 if( inetAddress instanceof Inet6Address ) {
                     bindInterfaceEndpointAddress = TCP_SCHEME + "[" + bindInterfaceAddress + "]" + PORT;
                 } else {

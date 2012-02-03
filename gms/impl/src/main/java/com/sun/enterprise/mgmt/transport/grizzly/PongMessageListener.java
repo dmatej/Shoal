@@ -47,12 +47,16 @@ import com.sun.enterprise.mgmt.transport.Message;
 import com.sun.enterprise.ee.cms.impl.base.PeerID;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Logger;
 
 /**
  * @author Bongjae Chang
  */
 public class PongMessageListener implements MessageListener {
 
+    private final static Logger LOG = GrizzlyNetworkManager.getLogger();
+
+    @Override
     public void receiveMessageEvent( final MessageEvent event ) throws MessageIOException {
         if( event == null )
             return;
@@ -71,6 +75,7 @@ public class PongMessageListener implements MessageListener {
             pingMessageLock.countDown();
     }
 
+    @Override
     public int getType() {
         return Message.TYPE_PONG_MESSAGE;
     }

@@ -45,7 +45,9 @@ import org.glassfish.ha.store.api.BackingStoreConfiguration;
 import org.glassfish.ha.store.api.BackingStoreException;
 import org.glassfish.ha.store.api.HashableKey;
 import org.glassfish.ha.store.util.SimpleMetadata;
+import org.shoal.adapter.store.ReplicatedBackingStore;
 import org.shoal.adapter.store.ReplicatedBackingStoreFactory;
+import org.shoal.ha.cache.impl.command.CommandManager;
 import org.shoal.ha.mapper.DefaultKeyMapper;
 
 import java.io.*;
@@ -64,6 +66,8 @@ public class SimpleStoreableBackingStoreShell {
 
     ConcurrentHashMap<MyKey, SimpleMetadata> cache =
             new ConcurrentHashMap<MyKey, SimpleMetadata>();
+
+    CommandManager<MyKey, SimpleMetadata> cm;
 
     int counter = 0;
 
@@ -91,6 +95,11 @@ public class SimpleStoreableBackingStoreShell {
     }
 
     private void runShell(BackingStore<MyKey, SimpleMetadata> ds) {
+
+
+        cm = ((ReplicatedBackingStore<MyKey, SimpleMetadata>) ds)
+                .getDataStoreContext().getCommandManager();
+
         this.ds = ds;
         String line = "";
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

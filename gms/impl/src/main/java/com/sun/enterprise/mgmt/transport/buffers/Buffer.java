@@ -38,11 +38,9 @@
  * holder.
  */
 
-package com.sun.enterprise.mgmt.transport;
+package com.sun.enterprise.mgmt.transport.buffers;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.*;
 
 /**
  * JDK {@link java.nio.ByteBuffer} was taken as base for Grizzly
@@ -54,13 +52,30 @@ import java.nio.*;
  */
 public interface Buffer extends Comparable<Buffer> {
     /**
+     * Creates a new <code>Buffer</code> that shares this buffer's content.
+     *
+     * <p> The content of the new buffer will be that of this buffer.  Changes
+     * to this buffer's content will be visible in the new buffer, and vice
+     * versa; the two buffer's position, limit, and mark values will be
+     * independent.
+     *
+     * <p> The new buffer's capacity, limit, position, and mark values will be
+     * identical to those of this buffer.  The new buffer will be direct if,
+     * and only if, this buffer is direct, and it will be read-only if, and
+     * only if, this buffer is read-only.  </p>
+     *
+     * @return  The new <code>Buffer</code>
+     */
+    public Buffer duplicate();
+    
+    /**
      * Disposes the buffer part, outside [position, limit] interval if possible.
      * May return without changing capacity.
-     * After disposeUnused is called, postion/limit/capacity values may have
-     * different values, than before, by still point to the same <tt>Buffer</tt>
+     * After shrink is called, position/limit/capacity values may have
+     * different values, than before, but still point to the same <tt>Buffer</tt>
      * elements.
      */
-    public ByteBuffer trimLeft();
+    public void shrink();
 
     /**
      * Notify the allocator that the space for this <tt>Buffer</tt> is no

@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.mgmt.transport.grizzly;
+package com.sun.enterprise.mgmt.transport.grizzly.grizzly1_9;
 
 import com.sun.enterprise.mgmt.transport.MessageIOException;
 import com.sun.grizzly.ConnectorHandler;
@@ -48,6 +48,7 @@ import com.sun.enterprise.ee.cms.impl.base.PeerID;
 import com.sun.enterprise.mgmt.transport.Message;
 import com.sun.enterprise.mgmt.transport.NetworkUtility;
 import com.sun.enterprise.mgmt.transport.AbstractMultiMessageSender;
+import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyPeerID;
 
 import java.io.IOException;
 import java.io.Serializable;

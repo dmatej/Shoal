@@ -1,7 +1,9 @@
 package org.shoal.ha.cache.impl.store;
 
+import org.shoal.adapter.store.commands.AbstractSaveCommand;
 import org.shoal.adapter.store.commands.LoadResponseCommand;
 import org.shoal.adapter.store.commands.SaveCommand;
+import org.shoal.adapter.store.commands.TouchCommand;
 import org.shoal.ha.cache.api.*;
 
 import java.io.ByteArrayInputStream;
@@ -39,8 +41,8 @@ public abstract class DataStoreEntryUpdater<K, V> {
         } catch (Exception ex) {
             throw new DataStoreException("Error during prepareToTransmit()", ex);
         } finally {
-            try { oos.close(); } catch (Exception ex) {}
-            try { bos.close(); } catch (Exception ex) {}
+            try { oos.close(); } catch (Exception ex) {_logger.log(Level.FINEST, "Ignorable error while closing ObjectOutputStream");}
+            try { bos.close(); } catch (Exception ex) {_logger.log(Level.FINEST, "Ignorable error while closing ByteArrayOutputStream");}
         }
 
         return result;
@@ -71,7 +73,7 @@ public abstract class DataStoreEntryUpdater<K, V> {
         return v;
     }
 
-    protected void updateMetaInfoInDataStoreEntry(DataStoreEntry<K, V> entry, SaveCommand<K, V> cmd) {
+    protected void updateMetaInfoInDataStoreEntry(DataStoreEntry<K, V> entry, AbstractSaveCommand<K, V> cmd) {
         entry.setVersion(cmd.getVersion());
         entry.setLastAccessedAt(cmd.getLastAccessedAt());
         entry.setMaxIdleTime(cmd.getMaxIdleTime());
@@ -91,6 +93,9 @@ public abstract class DataStoreEntryUpdater<K, V> {
             throws DataStoreException;
 
     public abstract void executeSave(DataStoreEntry<K, V> entry, SaveCommand<K, V> cmd)
+            throws DataStoreException;
+
+    public abstract void executeTouch(DataStoreEntry<K, V> entry, TouchCommand<K, V> cmd)
             throws DataStoreException;
 
     public abstract V getV(DataStoreEntry<K, V> entry)

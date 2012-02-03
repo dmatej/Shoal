@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,41 +38,13 @@
  * holder.
  */
 
-package com.sun.enterprise.mgmt.transport.grizzly;
-
-import com.sun.grizzly.util.Copyable;
-import com.sun.grizzly.connectioncache.server.CacheableSelectionKeyHandler;
-
-import java.nio.channels.SelectionKey;
+package com.sun.enterprise.mgmt.transport.buffers;
 
 /**
- * @author Bongjae Chang
+ * {@link DynamicBufferWriter} factory.
+ *
+ * @author Alexey Stashok
  */
-public class GrizzlyCacheableSelectionKeyHandler extends CacheableSelectionKeyHandler {
-
-    private GrizzlyNetworkManager networkManager;
-
-    public GrizzlyCacheableSelectionKeyHandler() {
-    }
-
-    public GrizzlyCacheableSelectionKeyHandler( int highWaterMark, int numberToReclaim, GrizzlyNetworkManager networkManager ) {
-        super( highWaterMark, numberToReclaim );
-        this.networkManager = networkManager;
-    }
-
-    @Override
-    public void cancel( SelectionKey key ) {
-        super.cancel( key );
-        if( networkManager != null )
-            networkManager.removeRemotePeer( key );
-    }
-
-    @Override
-    public void copyTo( Copyable copy ) {
-        super.copyTo( copy );
-        if( copy instanceof GrizzlyCacheableSelectionKeyHandler ) {
-            GrizzlyCacheableSelectionKeyHandler copyHandler = (GrizzlyCacheableSelectionKeyHandler)copy;
-            copyHandler.networkManager = networkManager;
-        }
-    }
+public interface ExpandableBufferWriterFactory {
+    public ExpandableBufferWriter create();
 }

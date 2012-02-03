@@ -57,8 +57,9 @@ import java.util.logging.Level;
  */
 public class PingMessageListener implements MessageListener {
 
-    private static final Logger LOG = GrizzlyUtil.getLogger();
+    private final static Logger LOG = GrizzlyNetworkManager.getLogger();
 
+    @Override
     public void receiveMessageEvent( final MessageEvent event ) throws MessageIOException {
         if( event == null )
             return;
@@ -86,6 +87,7 @@ public class PingMessageListener implements MessageListener {
         }
     }
 
+    @Override
     public int getType() {
         return Message.TYPE_PING_MESSAGE;
     }

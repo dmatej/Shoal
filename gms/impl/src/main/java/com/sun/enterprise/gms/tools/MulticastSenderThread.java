@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,11 +40,13 @@
 
 package com.sun.enterprise.gms.tools;
 
+import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
+import com.sun.enterprise.mgmt.transport.NetworkUtility;
+
 import static com.sun.enterprise.ee.cms.core.GMSConstants.MINIMUM_MULTICAST_TIME_TO_LIVE;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
+import java.net.*;
+import java.util.logging.Level;
 
 /**
  * Used to periodically send multicast messages.
@@ -86,9 +88,37 @@ public class MulticastSenderThread extends Thread {
             DatagramPacket datagramPacket = new DatagramPacket(data,
                 data.length, group, mcPort);
             socket = new MulticastSocket(mcPort);
+
             if (bindInterface != null) {
-                socket.setInterface(InetAddress.getByName(bindInterface));
+                InetAddress iaddr = InetAddress.getByName(bindInterface);
+                log("InetAddress.getByName returned: " + iaddr);
+
+                // make sure the network interface is valid
+                NetworkInterface ni = NetworkInterface.getByInetAddress(iaddr);
+                if (ni != null && NetworkUtility.isUp(ni)) {
+                    socket.setInterface(iaddr);
+                    System.out.println(String.format(sm.get("configured.bindinterface", bindInterface,
+                        ni.getName(), ni.getDisplayName(), NetworkUtility.isUp(ni),
+                        ni.isLoopback())));
+                } else {
+                    if (ni != null) {
+                        System.out.println(String.format(sm.get("invalid.bindinterface", bindInterface,
+                            ni.getName(), ni.getDisplayName(), NetworkUtility.isUp(ni),
+                            ni.isLoopback())));
+                    } else {
+                        System.err.println(sm.get("nonexistent.bindinterface",
+                            bindInterface));
+                    }
+                    iaddr = getFirstAddress();
+                    log("setting socket to: " + iaddr + " instead");
+                    socket.setInterface(iaddr);
+                }
+            } else {
+                InetAddress iaddr = getFirstAddress();
+                log("setting socket to: " + iaddr);
+                socket.setInterface(iaddr);
             }
+
             if (ttl != -1) {
                 try {
                     socket.setTimeToLive(ttl);
@@ -156,6 +186,15 @@ public class MulticastSenderThread extends Thread {
                 socket.close();
             }
         }
+    }
+
+    // utility so we can silence the shoal logger
+    private InetAddress getFirstAddress() throws IOException {
+        if (!debug) {
+            GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER).setLevel(
+                Level.SEVERE);
+        }
+        return NetworkUtility.getFirstInetAddress(false);
     }
 
     private void log(String msg) {

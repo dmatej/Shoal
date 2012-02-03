@@ -48,7 +48,7 @@ package com.sun.enterprise.ee.cms.core;
  * @version $Revision$
  */
 public class GMSConstants {
-    public static final String GRIZZLY_GROUP_COMMUNICATION_PROVIDER="Grizzly";
+    public static final String GRIZZLY_GROUP_COMMUNICATION_PROVIDER="grizzly2";
     public static final String JXTA_GROUP_COMMUNICATION_PROVIDER="jxta";
     public static final String DEFAULT_GROUP_COMMUNICATION_PROVIDER=GRIZZLY_GROUP_COMMUNICATION_PROVIDER;
     public static final String GROUP_COMMUNICATION_PROVIDER =
@@ -60,4 +60,5 @@ public class GMSConstants {
     public static enum groupStartupState { INITIATED, COMPLETED_SUCCESS, COMPLETED_FAILED }
     public static final int DEFAULT_MULTICAST_TIME_TO_LIVE = -1;
     public static final int MINIMUM_MULTICAST_TIME_TO_LIVE = 4;
+    public static final String JOIN_CLUSTER_SEED_URI_LIST = "JOIN_CLUSTER_SEED_URI_LIST";
 }

@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE>Shoal Java Clustering Framework Automated Delegated Recovery Initiation</TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 8  (Solaris x86)">
+	<META NAME="AUTHOR" CONTENT="Shreedhar Ganapathy">
+	<META NAME="CREATED" CONTENT="20060505;14051600">
+	<META NAME="CHANGEDBY" CONTENT="Shreedhar Ganapathy">
+	<META NAME="CHANGED" CONTENT="20060515;12550300">
+<meta name="keywords" content="shoal, glassfish, clustering, java ee, java, jxta, peer-to-peer, p2p, enterprise, group communication, jgroups, j2ee, framework, generic, pluggable, service provider, java-enterprise, networking, routing, multicast, reliable, replication, high availability, in-memory, fault tolerance, scalability, discovery, peer, peergroup, membership, groups, group management, distributed systems, distributed cache, cache, messaging, events, notifications, rendezvous">
+<meta name="description" content="Shoal - A Generic Dynamic Clustering Framework for Group Membership, Reliability, Fault Tolerance and High Availability Systems"
+	<STYLE>
+	<!--
+		@page { size: 8.5in 11in; margin: 0.79in }
+		P { margin-bottom: 0.08in }
+	-->
+	</STYLE>
+<script defer="defer" id="snap_preview_anywhere" type="text/javascript" src="http://spa.snap.com/snap_preview_anywhere.js?ap=1&amp;key=903354f56e911022a1f63b07a41ba43e&amp;sb=1&amp;domain=https://shoal.dev.java.net"></script>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P STYLE="margin-top: 0.17in; margin-bottom: 0.2in; page-break-after: avoid">
+<FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Shoal Automated
+Delegated Recovery Initiation</B></FONT></FONT></P>
+<P><FONT FACE="Arial, sans-serif">To better understand this document,
+read : </FONT><A HREF="ShoalDesignDocument.html"><FONT FACE="Arial, sans-serif">Shoal
+Design Document</FONT></A> 
+</P>
+<P><FONT FACE="Arial, sans-serif">Shoal's GroupManagementService
+(GMS) provides a client API that allows client components within a
+process to receive callbacks when group events occur. One such group
+event is the Automatic Selection of a live member for Initiating
+Recovery operations on a failed member's resources when the failure
+is confirmed.</FONT></P>
+<P><FONT FACE="Arial, sans-serif">This selection event is only
+notified to the registered component on the selected member, while a
+record of this selection is shared with all members through an entry
+in the GMS implementation of Distributed State Cache.&nbsp; In order
+to have such a selection performed and notification delivered, one or
+more components in each member should register with the Group
+Management Service.&nbsp; For this, the client component has to
+implement two interfaces, namely, FailureRecoveryActionFactory and
+FailureRecoveryAction.&nbsp; FailureRecoveryActionFactory produces a
+FailureRecoveryAction which consumes a FailureRecoverySignal, which
+is the selection event object handed by GMS on the member that is
+selected. </FONT>
+</P>
+<P><FONT FACE="Arial, sans-serif">The client invokes the registration
+API by doing the following :</FONT></P>
+<P><FONT FACE="courier new">GroupManagementService gms =
+GMSFactory.getGMSModule(groupName);<BR>gms.addActionFactory(FailureRecoveryActionFactory);<BR><BR></FONT><B><FONT SIZE=4><FONT FACE="Helvetica, sans-serif">When
+Failure Occurs</FONT></FONT></B><BR><FONT FACE="Arial, sans-serif">GMS's
+failure handing core would determine if the recovery member selection
+algorithm needs to be run and if there are recipients for such a
+resultant notification. If so, the algorithm is run and in the member
+that was selected, the client component's
+<FONT FACE="courier new">FailureRecoveryActionFactory's
+produceAction()</FONT> method is invoked, followed by invoking the
+produced <FONT FACE="courier new">FailureRecoveryAction</FONT>'s
+<FONT FACE="courier new">consumeSignal()</FONT> method. GMS passes
+the <FONT FACE="courier new">FailureRecoverySignal</FONT>
+implementation packaging the failed member's identity token,
+timestamps, etc.</FONT></P>
+<P><FONT FACE="Arial, sans-serif">The recovery selection algorithm
+currently depends on an identically ordered list of members on all
+surviving members. The list prior to failure is consulted, and the
+member that was next in the list to the failed member, is selected
+for recovery operations. This makes it a more deterministic, simple
+bit scalable solution for recovery operations. </FONT>
+</P>
+<P><FONT FACE="Arial, sans-serif">Note that the implementation of
+<FONT FACE="courier new">FailureRecoveryAction</FONT>'s
+<FONT FACE="courier new">consumeSignal()</FONT> method has to follow
+the precedence norms set out in the <A HREF="ShoalDesignDocument.html">Shoal
+Design Document</A>. In other words, the implementation in
+<FONT FACE="Courier New">consumeSignal()</FONT> method should first
+acquire the Signal by invoking <FONT FACE="Courier New">FailureRecoverySignal.acquire()</FONT>.</FONT></P>
+<P><FONT FACE="Arial, sans-serif">Note also that the <FONT FACE="Courier New">acquire()</FONT>
+call here has special meaning in that Shoal's protective Failure
+Fencing kicks in when this call is made, i.e. internally, the
+Distributed State Cache implementation is called and an entry is
+placed in it recording the recovery member identity, the failed
+member identity, the recovery state (appointed or in-progress) and a
+timestamp of the entry. Once recovery is completed, the
+<FONT FACE="Courier New">consumeSignal() </FONT>implementation should
+call <FONT FACE="Courier New">Signal.release() </FONT>which results
+in the fence being lowered . i.e. the entry in the Distributed State
+Cache is removed. </FONT>
+</P>
+<P><FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Failure Fencing
+Explained</B> </FONT></FONT>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">When
+a remote/delegate member is performing recovery operations on a
+failed member's resources, this operation has to be protected from
+contention or race conditions. The contention or race condition could
+occur when the failed member restarts before the recovery operations
+by the delegate member is completed and attempts to regain control of
+its resources. In order to enforce such a protection, GMS provides a
+protocol that allows processes to raise a protective fence until
+recovery operations are complete, at which point, the fence is
+lowered by the recovery member. The lowering of the fence is
+automatically done when <FONT FACE="Courier New">consumeSignal()</FONT><FONT FACE="Helvetica, sans-serif">implementation
+calls <FONT FACE="Courier New">FailureRecoverySignal.release()</FONT>.</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">When
+a failed member restarts, the protocol requires that the member check
+with the group as to whether any other member is performing recovery
+operations on its resources. This portion of the protocol is termed
+<B>Netiquette</B>. This is provided through <FONT FACE="Courier New">GroupHandle.isFenced()
+</FONT>API. </FONT>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><FONT FACE="Arial, sans-serif">The
+client in the restarting failed member, may have predetermined
+policies for handling such situations. One policy example could be to
+continue its startup without reclaiming control over the resources,
+and reclaim ownership when notified about completion of the recovery.
+GMS currently does not provide notifications when the fence is raised
+or lowered. Typically, clients can call the <FONT FACE="Courier New">GroupHandle.isFenced()</FONT>
+API to make such a determination. Another policy example would be to
+block start up until the recovery operations are completed and
+continue startup after regaining control of resources. This is left
+to the client's implementation. </FONT>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<P STYLE="margin-top: 0.17in; margin-bottom: 0.2in; page-break-after: avoid">
+<FONT FACE="Helvetica, sans-serif"><FONT SIZE=4><B>Clients Performing
+Recovery on Startup</B></FONT></FONT></P>
+<P STYLE="font-weight: medium"><FONT FACE="Helvetica, sans-serif">There
+are situations where certain clients perform recovery operations on
+their resources during startup with the implicit assumption that the
+startup was preceded by a failure.  In such cases, and particularly
+so when delegated recovery notification is registered for, such
+clients during startup must :</FONT></P>
+<UL>
+	<LI><P STYLE="font-weight: medium"><FONT FACE="Helvetica, sans-serif">first
+	check if a fence has been raised on their member identity (through
+	<FONT FACE="Courier New">GroupHandle.isFenced()</FONT>)</FONT></P>
+	<LI><P STYLE="font-weight: medium"><FONT FACE="Helvetica, sans-serif">if
+	not fenced, and if performing recovery, raise a fence (through
+	<FONT FACE="Courier New">GroupHandle.raiseFence()</FONT>). This
+	results in an entry in the Distributed State Cache recording t<FONT FACE="Arial, sans-serif">he
+	recovery member identity, the failed member identity, the recovery
+	state (appointed or in-progress) and a timestamp of the entry</FONT></FONT></P>
+	<LI><P STYLE="font-weight: medium"><FONT FACE="Helvetica, sans-serif">when
+	recovery operations are done, lower the fence (through
+	<FONT FACE="Courier New">GroupHandle.lowerFence()</FONT>). This
+	results in  <FONT FACE="Arial, sans-serif">the entry in the
+	Distributed State Cache being removed</FONT></FONT></P>
+</UL>
+<P STYLE="font-weight: medium"><BR><BR>
+</P>
+<P STYLE="font-weight: medium"><BR><BR>
+</P>
+<P STYLE="margin-bottom: 0in; widows: 2; orphans: 2"><BR>
+</P>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript" language="javascript">
+var sc_project=1946047; 
+var sc_invisible=1; 
+var sc_partition=17; 
+var sc_security="757c102e"; 
+</script>
+
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c18.statcounter.com/counter.php?sc_project=1946047&java=0&security=757c102e&invisible=1" alt="statistics" border="0"></a> </noscript>
+<!-- End of StatCounter Code -->
+<!-- google analytics code -->
+<script src="https://ssl.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-917902-1";
+urchinTracker();
+</script>	
+<!-- end google analytics code -->
+</BODY>
+</HTML>

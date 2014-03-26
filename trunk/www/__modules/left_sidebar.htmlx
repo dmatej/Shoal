@@ -16,14 +16,14 @@ top of the file. This is how it should be, due to the place where this gets inje
 <script>
 var info = {
 title: "Shoal",
-logo: "http://shoal.java.net/Shoal_244_179.JPG"
+logo: "https://shoal.java.net/Shoal_244_179.JPG"
 }
 </script>
 
 <div id="navcol">
 <dl id="projecttools" class="navgroup" style="text-align: left;">
  <dt id="current-zone" class="depth0">
- <a href="http://shoal.java.net/">Shoal</a>
+ <a href="https://shoal.java.net/">Shoal</a>
  </dt>
  <dd class="depth0 parent parent" id="menubar">
 <!--
@@ -44,37 +44,37 @@ For example, the following match attribute says "overview" should be the current
 page even if you are in sub.html. This is useful for grouping a large number of pages
 under a single navigation item.
 -->
-          <a href="http://shoal.java.net" match="/|/sub.html">Overview</a>
+          <a href="https://shoal.java.net" match="/|/sub.html">Overview</a>
         </li>
-        <li> <a href="http://shoal.java.net/downloadsindex.html">Downloads
+        <li> <a href="https://shoal.java.net/downloadsindex.html">Downloads
           </a> </li>
         <li> <a
- href="http://java.net/projects/shoal/lists/announce/archive">Announcements</a>
+ href="https://java.net/projects/shoal/lists/announce/archive">Announcements</a>
         </li>
-        <li> <a href="http://java.net/projects/shoal/lists/">Mailing
+        <li> <a href="https://java.net/projects/shoal/lists/">Mailing
 lists</a><!--
 The following shows how to embed something other than a link to the menu bar.
 -->
         </li>
-        <li><a href="http://java.net/jira/browse/SHOAL/">IssueTracker</a>
+        <li><a href="https://java.net/jira/browse/SHOAL/">IssueTracker</a>
         </li>
         <li> <a href="#">Using Shoal....</a>
           <ul>
-            <li> <a href="http://shoal.java.net/ShoalOverview.html">What
+            <li> <a href="https://shoal.java.net/ShoalOverview.html">What
 is Shoal?</a> </li>
             <li> <a
- href="http://wikis.sun.com/display/shoal/Shoal+Home">Shoal
+ href="https://wikis.oracle.com/display/GlassFish/GlassFishv3.1GMS">Shoal
 Documentation</a> </li>
             <li> <a
- href="http://www.glassfishwiki.org/gfwiki/attach/UserExperienceMeeting/ShoalJXTAOverview.pdf">Shoal
+ href="https://www.glassfishwiki.org/gfwiki/attach/UserExperienceMeeting/ShoalJXTAOverview.pdf">Shoal
 Overview Preso</a> </li>
             <li> <a
  href="/servlets/ProjectDocumentView?documentID=43252&amp;noNav=true">Build
 Instructions</a> </li>
-            <li> <a href="https://shoal.java.net/nonav/docs/api/">Javadocs</a>
+            <li> <a href="httpss://shoal.java.net/nonav/docs/api/">Javadocs</a>
             </li>
             <li> <a
- href="http://java.net/projects/shoal/sources/svn/show">SVN
+ href="https://java.net/projects/shoal/sources/svn/show">SVN
 Source Browser</a> </li>
           </ul>
         </li>
@@ -84,7 +84,7 @@ Source Browser</a> </li>
  onsubmit="return false;"> <input value="Search" type="submit"><input
  name="q" size="8" type="text"></form>
           <script type="text/javascript"
- src="http://www.google.com/coop/cse/brand?form=searchbox_006309538249653171294%3A6o2eqfdhoko&amp;lang=en"></script>
+ src="https://www.google.com/coop/cse/brand?form=searchbox_006309538249653171294%3A6o2eqfdhoko&amp;lang=en"></script>
           <div id="results_006309538249653171294:6o2eqfdhoko"
  style="display: none;">
           <div class="cse-closeResults"><a>&times;
@@ -105,8 +105,8 @@ document.getElementById("results_006309538249653171294:6o2eqfdhoko"));
 GSearch.setOnLoadCallback(OnLoad);
           </script><!-- Google CSE Code ends --></li>
         <li> <a href="mailto:users@shoal.java.net">Feedback/Questions?</a></li>
-        <li><a href="http://java.net/projects/shoal/roles">Membership</a></li>
-        <li> <a href="http://shoal.java.net/public/contribute.html">Join
+        <li><a href="https://java.net/projects/shoal/roles">Membership</a></li>
+        <li> <a href="https://shoal.java.net/public/contribute.html">Join
 Project Shoal</a></li>
       </ul>
     </ul>
@@ -117,11 +117,11 @@ The title is mandatory, but the logo is optional.
     <script>
 var info = {
 title: "Project Shoal",
-logo: "http://shoal.java.net/Shoal_244_179_0.JPG"
+logo: "https://shoal.java.net/Shoal_244_179_0.JPG"
 }
     </script>
-    <script src="http://glassfish-theming.java.net/zone-core.js"></script>
-    <script src="http://glassfish-theming.java.net/theme.js"></script><!--
+    <script src="https://glassfish-theming.java.net/zone-core.js"></script>
+    <script src="https://glassfish-theming.java.net/theme.js"></script><!--
 If your project uses a site traffic tracker like Google Analytics, this is a good place
 to inject it.
 --><!--

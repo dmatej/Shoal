@@ -55,14 +55,14 @@ public abstract class AbstractMessageSender implements MessageSender {
 
     /**
      * Represents local {@link PeerID}.
-     * This value should be assigned in real {@link MessageSender}'s implementation correspoinding to the specific transport layer
+     * This value should be assigned in real {@link MessageSender}'s implementation corresponding to the specific transport layer
      */
-    protected PeerID localPeerID;
+    protected PeerID<?> localPeerID;
 
     /**
      * {@inheritDoc}
      */
-    public boolean send( final PeerID peerID, final Message message ) throws IOException {
+    public boolean send( final PeerID<?> peerID, final Message message ) throws IOException {
         if( peerID == null )
             throw new IOException( "peer ID can not be null" );
         if( message == null )
@@ -94,5 +94,5 @@ public abstract class AbstractMessageSender implements MessageSender {
      * @return true if the message is sent to the destination successfully, otherwise false
      * @throws IOException if I/O error occurs or given parameters are not valid
      */
-    protected abstract boolean doSend( final PeerID peerID, final Message message ) throws IOException;
+    protected abstract boolean doSend( final PeerID<?> peerID, final Message message ) throws IOException;
 }

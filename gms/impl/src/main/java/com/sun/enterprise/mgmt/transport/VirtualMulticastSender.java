@@ -40,18 +40,19 @@
 
 package com.sun.enterprise.mgmt.transport;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.sun.enterprise.ee.cms.impl.base.PeerID;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
-import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyNetworkManager;
-import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyPeerID;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.io.IOException;
 
 /**
  * This class extends {@link BlockingIOMulticastSender}
@@ -69,14 +70,14 @@ public class VirtualMulticastSender extends AbstractMulticastMessageSender {
     //private static final Logger LOG = GMSLogDomain.getLogger( GMSLogDomain.GMS_LOGGER );
     private static final Logger LOG = GMSLogDomain.getNoMCastLogger();
 
-    final Set<PeerID> virtualPeerIdList = new CopyOnWriteArraySet<PeerID>();
+    final Set<PeerID<?>> virtualPeerIdList = new CopyOnWriteArraySet<PeerID<?>>();
     final NetworkManager networkManager;
-    final Map<PeerID, Long> lastReportedSendFailure = new ConcurrentHashMap<PeerID, Long>();
+    final Map<PeerID<?>, Long> lastReportedSendFailure = new ConcurrentHashMap<PeerID<?>, Long>();
     static final long LAST_REPORTED_FAILURE_DURATION_MS = 10000;  // 10 seconds between reporting failed send.
     final long DISCOVERY_PERIOD_COMPLETED_TIME;
     boolean discoveryCleanupPending = true;
 
-    public VirtualMulticastSender(NetworkManager networkManager, List<PeerID> initialPeerIds) throws IOException {
+    public VirtualMulticastSender(NetworkManager networkManager, List<? extends PeerID<?>> initialPeerIds) throws IOException {
         this.networkManager = networkManager;
         if( initialPeerIds != null && !initialPeerIds.isEmpty() ) {
             this.virtualPeerIdList.addAll(initialPeerIds);
@@ -84,7 +85,7 @@ public class VirtualMulticastSender extends AbstractMulticastMessageSender {
         DISCOVERY_PERIOD_COMPLETED_TIME = System.currentTimeMillis() + 10000;
     }
 
-    public Set<PeerID> getVirtualPeerIDSet() {
+    public Set<PeerID<?>> getVirtualPeerIDSet() {
         return virtualPeerIdList;
     }
 
@@ -126,7 +127,7 @@ public class VirtualMulticastSender extends AbstractMulticastMessageSender {
                 removeUnknownInstances();
             }
         }
-        for( PeerID peerID : virtualPeerIdList ) {
+        for( PeerID<?> peerID : virtualPeerIdList ) {
             try {
                 if (LOG.isLoggable(Level.FINEST)) {
                     LOG.log(Level.FINEST, "VirtualMulticastSender.doBroadcast prepare to send msg to peerID " + peerID);
@@ -167,10 +168,10 @@ public class VirtualMulticastSender extends AbstractMulticastMessageSender {
      */
     public void removeUnknownInstances() {
             boolean removed = false;
-            LinkedList<PeerID> unknownList = new LinkedList<PeerID>();
-            Iterator<PeerID> iter = virtualPeerIdList.iterator();
+            LinkedList<PeerID<?>> unknownList = new LinkedList<PeerID<?>>();
+            Iterator<PeerID<?>> iter = virtualPeerIdList.iterator();
             while (iter.hasNext()) {
-                PeerID id = iter.next();
+                PeerID<?> id = iter.next();
                 if (id.getInstanceName().startsWith("Unknown_")) {
                     removed = true;
                     unknownList.add(id);
@@ -186,9 +187,9 @@ public class VirtualMulticastSender extends AbstractMulticastMessageSender {
     }
 
     private void purge() {
-         Iterator<Map.Entry<PeerID, Long>> iter = lastReportedSendFailure.entrySet().iterator();
+         Iterator<Map.Entry<PeerID<?>, Long>> iter = lastReportedSendFailure.entrySet().iterator();
          while (iter.hasNext()) {
-             Map.Entry<PeerID, Long> e = iter.next();
+             Map.Entry<PeerID<?>, Long> e = iter.next();
              if (e.getValue() - System.currentTimeMillis() > LAST_REPORTED_FAILURE_DURATION_MS) {
                  iter.remove();
              }

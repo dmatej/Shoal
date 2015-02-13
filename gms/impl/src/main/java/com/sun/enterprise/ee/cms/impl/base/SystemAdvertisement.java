@@ -49,7 +49,7 @@ import java.net.URI;
  * This interface provides system characteristics
  *
  * i.g. HW/SW configuration, CPU load, etc...
- * 
+ *
  * @author Bongjae Chang
  */
 public interface SystemAdvertisement extends Comparable<SystemAdvertisement>, Cloneable, Serializable {
@@ -91,7 +91,7 @@ public interface SystemAdvertisement extends Comparable<SystemAdvertisement>, Cl
      *
      * @param id The id
      */
-    public void setID( final PeerID id );
+    public void setID( final PeerID<?> id );
 
     /**
      * Sets the network interface's address in the form of a URI
@@ -158,7 +158,7 @@ public interface SystemAdvertisement extends Comparable<SystemAdvertisement>, Cl
      *
      * @return ID the device id
      */
-    public PeerID getID();
+    public PeerID<?> getID();
 
     /**
      * Gets the address of the network interface in the form of URI

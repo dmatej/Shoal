@@ -49,6 +49,7 @@ import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -58,8 +59,8 @@ import java.io.IOException;
 /**
  * This class implements a common {@link NetworkManager} logic simply in order to help the specific transport layer to be implemented easily
  *
- * Mainly, this manages {@link MessageListener} and dispatches an inbound {@link Message} into the appropriate listener 
- * 
+ * Mainly, this manages {@link MessageListener} and dispatches an inbound {@link Message} into the appropriate listener
+ *
  * @author Bongjae Chang
  */
 public abstract class AbstractNetworkManager implements NetworkManager {
@@ -68,9 +69,9 @@ public abstract class AbstractNetworkManager implements NetworkManager {
 
     /**
      * Represents local {@link PeerID}.
-     * This value should be assigned in real {@link NetworkManager}'s implementation correspoinding to the specific transport layer
+     * This value should be assigned in real {@link NetworkManager}'s implementation corresponding to the specific transport layer
      */
-    protected PeerID localPeerID;
+    private PeerID<?> localPeerID;
 
     /**
      * The list of registered {@link MessageListener}
@@ -114,16 +115,16 @@ public abstract class AbstractNetworkManager implements NetworkManager {
      * {@inheritDoc}
      */
     @Override
-    public void receiveMessage( Message message, Map piggyback ) {
-        PeerID sourcePeerID = null;
-        PeerID targetPeerID = null;
+    public void receiveMessage( Message message, Map<?, ?> piggyback ) {
+        PeerID<?> sourcePeerID = null;
+        PeerID<?> targetPeerID = null;
         if( message != null ) {
             Object element = message.getMessageElement( Message.SOURCE_PEER_ID_TAG );
             if( element instanceof PeerID )
-                sourcePeerID = (PeerID)element;
+                sourcePeerID = (PeerID<?>)element;
             element = message.getMessageElement( Message.TARGET_PEER_ID_TAG );
             if( element instanceof PeerID )
-                targetPeerID = (PeerID)element;
+                targetPeerID = (PeerID<?>)element;
         }
         if( sourcePeerID != null && !localPeerID.getGroupName().equals( sourcePeerID.getGroupName() ) )
             return; // drop the different group's packet
@@ -167,8 +168,13 @@ public abstract class AbstractNetworkManager implements NetworkManager {
      * {@inheritDoc}
      */
     @Override
-    public PeerID getLocalPeerID() {
+    public PeerID<?> getLocalPeerID() {
         return localPeerID;
+    }
+
+
+    protected void setLocalPeerID(PeerID<?> localPeerID) {
+        this.localPeerID = localPeerID;
     }
 
 
@@ -210,7 +216,7 @@ public abstract class AbstractNetworkManager implements NetworkManager {
         NetworkManager networkManager = null;
         // for jdk 5.  just use class loader.
         try{
-            Class networkManagerClass = Class.forName(classname);
+            Class<?> networkManagerClass = Class.forName(classname);
             networkManager = (NetworkManager)networkManagerClass.newInstance();
         } catch (Throwable x) {
             LOG.log(Level.SEVERE, "fatal error instantiating NetworkManager service", x);
@@ -246,7 +252,7 @@ public abstract class AbstractNetworkManager implements NetworkManager {
      * @param messageEvent a received {@link MessageEvent}
      * @param piggyback piggyback
      */
-    protected abstract void beforeDispatchingMessage( MessageEvent messageEvent, Map piggyback );
+    protected abstract void beforeDispatchingMessage( MessageEvent messageEvent, Map<?, ?> piggyback );
 
     /**
      * After executing {@link MessageListener#receiveMessageEvent(MessageEvent)}} callback, this method will be called
@@ -254,7 +260,7 @@ public abstract class AbstractNetworkManager implements NetworkManager {
      * @param messageEvent a received {@link MessageEvent}
      * @param piggyback piggyback
      */
-    protected abstract void afterDispatchingMessage( MessageEvent messageEvent, Map piggyback );
+    protected abstract void afterDispatchingMessage( MessageEvent messageEvent, Map<?, ?> piggyback );
 
     static public Logger getLogger() {
         return LOG;
@@ -262,7 +268,7 @@ public abstract class AbstractNetworkManager implements NetworkManager {
 
     @Override
     public synchronized void initialize( final String groupName,
-            final String instanceName, final Map properties )
+            final String instanceName, final Properties properties )
             throws IOException {
         int maxMsgLength =  Utility.getIntProperty( ServiceProviderConfigurationKeys.MAX_MESSAGE_LENGTH.toString(),
                                                     MessageImpl.DEFAULT_MAX_TOTAL_MESSAGE_LENGTH,

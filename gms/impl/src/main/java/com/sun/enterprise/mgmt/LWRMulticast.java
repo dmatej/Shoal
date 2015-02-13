@@ -63,7 +63,7 @@ import java.util.logging.Logger;
  */
 public class LWRMulticast implements MessageListener {
     private final static Logger LOG = Logger.getLogger(LWRMulticast.class.getName());
-    
+
     /**
      * Ack message element name
      */
@@ -84,11 +84,10 @@ public class LWRMulticast implements MessageListener {
     private transient AtomicLong sequence = new AtomicLong();
     private final Object ackLock = new Object();
     private transient int threshold = 0;
-    private transient Set<PeerID> ackSet = new HashSet<PeerID>();
-    private transient Set<PeerID> ackList = new HashSet<PeerID>();
-    private long t0 = System.currentTimeMillis();
+    private transient Set<PeerID<?>> ackSet = new HashSet<PeerID<?>>();
+    private transient Set<PeerID<?>> ackList = new HashSet<PeerID<?>>();
     private ClusterManager manager;
-    private PeerID localPeerID;
+    private PeerID<?> localPeerID;
 
     /**
      * The application message listener
@@ -156,7 +155,7 @@ public class LWRMulticast implements MessageListener {
         }
 
         Object element;
-        PeerID id = getSource(message);
+        PeerID<?> id = getSource(message);
         if (id != null && id.equals(localPeerID)) {
             //loop back
             return;
@@ -196,7 +195,7 @@ public class LWRMulticast implements MessageListener {
      * @param id  source peer ID
      * @param seq message sequence number
      */
-    private void processAck(PeerID id, long seq) {
+    private void processAck(PeerID<?> id, long seq) {
         LOG.log(Level.FINEST, "Processing ack for message sequence " + seq);
         if (!ackSet.contains(id)) {
             ackSet.add(id);
@@ -215,7 +214,7 @@ public class LWRMulticast implements MessageListener {
      * @param id  source peer ID
      * @param seq message sequence number
      */
-    private void ackMessage(PeerID id, long seq) {
+    private void ackMessage(PeerID<?> id, long seq) {
         LOG.log(Level.FINEST, "Ack'ing message Sequence :" + seq);
         Message msg = new MessageImpl( Message.TYPE_MCAST_MESSAGE );
         msg.addMessageElement(SRCIDTAG, localPeerID);
@@ -234,7 +233,7 @@ public class LWRMulticast implements MessageListener {
      *
      * @return a List of PeerID's
      */
-    public Set<PeerID> getAckList() {
+    public Set<PeerID<?>> getAckList() {
         return ackList;
     }
 
@@ -302,11 +301,11 @@ public class LWRMulticast implements MessageListener {
      * @param msg message
      * @return The source value
      */
-    public static PeerID getSource(Message msg) {
-        PeerID id = null;
+    public static PeerID<?> getSource(Message msg) {
+        PeerID<?> id = null;
         Object value = msg.getMessageElement(SRCIDTAG);
         if( value instanceof PeerID ) {
-            id = (PeerID)value;
+            id = (PeerID<?>)value;
         }
         return id;
     }
@@ -319,7 +318,7 @@ public class LWRMulticast implements MessageListener {
      * A call to getAckList() returns a list of ack source peer ID's
      *
      * @param msg       the message to send
-     * @param threshold the minimun of ack expected, 0 indicates none are expected
+     * @param threshold the minimum of ack expected, 0 indicates none are expected
      * @throws IOException if an i/o error occurs, or SocketTimeoutException
      *                     if the threshold is not met within timeout
      */
@@ -327,7 +326,6 @@ public class LWRMulticast implements MessageListener {
         if (threshold < 0) {
             throw new IllegalArgumentException("Invalid threshold " + threshold + " must be >= 0");
         }
-        t0 = System.currentTimeMillis();
         this.threshold = threshold;
         msg.addMessageElement(SRCIDTAG, localPeerID);
         long seq = sequence.getAndIncrement();
@@ -337,21 +335,21 @@ public class LWRMulticast implements MessageListener {
             if (LOG.isLoggable(Level.FINEST)) {
                 LOG.log(Level.FINEST, "Sending message sequence #: " + seq + " Threshold :" + threshold);
             }
-            send((PeerID) null, msg);
+            send((PeerID<?>) null, msg);
             if (threshold == 0) {
                 return;
             }
             try {
                 ackLock.wait(timeout);
                 if (ackSet.size() >= threshold) {
-                    ackList = new HashSet<PeerID>(ackSet);
+                    ackList = new HashSet<PeerID<?>>(ackSet);
                     ackSet.clear();
                     return;
                 }
             } catch (InterruptedException ie) {
                 LOG.log(Level.FINEST, "Interrupted " + ie.toString());
             }
-            ackList = new HashSet<PeerID>(ackSet);
+            ackList = new HashSet<PeerID<?>>(ackSet);
             ackSet.clear();
 
             if (ackList.size() < threshold) {
@@ -371,7 +369,7 @@ public class LWRMulticast implements MessageListener {
      * the message after waiting some amount of time.
      * @throws IOException if an i/o error occurs
      */
-    public boolean send(PeerID pid, Message msg) throws IOException {
+    public boolean send(PeerID<?> pid, Message msg) throws IOException {
         checkState();
         LOG.log(Level.FINEST, "Sending a message");
         if( pid != null ) {
@@ -400,7 +398,7 @@ public class LWRMulticast implements MessageListener {
      * the message after waiting some amount of time.
      * @throws IOException if an i/o error occurs
      */
-    public boolean send(Set<PeerID> ids, Message msg) throws IOException {
+    public boolean send(Set<PeerID<?>> ids, Message msg) throws IOException {
         boolean sent = true;
         checkState();
         this.threshold = ids.size();
@@ -413,7 +411,7 @@ public class LWRMulticast implements MessageListener {
             MessageSender sender = manager.getNetworkManager().getMessageSender( ShoalMessageSender.UDP_TRANSPORT );
             if( sender == null )
                 throw new IOException( "message sender is null" );
-            for( PeerID peerID: ids ) {
+            for( PeerID<?> peerID: ids ) {
                 if( !sender.send( peerID, msg ) )
                     sent = false;
             }
@@ -424,7 +422,7 @@ public class LWRMulticast implements MessageListener {
                 try {
                     ackLock.wait(timeout);
                     if (ackSet.size() >= threshold) {
-                        ackList = new HashSet<PeerID>(ackSet);
+                        ackList = new HashSet<PeerID<?>>(ackSet);
                         ackSet.clear();
                         return sent;
                     }
@@ -432,7 +430,7 @@ public class LWRMulticast implements MessageListener {
                     LOG.log(Level.FINEST, "Interrupted " + ie.toString());
                 }
                 if (ackSet.size() < threshold) {
-                    ackList = new HashSet<PeerID>(ackSet);
+                    ackList = new HashSet<PeerID<?>>(ackSet);
                     ackSet.clear();
                     throw new SocketTimeoutException("Failed to receive minimum acknowledments of " + threshold + " received :" + ackSet.size());
                 }

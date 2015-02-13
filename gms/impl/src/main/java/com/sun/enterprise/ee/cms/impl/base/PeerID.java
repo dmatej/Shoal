@@ -41,7 +41,7 @@
 package com.sun.enterprise.ee.cms.impl.base;
 
 import java.io.Serializable;
-                           
+
 /**
  * This class is representative of the identifier of a member
  *
@@ -50,7 +50,7 @@ import java.io.Serializable;
  *
  * @author Bongjae Chang
  */
-public class PeerID<T extends Serializable> implements Serializable, Comparable<PeerID> {
+public class PeerID<T extends Serializable> implements Serializable, Comparable<PeerID<?>> {
 
     static final long serialVersionUID = 2618091647571033721L;
 
@@ -84,7 +84,7 @@ public class PeerID<T extends Serializable> implements Serializable, Comparable<
             return true;
         } else if( other instanceof PeerID ) {
             boolean equal = true;
-            PeerID otherPeerID = (PeerID)other;
+            PeerID<?> otherPeerID = (PeerID<?>)other;
             if( uniqueID != null && uniqueID.equals( otherPeerID.getUniqueID() ) ) {
                 if( groupName != null )
                     equal = groupName.equals( otherPeerID.getGroupName() );
@@ -120,8 +120,7 @@ public class PeerID<T extends Serializable> implements Serializable, Comparable<
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public int compareTo( PeerID other ) {
+    public int compareTo( PeerID<?> other ) {
         if( this == other )
             return 0;
         if( other == null )
@@ -138,7 +137,8 @@ public class PeerID<T extends Serializable> implements Serializable, Comparable<
             return result;
         }
 
-        final Class<T> uniqueIDClass = (Class<T>) uniqueID.getClass();
+        @SuppressWarnings("unchecked")
+		final Class<T> uniqueIDClass = (Class<T>) uniqueID.getClass();
         if (Comparable.class.isAssignableFrom(uniqueIDClass) &&
                 uniqueIDClass.isAssignableFrom(other.getUniqueID().getClass())) {
             return ((Comparable<T>) uniqueID).compareTo((T) other.getUniqueID());

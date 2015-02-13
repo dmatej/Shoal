@@ -260,7 +260,7 @@ public class MessageWindow implements Runnable {
             try {
                 mw.handleDSCMessage(dMsg, fromMember);
             } catch (Throwable t) {
-                mw.logger.log(Level.SEVERE, "failed to handleDSCMessage", t);
+                logger.log(Level.SEVERE, "failed to handleDSCMessage", t);
             }
         }
     }

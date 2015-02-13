@@ -47,7 +47,7 @@ import java.util.EventObject;
 /**
  * This class represents a received message event
  *
- * Management modules will use this message event in order to process a received network packet internally 
+ * Management modules will use this message event in order to process a received network packet internally
  *
  * @author Bongjae Chang
  */
@@ -63,12 +63,12 @@ public class MessageEvent extends EventObject {
     /**
      * The received message's source {@link PeerID}
      */
-    private final PeerID sourcePeerID;
+    private final PeerID<?> sourcePeerID;
 
     /**
      * The received message's destination {@link PeerID}
      */
-    private final PeerID targetPeerID;
+    private final PeerID<?> targetPeerID;
 
     /**
      * Creates a new event
@@ -78,7 +78,7 @@ public class MessageEvent extends EventObject {
      * @param sourcePeerID source peer id
      * @param targetPeerID target peer id
      */
-    public MessageEvent( Object source, Message message, PeerID sourcePeerID, PeerID targetPeerID ) {
+    public MessageEvent( Object source, Message message, PeerID<?> sourcePeerID, PeerID<?> targetPeerID ) {
         super( source );
         this.message = message;
         this.sourcePeerID = sourcePeerID;
@@ -99,16 +99,16 @@ public class MessageEvent extends EventObject {
      *
      * @return peer id
      */
-    public PeerID getSourcePeerID() {
+    public PeerID<?> getSourcePeerID() {
         return sourcePeerID;
     }
 
     /**
-     * Returns the target peer id to which this message is sent 
+     * Returns the target peer id to which this message is sent
      *
      * @return peer id
      */
-    public PeerID getTargetPeerID() {
+    public PeerID<?> getTargetPeerID() {
         return targetPeerID;
     }
 }

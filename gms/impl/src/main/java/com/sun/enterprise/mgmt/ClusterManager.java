@@ -54,6 +54,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -115,7 +116,7 @@ public class ClusterManager implements MessageListener {
     public ClusterManager(final String groupName,
                           final String instanceName,
                           final Map<String, String> identityMap,
-                          final Map props,
+                          final Properties props,
                           final List<ClusterViewEventListener> viewListeners,
                           final List<ClusterMessageListener> messageListeners) throws GMSException {
         this.memberType = (String)identityMap.get( CustomTagNames.MEMBER_TYPE.toString());
@@ -130,7 +131,7 @@ public class ClusterManager implements MessageListener {
                                                                  props );
         this.netManager = getNetworkManager(gmsContextProviderTransport);
         LOG.config("instantiated following NetworkManager implementation:" + netManager.getClass().getName());
-        
+
         this.identityMap = identityMap;
         try {
             netManager.initialize( groupName, instanceName, props);
@@ -162,7 +163,7 @@ public class ClusterManager implements MessageListener {
                 getVerifyFailureTimeout(props),
                 getFailureDetectionTcpRetransmitTimeout(props),
                 getFailureDetectionTcpRetransmitPort(props));
-        
+
         cmListeners = messageListeners;
     }
 
@@ -170,30 +171,30 @@ public class ClusterManager implements MessageListener {
          return GroupManagementService.MemberType.WATCHDOG.toString().equals(memberType);
      }
 
-    private boolean isLoopBackEnabled(final Map props) {
+    private boolean isLoopBackEnabled(final Properties props) {
         boolean LOOPBACK_DEFAULT = false;
         return Utility.getBooleanProperty(ConfigConstants.LOOPBACK.toString(), LOOPBACK_DEFAULT, props);
     }
 
-    private long getDiscoveryTimeout(Map props) {
+    private long getDiscoveryTimeout(Properties props) {
         long DISCOVERY_TIMEOUT_DEFAULT = 5000;  // milliseconds or 5 seconds.
         return Utility.getLongProperty(ConfigConstants.DISCOVERY_TIMEOUT.toString(),
             DISCOVERY_TIMEOUT_DEFAULT, props);
     }
 
-    private long getFailureDetectionTimeout(Map props) {
+    private long getFailureDetectionTimeout(Properties props) {
         long DEFAULT_FAILURE_DETECTION_TIMEOUT = 3000;
         return Utility.getLongProperty(ConfigConstants.FAILURE_DETECTION_TIMEOUT.toString(),
             DEFAULT_FAILURE_DETECTION_TIMEOUT, props);
     }
 
-    private int getFailureDetectionRetries(Map props) {
+    private int getFailureDetectionRetries(Properties props) {
         int DEFAULT_FAILURE_RETRY = 3;
         return Utility.getIntProperty(ConfigConstants.FAILURE_DETECTION_RETRIES.toString(),
             DEFAULT_FAILURE_RETRY, props);
     }
 
-    private long getFailureDetectionTcpRetransmitTimeout(Map props) {
+    private long getFailureDetectionTcpRetransmitTimeout(Properties props) {
         long DEFAULT_FAIL_TCP_TIMEOUT = 10000;   // sailfin requirement to discover network outage under 30 seconds.
                                        // fix for sailfin 626.
                                        // HealthMonitor.isConnected() is called twice and must time out twice,
@@ -203,13 +204,13 @@ public class ClusterManager implements MessageListener {
             DEFAULT_FAIL_TCP_TIMEOUT, props);
     }
 
-    private int getFailureDetectionTcpRetransmitPort(Map props) {
+    private int getFailureDetectionTcpRetransmitPort(Properties props) {
         int DEFAULT_FAIL_TCP_PORT = 9000;
         return Utility.getIntProperty(ConfigConstants.FAILURE_DETECTION_TCP_RETRANSMIT_PORT.toString(),
             DEFAULT_FAIL_TCP_PORT, props);
     }
 
-    private long getVerifyFailureTimeout(Map props) {
+    private long getVerifyFailureTimeout(Properties props) {
         long DEFAULT_VERIFY_TIMEOUT = 2000;
         return Utility.getLongProperty(ConfigConstants.FAILURE_VERIFICATION_TIMEOUT.toString(),
                                     DEFAULT_VERIFY_TIMEOUT, props);
@@ -307,7 +308,7 @@ public class ClusterManager implements MessageListener {
         return clusterViewManager;
     }
 
-    public PeerID getPeerID() {
+    public PeerID<?> getPeerID() {
         return netManager.getLocalPeerID();
     }
 
@@ -336,7 +337,7 @@ public class ClusterManager implements MessageListener {
      * the message after waiting some amount of time.
      * @throws java.io.IOException if an io error occurs
      */
-    public boolean send(final PeerID peerid, final Serializable msg, boolean validatePeeridInView) throws IOException, MemberNotInViewException {
+    public boolean send(final PeerID<?> peerid, final Serializable msg, boolean validatePeeridInView) throws IOException, MemberNotInViewException {
         boolean sent = false;
         if (!stopping) {
             final Message message = new MessageImpl( Message.TYPE_CLUSTER_MANAGER_MESSAGE );
@@ -372,7 +373,7 @@ public class ClusterManager implements MessageListener {
         return sent;
     }
 
-    public boolean send(final PeerID peerid, final Serializable msg) throws IOException, MemberNotInViewException {
+    public boolean send(final PeerID<?> peerid, final Serializable msg) throws IOException, MemberNotInViewException {
         return send(peerid, msg, true);
     }
 
@@ -406,7 +407,7 @@ public class ClusterManager implements MessageListener {
                     LOG.log(Level.WARNING, "mgmt.unknownMessage");
                     return;
                 }
-                final PeerID srcPeerID = adv.getID();
+                final PeerID<?> srcPeerID = adv.getID();
                 if (!loopbackMessages) {
                     if (srcPeerID.equals(getPeerID())) {
                         LOG.log(Level.FINEST, "CLUSTERMANAGER:Discarding loopback message");
@@ -438,7 +439,7 @@ public class ClusterManager implements MessageListener {
         }
     }
 
-    public SystemAdvertisement getSystemAdvertisementForMember(final PeerID id) {
+    public SystemAdvertisement getSystemAdvertisementForMember(final PeerID<?> id) {
         return clusterViewManager.get(id);
     }
 
@@ -465,7 +466,7 @@ public class ClusterManager implements MessageListener {
      * @param bindInterfaceAddress bind interface address
      * @return SystemAdvertisement object
      */
-    private static synchronized SystemAdvertisement createSystemAdv(final PeerID peerID,
+    private static synchronized SystemAdvertisement createSystemAdv(final PeerID<?> peerID,
                                                                     final String name,
                                                                     final Map<String, String> customTags,
                                                                     final String bindInterfaceAddress) {
@@ -527,8 +528,8 @@ public class ClusterManager implements MessageListener {
         }
     }
 
-    public String getNodeState(final PeerID peerID, long threshold, long timeout) {
-        return getHealthMonitor().getMemberState((PeerID) peerID, threshold, timeout);
+    public String getNodeState(final PeerID<?> peerID, long threshold, long timeout) {
+        return getHealthMonitor().getMemberState(peerID, threshold, timeout);
     }
 
     /**
@@ -537,7 +538,7 @@ public class ClusterManager implements MessageListener {
      * @param name to name to encode
      * @return name encoded ID
      */
-    public PeerID getID(final String name) {
+    public PeerID<?> getID(final String name) {
         return netManager.getPeerID(name);
     }
 

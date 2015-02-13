@@ -55,9 +55,9 @@ public abstract class AbstractMulticastMessageSender implements MulticastMessage
 
     /**
      * Represents local {@link PeerID}.
-     * This value should be assigned in real {@link MessageSender}'s implementation correspoinding to the specific transport layer
+     * This value should be assigned in real {@link MessageSender}'s implementation corresponding to the specific transport layer
      */
-    protected PeerID localPeerID;
+    protected PeerID<?> localPeerID;
 
     /**
      * {@inheritDoc}

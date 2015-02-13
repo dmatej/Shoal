@@ -41,20 +41,22 @@ package com.sun.enterprise.mgmt.transport.grizzly.grizzly2;
 
 import com.sun.enterprise.mgmt.transport.Message;
 import com.sun.enterprise.mgmt.transport.MessageImpl;
+
 import java.io.IOException;
+
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.attributes.Attribute;
-import org.glassfish.grizzly.attributes.NullaryFunction;
 import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.memory.MemoryManager;
+import org.glassfish.grizzly.utils.NullaryFunction;
 
 /**
  * Filter, responsible for {@link Buffer} <-> {@link Message} transformation.
- * 
+ *
  * Message protocol format is:
  *
  * Message Header is MessageImpl.HEADER_LENGTH and composed of following fields.
@@ -88,7 +90,7 @@ public class MessageFilter extends BaseFilter {
 
     @Override
     public NextAction handleRead(final FilterChainContext ctx) throws IOException {
-        final Connection connection = ctx.getConnection();
+        final Connection<?> connection = ctx.getConnection();
         final Buffer buffer = ctx.getMessage();
 
         final MessageParsingState parsingState =
@@ -149,7 +151,7 @@ public class MessageFilter extends BaseFilter {
                 buffer.split(pos + totalMsgLength);
 
         parsingState.reset();
-        
+
         return ctx.getInvokeAction(remainder.hasRemaining() ? remainder : null);
     }
 
@@ -157,7 +159,8 @@ public class MessageFilter extends BaseFilter {
     public NextAction handleWrite(final FilterChainContext ctx) throws IOException {
         final Message message = ctx.getMessage();
 
-        final MemoryManager mm = ctx.getConnection().getTransport().getMemoryManager();
+        @SuppressWarnings("unchecked")
+		final MemoryManager<org.glassfish.grizzly.Buffer> mm = ctx.getConnection().getTransport().getMemoryManager();
 
         com.sun.enterprise.mgmt.transport.buffers.Buffer buffer =
                 message.getPlainBuffer(

@@ -78,13 +78,13 @@ public class MessageImplTest extends TestCase {
         System.out.println("initialized message = " + message);
         assertNotNull(message.getMessageElement(key1));
         assertNotNull(message.getMessageElement(key2));
-        assertNotNull(message.getMessageElement(message.SOURCE_PEER_ID_TAG));
-        assertNotNull(message.getMessageElement(message.TARGET_PEER_ID_TAG));
+        assertNotNull(message.getMessageElement(Message.SOURCE_PEER_ID_TAG));
+        assertNotNull(message.getMessageElement(Message.TARGET_PEER_ID_TAG));
         assertEquals(message.getType(), Message.TYPE_CLUSTER_MANAGER_MESSAGE);
         assertEquals((String) message.getMessageElement(key1), value1);
         assertEquals((String) message.getMessageElement(key2), value2);
-        assertEquals((String) message.getMessageElement(message.SOURCE_PEER_ID_TAG), "fromMember");
-        assertEquals((String) message.getMessageElement(message.TARGET_PEER_ID_TAG), "targetMember");
+        assertEquals((String) message.getMessageElement(Message.SOURCE_PEER_ID_TAG), "fromMember");
+        assertEquals((String) message.getMessageElement(Message.TARGET_PEER_ID_TAG), "targetMember");
 
     }
 
@@ -102,21 +102,21 @@ public class MessageImplTest extends TestCase {
         assertEquals(emptyMessage.getType(), 0);
     }
 
-   
+
     public void testGetVersion() {
                 mySetUp();
 
         assertEquals(message.getVersion(), 1);
     }
 
-    
+
     public void testGetType() {
                 mySetUp();
 
         // tested in testInitialMessage() above
     }
 
- 
+
     public void testGetStringType() {
                 mySetUp();
 
@@ -132,7 +132,7 @@ public class MessageImplTest extends TestCase {
     /**
      * Test of getPlainBytes()
      */
-   
+
     public void testGetPlainBytes() {
                 mySetUp();
 
@@ -143,12 +143,12 @@ public class MessageImplTest extends TestCase {
             message2.parseMessage(plainBytes, MessageImpl.HEADER_LENGTH, messageLen);
             assertNotNull(message2.getMessageElement(key1));
             assertNotNull(message2.getMessageElement(key2));
-            assertNotNull(message2.getMessageElement(message.SOURCE_PEER_ID_TAG));
-            assertNotNull(message2.getMessageElement(message.TARGET_PEER_ID_TAG));
+            assertNotNull(message2.getMessageElement(Message.SOURCE_PEER_ID_TAG));
+            assertNotNull(message2.getMessageElement(Message.TARGET_PEER_ID_TAG));
             assertEquals((String) message2.getMessageElement(key1), value1);
             assertEquals((String) message2.getMessageElement(key2), value2);
-            assertEquals((String) message.getMessageElement(message2.SOURCE_PEER_ID_TAG), "fromMember");
-            assertEquals((String) message.getMessageElement(message2.TARGET_PEER_ID_TAG), "targetMember");
+            assertEquals((String) message.getMessageElement(Message.SOURCE_PEER_ID_TAG), "fromMember");
+            assertEquals((String) message.getMessageElement(Message.TARGET_PEER_ID_TAG), "targetMember");
             System.out.println("message from bytes = " + message2);
         } catch (Exception ex) {
             fail("Exception occurred: " + ex);
@@ -158,7 +158,7 @@ public class MessageImplTest extends TestCase {
     /**
      * Test of remove message from bytes()
      */
-    
+
     public void testRemoveFromBytes() {
                 mySetUp();
 
@@ -178,7 +178,7 @@ public class MessageImplTest extends TestCase {
     /**
      * Test of remove message from bytes()
      */
-    
+
     public void testMessageFromByteBuffer() {
                 mySetUp();
 
@@ -188,12 +188,12 @@ public class MessageImplTest extends TestCase {
             int messageLen = message4.parseHeader(plainByteBuffer, 0);
             message4.parseMessage(plainByteBuffer, MessageImpl.HEADER_LENGTH, messageLen);
             assertNotNull(message4.getMessageElement(key1));
-            assertNotNull(message4.getMessageElement(message.SOURCE_PEER_ID_TAG));
-            assertNotNull(message4.getMessageElement(message.TARGET_PEER_ID_TAG));
+            assertNotNull(message4.getMessageElement(Message.SOURCE_PEER_ID_TAG));
+            assertNotNull(message4.getMessageElement(Message.TARGET_PEER_ID_TAG));
             assertEquals((String) message4.getMessageElement(key1), value1);
             assertEquals((String) message4.getMessageElement(key2), value2);
-            assertEquals((String) message.getMessageElement(message4.SOURCE_PEER_ID_TAG), "fromMember");
-            assertEquals((String) message.getMessageElement(message4.TARGET_PEER_ID_TAG), "targetMember");
+            assertEquals((String) message.getMessageElement(Message.SOURCE_PEER_ID_TAG), "fromMember");
+            assertEquals((String) message.getMessageElement(Message.TARGET_PEER_ID_TAG), "targetMember");
             System.out.println("message from byte buffer = " + message4);
         } catch (Exception ex) {
             fail("Exception occurred: " + ex);
@@ -203,13 +203,12 @@ public class MessageImplTest extends TestCase {
     /**
      * Test of remove message from bytes()
      */
-   
+
     public void testRemoveFromByteBuffer() {
                 mySetUp();
 
         message.removeMessageElement(key1);
         assertNull(message.getMessageElement(key1));
-        Message message3 = new MessageImpl();
         try {
             byte[] plainByteBuffer = message.getPlainByteBuffer().array();
             Message message5 = new MessageImpl();
@@ -224,7 +223,7 @@ public class MessageImplTest extends TestCase {
     /**
      * Test of remove message from bytes()
      */
-   
+
     public void testAddLargeAppMessage() {
                 mySetUp();
 

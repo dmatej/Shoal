@@ -40,30 +40,33 @@
 
 package com.sun.enterprise.ee.cms.impl.base;
 
-import com.sun.enterprise.ee.cms.core.GMSException;
-import com.sun.enterprise.ee.cms.core.MemberNotInViewException;
-import com.sun.enterprise.ee.cms.core.GMSConstants;
-import com.sun.enterprise.ee.cms.impl.common.GMSContextFactory;
-import com.sun.enterprise.ee.cms.impl.common.GMSMonitor;
-import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
-import com.sun.enterprise.ee.cms.spi.GMSMessage;
-import com.sun.enterprise.ee.cms.spi.GroupCommunicationProvider;
-import com.sun.enterprise.ee.cms.spi.MemberStates;
-import com.sun.enterprise.mgmt.*;
-import com.sun.enterprise.mgmt.transport.Message;
-import com.sun.enterprise.mgmt.transport.MessageIOException;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Hashtable;
+import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.ee.cms.core.GMSConstants;
+import com.sun.enterprise.ee.cms.core.GMSException;
+import com.sun.enterprise.ee.cms.core.MemberNotInViewException;
+import com.sun.enterprise.ee.cms.impl.common.GMSContextFactory;
+import com.sun.enterprise.ee.cms.impl.common.GMSMonitor;
+import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
+import com.sun.enterprise.ee.cms.spi.GMSMessage;
+import com.sun.enterprise.ee.cms.spi.GroupCommunicationProvider;
+import com.sun.enterprise.ee.cms.spi.MemberStates;
+import com.sun.enterprise.mgmt.ClusterManager;
+import com.sun.enterprise.mgmt.ClusterMessageListener;
+import com.sun.enterprise.mgmt.ClusterView;
+import com.sun.enterprise.mgmt.ClusterViewEvent;
+import com.sun.enterprise.mgmt.ClusterViewEventListener;
+import com.sun.enterprise.mgmt.HealthMonitor;
+import com.sun.enterprise.mgmt.transport.MessageIOException;
 
 /**
  * Implements the GroupCommunicationProvider interface to plug in
@@ -141,7 +144,7 @@ public class GroupCommunicationProviderImpl implements
      * values of group identity, member(self) identity, and a Map containing
      * recognized and valid configuration properties that can be set/overriden
      * by the employing application. The valid property keys must be specified
-     * in a datastructure that is available to the implementation and to GMS.
+     * in a data structure that is available to the implementation and to GMS.
      *
      * @param memberName       member name
      * @param groupName        group name
@@ -151,7 +154,7 @@ public class GroupCommunicationProviderImpl implements
     public void initializeGroupCommunicationProvider(final String memberName,
                                                      final String groupName,
                                                      final Map<String, String> identityMap,
-                                                     final Map configProperties) throws GMSException {
+                                                     final Properties configProperties) throws GMSException {
         final List<ClusterViewEventListener> cvListeners =
                 new ArrayList<ClusterViewEventListener>();
         if (! getGMSContext().isWatchdog()) {
@@ -218,7 +221,7 @@ public class GroupCommunicationProviderImpl implements
 
     // the cluster view is in flux when all the members are joining.
     // send synch the distributed state cache WITHOUT checking if instance is in view.
-    public boolean sendMessage(final PeerID id, final Serializable msg) {
+    public boolean sendMessage(final PeerID<?> id, final Serializable msg) {
         boolean sent = false;
         try {
             sent = clusterManager.send(id, msg, false);
@@ -273,7 +276,7 @@ public class GroupCommunicationProviderImpl implements
                             getLocalView().getView();
 
                     for (SystemAdvertisement currentMemberAdv : currentMemberAdvs) {
-                        final PeerID id = currentMemberAdv.getID();
+                        final PeerID<?> id = currentMemberAdv.getID();
                         final String member = currentMemberAdv.getName();
                         final long INDOUBT_INTERVAL_MS = clusterManager.getHealthMonitor().getIndoubtDuration();
                         MemberStates memberState = getMemberState(member, INDOUBT_INTERVAL_MS, 0);
@@ -343,7 +346,7 @@ public class GroupCommunicationProviderImpl implements
                     }
                 }
             } else {
-                final PeerID id = clusterManager.getID(targetMemberIdentityToken);
+                final PeerID<?> id = clusterManager.getID(targetMemberIdentityToken);
                 if (id.equals(PeerID.NULL_PEER_ID)) {
                     logger.log(Level.FINE, "GroupCommunicationProvider.sendMessage(target=" + targetMemberIdentityToken + "): unable to send message: missing mapping from member identifier to network peerid");
                     throw new MemberNotInViewException("No mapping from member identifier:" + targetMemberIdentityToken + " to a network peerid.");
@@ -362,7 +365,7 @@ public class GroupCommunicationProviderImpl implements
                 } else {
                     logger.log(Level.FINE, "message not sent to  " + targetMemberIdentityToken +
                             " since it is not in the View");
-                    throw new MemberNotInViewException("Member " + targetMemberIdentityToken + " with network peerid:" + id + 
+                    throw new MemberNotInViewException("Member " + targetMemberIdentityToken + " with network peerid:" + id +
                             " is not in the View anymore. Hence not performing sendMessage operation");
                 }
             }
@@ -444,7 +447,7 @@ public class GroupCommunicationProviderImpl implements
     public MemberStates getMemberState(String member, long threshold, long timeout) {
         MemberStates result = MemberStates.UNKNOWN;
         if (clusterManager != null) {
-            PeerID id = clusterManager.getID(member);
+            PeerID<?> id = clusterManager.getID(member);
             if (! id.equals(PeerID.NULL_PEER_ID)) {
                 String state = clusterManager.getNodeState(id, threshold, timeout).toUpperCase();
                 result = MemberStates.valueOf(state);

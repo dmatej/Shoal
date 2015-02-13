@@ -70,10 +70,10 @@ public class PingMessageListener implements MessageListener {
         if( !( obj instanceof NetworkManager ) )
             return;
         NetworkManager networkManager = (NetworkManager)obj;
-        PeerID sourcePeerId = event.getSourcePeerID();
+        PeerID<?> sourcePeerId = event.getSourcePeerID();
         if( sourcePeerId == null )
             return;
-        PeerID targetPeerId = event.getTargetPeerID();
+        PeerID<?> targetPeerId = event.getTargetPeerID();
         if( targetPeerId == null )
             return;
         if( networkManager.getLocalPeerID().equals( targetPeerId ) ) {

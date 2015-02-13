@@ -60,7 +60,7 @@ import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
 public class ClusterView {
     private static final Logger LOG = GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER);
 
-    private final TreeMap<PeerID, SystemAdvertisement> view;
+    private final TreeMap<PeerID<?>, SystemAdvertisement> view;
     private final long viewId;
     public final long masterViewId;
     private ReentrantLock viewLock = new ReentrantLock(true);
@@ -74,8 +74,8 @@ public class ClusterView {
      * @param viewId         View ID
      * @param masterViewId   MasterView ID
      */
-    ClusterView(final TreeMap<PeerID, SystemAdvertisement> advertisements, final long viewId, final long masterViewId) {
-        view = new TreeMap<PeerID, SystemAdvertisement>(advertisements);
+    ClusterView(final TreeMap<PeerID<?>, SystemAdvertisement> advertisements, final long viewId, final long masterViewId) {
+        view = new TreeMap<PeerID<?>, SystemAdvertisement>(advertisements);
         this.viewId = viewId;
         this.masterViewId = masterViewId;
     }
@@ -88,7 +88,7 @@ public class ClusterView {
      * @param advertisement this nodes system advertisement
      */
     ClusterView(SystemAdvertisement advertisement) {
-        view = new TreeMap<PeerID, SystemAdvertisement>();
+        view = new TreeMap<PeerID<?>, SystemAdvertisement>();
         lockLog("constructor()");
         viewLock.lock();
         try {
@@ -106,7 +106,7 @@ public class ClusterView {
      * @param id instance id
      * @return Returns the SystemAdvertisement associated with id
      */
-    public SystemAdvertisement get(final PeerID id) {
+    public SystemAdvertisement get(final PeerID<?> id) {
         return view.get(id);
     }
 
@@ -125,7 +125,7 @@ public class ClusterView {
         }
     }
 
-    public boolean containsKey(final PeerID id) {
+    public boolean containsKey(final PeerID<?> id) {
         boolean hasKey = false;
         lockLog("containsKey()");
         viewLock.lock();
@@ -166,7 +166,7 @@ public class ClusterView {
         lockLog("getPeerNamesInView()");
         viewLock.lock();
         try {
-            for( PeerID peerID : view.keySet() ) {
+            for( PeerID<?> peerID : view.keySet() ) {
                 peerNamesList.add( peerID.toString() );
             }
         } finally {
@@ -201,7 +201,7 @@ public class ClusterView {
         lockLog("getMasterCandidate()");
         viewLock.lock();
         try {
-            final PeerID id = view.firstKey();
+            final PeerID<?> id = view.firstKey();
             final SystemAdvertisement adv = view.get(id);
             if (LOG.isLoggable(Level.FINE)){
                 LOG.log(Level.FINE,
@@ -222,7 +222,7 @@ public class ClusterView {
      * @return true if this node is a the top of the list, false otherwise
      */
     public boolean isFirst(SystemAdvertisement advertisement) {
-        final PeerID id = view.firstKey();
+        final PeerID<?> id = view.firstKey();
         return advertisement.getID().equals(id);
     }
 

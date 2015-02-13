@@ -352,7 +352,7 @@ public class DistributedStateCacheImpl implements DistributedStateCache {
 
             // first check if the instance that set the key value pair originally is a current group member.
             if (currentMembers != null && ! currentMembers.contains( remoteDSCMemberToken)) {
-                
+
                 // memberToken that originally set the key value pair has left group,
                 // so lets try to get memberTokens distributed state cache values from oldest current member.
                 // NOTE: that jts TX_LOG_DIR is the location of log directory for a failed server
@@ -545,7 +545,7 @@ public class DistributedStateCacheImpl implements DistributedStateCache {
         }
     }
 
-    void syncCache(final PeerID peerID, final boolean isCoordinator) throws GMSException {
+    void syncCache(final PeerID<?> peerID, final boolean isCoordinator) throws GMSException {
         final ConcurrentHashMap<GMSCacheable, Object> temp;
         temp = new ConcurrentHashMap<GMSCacheable, Object>(cache);
 

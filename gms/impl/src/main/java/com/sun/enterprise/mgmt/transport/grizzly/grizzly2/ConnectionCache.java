@@ -55,7 +55,7 @@ import org.glassfish.grizzly.utils.LinkedTransferQueue;
 
 /**
  * Connection cache implementation.
- * 
+ *
  * @author Alexey Stashok
  */
 public class ConnectionCache {
@@ -63,12 +63,11 @@ public class ConnectionCache {
 
     private final int highWaterMark;
     private final int maxParallelConnections;
-    private final int numberToReclaim;
 
     private final AtomicBoolean isClosed = new AtomicBoolean();
 
     private final AtomicInteger totalCachedConnectionsCount = new AtomicInteger();
-    
+
     private final ConcurrentHashMap<SocketAddress, CacheRecord> cache =
             new ConcurrentHashMap<SocketAddress, CacheRecord>();
 
@@ -77,14 +76,13 @@ public class ConnectionCache {
 
     private final Connection.CloseListener removeCachedConnectionOnCloseListener =
             new RemoveCachedConnectionOnCloseListener();
-    
+
     public ConnectionCache(SocketConnectorHandler socketConnectorHandler,
             int highWaterMark, int maxParallelConnections, int numberToReclaim) {
         this.socketConnectorHandler = socketConnectorHandler;
 
         this.highWaterMark = highWaterMark;
         this.maxParallelConnections = maxParallelConnections;
-        this.numberToReclaim = numberToReclaim;
     }
 
     public Connection poll(final SocketAddress localAddress,
@@ -108,6 +106,7 @@ public class ConnectionCache {
             return connection;
         }
 
+        @SuppressWarnings("rawtypes")
         final Future<Connection> connectFuture =
                 socketConnectorHandler.connect(remoteAddress, localAddress);
 
@@ -137,7 +136,7 @@ public class ConnectionCache {
         connection.addCloseListener(removeCachedConnectionOnCloseListener);
 
         cacheRecord.connections.offer(connection);
-        
+
         if (isClosed.get()) {
             // remove cache entry associated with the remoteAddress (only if we have the actual value)
             cache.remove(remoteAddress, cacheRecord);
@@ -156,7 +155,7 @@ public class ConnectionCache {
 
     private void closeCacheRecord(final CacheRecord cacheRecord) {
         if (cacheRecord == null) return;
-        Connection connection;
+        Connection<?> connection;
         while ((connection = cacheRecord.connections.poll()) != null) {
             cacheRecord.idleConnectionsCount.decrementAndGet();
             connection.close();

@@ -40,16 +40,13 @@
 
 package com.sun.enterprise.mgmt;
 
-import com.sun.enterprise.ee.cms.impl.base.CustomTagNames;
-import com.sun.enterprise.ee.cms.impl.base.SystemAdvertisement;
-import com.sun.enterprise.ee.cms.impl.base.PeerID;
-import com.sun.enterprise.ee.cms.impl.base.Utility;
-import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+
+import com.sun.enterprise.ee.cms.impl.base.PeerID;
+import com.sun.enterprise.ee.cms.impl.base.SystemAdvertisement;
+import com.sun.enterprise.ee.cms.impl.base.Utility;
 
 /**
  * This class contains health states of members
@@ -60,10 +57,8 @@ public class HealthMessage implements Serializable {
 
     static final long serialVersionUID = -5452866103975155397L;
 
-    private static final Logger LOG = GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER);
-
     private List<Entry> entries = new ArrayList<Entry>();
-    private PeerID srcID;
+    private PeerID<?> srcID;
 
     /**
      * Default Constructor
@@ -85,7 +80,7 @@ public class HealthMessage implements Serializable {
      *
      * @return Peerid The sender's peer id
      */
-    public PeerID getSrcID() {
+    public PeerID<?> getSrcID() {
         return srcID;
     }
 
@@ -106,7 +101,7 @@ public class HealthMessage implements Serializable {
      *
      * @param id The id
      */
-    public void setSrcID(final PeerID id) {
+    public void setSrcID(final PeerID<?> id) {
         this.srcID = (id == null ? null : id);
     }
 
@@ -128,7 +123,7 @@ public class HealthMessage implements Serializable {
         /**
          * Entry ID entry id
          */
-        final PeerID id;
+        final PeerID<?> id;
         /**
          * Entry adv SystemAdvertisement
          */
@@ -159,7 +154,7 @@ public class HealthMessage implements Serializable {
         public Entry(final SystemAdvertisement adv, final String state, long seqID) {
             this.state = state;
             this.adv = adv;
-            this.id = (PeerID) adv.getID();
+            this.id = (PeerID<?>) adv.getID();
             this.timestamp =System.currentTimeMillis();
             this.seqID = seqID;
         }

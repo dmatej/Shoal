@@ -39,55 +39,62 @@
  */
 package com.sun.enterprise.mgmt.transport.grizzly.grizzly2;
 
-import org.glassfish.grizzly.PortRange;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.CORE_POOLSIZE;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.DISCOVERY_URI_LIST;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.KEEP_ALIVE_TIME;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.MAX_POOLSIZE;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.POOL_QUEUE_SIZE;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.glassfish.grizzly.CloseType;
 import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.PortRange;
+import org.glassfish.grizzly.config.SSLConfigurator;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.filterchain.TransportFilter;
-import org.glassfish.grizzly.filterchain.FilterChainBuilder;
-import com.sun.enterprise.mgmt.transport.grizzly.PongMessageListener;
-import com.sun.enterprise.mgmt.transport.grizzly.PingMessageListener;
-import com.sun.enterprise.mgmt.transport.MessageEvent;
-import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
+import org.glassfish.grizzly.nio.transport.TCPNIOConnectorHandler;
+import org.glassfish.grizzly.nio.transport.TCPNIOServerConnection;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
-import com.sun.enterprise.mgmt.transport.NetworkUtility;
-import java.util.concurrent.ThreadPoolExecutor;
-import com.sun.enterprise.mgmt.transport.BlockingIOMulticastSender;
-import com.sun.enterprise.mgmt.transport.VirtualMulticastSender;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.net.InetAddress;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.List;
-
-import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyPeerID;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.ssl.SSLBaseFilter;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
-import org.glassfish.grizzly.config.SSLConfigurator;
 import org.glassfish.grizzly.ssl.SSLFilter;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
-import org.glassfish.grizzly.Grizzly;
+
 import com.sun.enterprise.ee.cms.impl.base.GMSThreadFactory;
 import com.sun.enterprise.ee.cms.impl.base.PeerID;
 import com.sun.enterprise.ee.cms.impl.base.Utility;
 import com.sun.enterprise.ee.cms.impl.common.GMSContext;
 import com.sun.enterprise.ee.cms.impl.common.GMSContextFactory;
 import com.sun.enterprise.ee.cms.impl.common.GMSMonitor;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.grizzly.filterchain.BaseFilter;
-import org.glassfish.grizzly.nio.transport.TCPNIOConnectorHandler;
-import org.glassfish.grizzly.nio.transport.TCPNIOServerConnection;
-
-import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.*;
+import com.sun.enterprise.mgmt.transport.BlockingIOMulticastSender;
+import com.sun.enterprise.mgmt.transport.MessageEvent;
+import com.sun.enterprise.mgmt.transport.NetworkUtility;
+import com.sun.enterprise.mgmt.transport.VirtualMulticastSender;
+import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyPeerID;
+import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyPeerIdWrapper;
+import com.sun.enterprise.mgmt.transport.grizzly.PingMessageListener;
+import com.sun.enterprise.mgmt.transport.grizzly.PongMessageListener;
 
 /**
  * @author Bongjae Chang
@@ -111,11 +118,11 @@ public class GrizzlyNetworkManager2 extends com.sun.enterprise.mgmt.transport.gr
 
     private final ConcurrentHashMap<String, Instance> instances =
             new ConcurrentHashMap<String, Instance>();
-    
+
     public GrizzlyNetworkManager2() {
     }
 
-    public void localConfigure(final Map properties) {
+    public void localConfigure(final Properties properties) {
         maxPoolSize = Utility.getIntProperty(MAX_POOLSIZE.toString(), 50, properties);
         corePoolSize = Utility.getIntProperty(CORE_POOLSIZE.toString(), 20, properties);
         keepAliveTime = Utility.getLongProperty(KEEP_ALIVE_TIME.toString(), 60 * 1000, properties);
@@ -163,8 +170,7 @@ public class GrizzlyNetworkManager2 extends com.sun.enterprise.mgmt.transport.gr
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public synchronized void initialize(final String groupName, final String instanceName, final Map properties) throws IOException {
+    public synchronized void initialize(final String groupName, final String instanceName, final Properties properties) throws IOException {
         super.initialize(groupName, instanceName, properties);
         this.instanceName = instanceName;
         this.groupName = groupName;
@@ -216,7 +222,7 @@ public class GrizzlyNetworkManager2 extends com.sun.enterprise.mgmt.transport.gr
         filterChainBuilder.add(new MessageDispatcherFilter(this));
 
         transport.setProcessor(filterChainBuilder.build());
-        
+
         tcpNioTransport = transport;
         final FilterChainBuilder senderFilterChainBuilder = FilterChainBuilder.stateless()
                 .add(new TransportFilter());
@@ -237,7 +243,6 @@ public class GrizzlyNetworkManager2 extends com.sun.enterprise.mgmt.transport.gr
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public synchronized void start() throws IOException {
         if (running) {
             return;
@@ -255,7 +260,7 @@ public class GrizzlyNetworkManager2 extends com.sun.enterprise.mgmt.transport.gr
             "Grizzly controller listening on {0}:{1}. Transport started in {2} ms",
             new Object[]{tcpListenerAddress, Integer.toString(tcpPort), durationInMillis});
 
-        if (localPeerID == null) {
+        if (getLocalPeerID() == null) {
             String uniqueHost = host;
             if (uniqueHost == null) {
                 // prefer IPv4
@@ -267,19 +272,19 @@ public class GrizzlyNetworkManager2 extends com.sun.enterprise.mgmt.transport.gr
             if (uniqueHost == null) {
                 throw new IOException("can not find an unique host");
             }
-            localPeerID = new PeerID<GrizzlyPeerID>(new GrizzlyPeerID(uniqueHost,
-                    tcpPort, multicastAddress, multicastPort), groupName, instanceName);
-            peerIDMap.put(instanceName, localPeerID);
+            GrizzlyPeerID grizzlyPeerID = new GrizzlyPeerID(uniqueHost, tcpPort, multicastAddress, multicastPort);
+			setLocalPeerID(new GrizzlyPeerIdWrapper(grizzlyPeerID, groupName, instanceName));
+            peerIDMap.put(instanceName, getLocalPeerID());
             if (LOG.isLoggable(Level.FINE)) {
-                LOG.log(Level.FINE, "local peer id = {0}", localPeerID);
+                LOG.log(Level.FINE, "local peer id = {0}", getLocalPeerID());
             }
         }
 
         tcpSender = new GrizzlyTCPMessageSender(tcpNioTransport,
-                tcpNioConnectionCache, localPeerID, sendWriteTimeoutMillis);
+                tcpNioConnectionCache, getLocalPeerID(), sendWriteTimeoutMillis);
         udpSender = null;
-        
-        List<PeerID> virtualPeerIdList = getVirtualPeerIDList(virtualUriList);
+
+        List<GrizzlyPeerIdWrapper> virtualPeerIdList = getVirtualPeerIDList(virtualUriList);
         if (virtualPeerIdList != null && !virtualPeerIdList.isEmpty()) {
             // Comment out this UDP receive thread pool until unicast UDP is implemented.
 //            final boolean FAIRNESS = true;
@@ -304,7 +309,7 @@ public class GrizzlyNetworkManager2 extends com.sun.enterprise.mgmt.transport.gr
                     multicastPort,
                     networkInterfaceName,
                     multicastPacketSize,
-                    localPeerID,
+                    getLocalPeerID(),
                     multicastSenderThreadPool,
                     multicastTimeToLive,
                     this);
@@ -349,46 +354,46 @@ public class GrizzlyNetworkManager2 extends com.sun.enterprise.mgmt.transport.gr
         pingMessageLockMap.clear();
 //        controller.stop();
         tcpNioConnectionCache.close();
-        tcpNioTransport.stop();
+        tcpNioTransport.shutdownNow();
 //        execService.shutdown();
     }
 
     @Override
     public void beforeDispatchingMessage(final MessageEvent messageEvent,
-            final Map piggyback) {
+            final Map<?, ?> piggyback) {
 
         if (messageEvent == null) {
             return;
         }
 
-        Connection connection = null;
+        Connection<?> connection = null;
         if( piggyback != null ) {
-            connection = (Connection) piggyback.get(MESSAGE_CONNECTION_TAG);
+            connection = (Connection<?>) piggyback.get(MESSAGE_CONNECTION_TAG);
         }
         if (! isLeavingMessage(messageEvent)) {
             addRemotePeer(messageEvent.getSourcePeerID(), connection);
         }
     }
 
-    @SuppressWarnings( "unchecked" )
-    public void addRemotePeer(final PeerID peerID, final Connection connection) {
+
+    public void addRemotePeer(final PeerID<?> peerID, final Connection<?> connection) {
         if (peerID == null) {
             return;
         }
-        if (peerID.equals(localPeerID)) {
+        if (peerID.equals(getLocalPeerID())) {
             return; // lookback
         }
-        
+
         final String peerInstanceName = peerID.getInstanceName();
-        if (peerInstanceName != null && peerID.getUniqueID() instanceof GrizzlyPeerID) {
-            final PeerID<GrizzlyPeerID> previous = peerIDMap.put(peerInstanceName, peerID);
+        if (peerInstanceName != null && peerID instanceof GrizzlyPeerIdWrapper) {
+            final GrizzlyPeerIdWrapper previous = peerIDMap.put(peerInstanceName, (GrizzlyPeerIdWrapper) peerID);
             if (previous == null) {
                 if (LOG.isLoggable(Level.FINE)) {
                     LOG.log(Level.FINE, "addRemotePeer: {0} peerId:{1}",
                             new Object[]{peerInstanceName, peerID});
                 }
             }
-            
+
             if (connection != null) {
                 obtainInstance(peerInstanceName).register(connection);
             }
@@ -433,7 +438,7 @@ public class GrizzlyNetworkManager2 extends com.sun.enterprise.mgmt.transport.gr
                 throws IOException {
 
             ctx.getConnection().close();
-            
+
             return ctx.getStopAction();
         }
     }
@@ -444,12 +449,12 @@ public class GrizzlyNetworkManager2 extends com.sun.enterprise.mgmt.transport.gr
     static class Instance {
         final AtomicBoolean isClosed = new AtomicBoolean();
 
-        final ConcurrentHashMap<Connection, Long> connections =
-                new ConcurrentHashMap<Connection, Long>();
+        final ConcurrentHashMap<Connection<?>, Long> connections =
+                new ConcurrentHashMap<Connection<?>, Long>();
 
-        final Connection.CloseListener closeListener = new CloseListener();
+        final CloseListener closeListener = new CloseListener();
 
-        void register(final Connection connection) {
+        void register(final Connection<?> connection) {
             if (connections.putIfAbsent(connection, System.currentTimeMillis()) == null) {
                 connection.addCloseListener(closeListener);
 
@@ -462,19 +467,19 @@ public class GrizzlyNetworkManager2 extends com.sun.enterprise.mgmt.transport.gr
 
         void close() {
             if (!isClosed.getAndSet(true)) {
-                for (Iterator<Connection> it = connections.keySet().iterator(); it.hasNext(); ) {
-                    final Connection connection = it.next();
+                for (Iterator<Connection<?>> it = connections.keySet().iterator(); it.hasNext(); ) {
+                    final Connection<?> connection = it.next();
                     it.remove();
                     connection.close();
                 }
 
             }
         }
-        
-        private class CloseListener implements Connection.CloseListener {
+
+        private class CloseListener implements org.glassfish.grizzly.CloseListener<Connection<?>, CloseType> {
 
             @Override
-            public void onClosed(Connection connection, Connection.CloseType type) throws IOException {
+            public void onClosed(Connection<?> connection, CloseType type) throws IOException {
                 connections.remove(connection);
             }
         }

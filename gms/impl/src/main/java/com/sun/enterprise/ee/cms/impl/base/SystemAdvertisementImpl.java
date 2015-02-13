@@ -40,23 +40,21 @@
 
 package com.sun.enterprise.ee.cms.impl.base;
 
-import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
-
-import java.io.Serializable;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.ArrayList;
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
 
 /**
  * This class is a default system advertisement and implements {@link com.sun.enterprise.ee.cms.impl.base.SystemAdvertisement}
- * 
+ *
  * @author Bongjae Chang
  */
 public class SystemAdvertisementImpl implements SystemAdvertisement {
@@ -66,7 +64,7 @@ public class SystemAdvertisementImpl implements SystemAdvertisement {
     private static final List<String> EMPTY_LIST = new ArrayList<String>();
     private String hwarch;
     private String hwvendor;
-    private PeerID id;
+    private PeerID<?> id;
     private String name;
     private String osname;
     private String osversion;
@@ -109,7 +107,7 @@ public class SystemAdvertisementImpl implements SystemAdvertisement {
      *
      * @param id The id
      */
-    public void setID(final PeerID id) {
+    public void setID(final PeerID<?> id) {
         this.id = id;
     }
 
@@ -174,7 +172,7 @@ public class SystemAdvertisementImpl implements SystemAdvertisement {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, String> getCustomTags() {
+	public Map<String, String> getCustomTags() {
         if (customTags == null) {
             return new HashMap<String, String>();
         } else {
@@ -221,7 +219,7 @@ public class SystemAdvertisementImpl implements SystemAdvertisement {
      *
      * @return ID the device id
      */
-    public PeerID getID() {
+    public PeerID<?> getID() {
         return id;
     }
 

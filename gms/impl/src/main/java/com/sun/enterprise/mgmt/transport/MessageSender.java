@@ -61,5 +61,5 @@ public interface MessageSender extends ShoalMessageSender {
      * @return true if the message is sent to the destination successfully, otherwise false
      * @throws IOException if I/O error occurs or given parameters are not valid
      */
-    public boolean send( final PeerID peerID, final Message message ) throws IOException;
+    public boolean send( final PeerID<?> peerID, final Message message ) throws IOException;
 }

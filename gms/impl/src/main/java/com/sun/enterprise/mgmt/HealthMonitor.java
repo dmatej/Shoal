@@ -46,6 +46,7 @@ import com.sun.enterprise.ee.cms.impl.base.PeerID;
 import com.sun.enterprise.ee.cms.impl.base.SystemAdvertisement;
 import com.sun.enterprise.ee.cms.impl.base.Utility;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
+import com.sun.enterprise.mgmt.HealthMessage.Entry;
 import com.sun.enterprise.mgmt.transport.Message;
 import com.sun.enterprise.mgmt.transport.MessageEvent;
 import com.sun.enterprise.mgmt.transport.MessageImpl;
@@ -87,10 +88,10 @@ public class HealthMonitor implements MessageListener, Runnable {
     private int maxMissedBeats = 3;
     private final Object threadLock = new Object();
     private final Object indoubtthreadLock = new Object();
-    private final ConcurrentHashMap<PeerID, HealthMessage.Entry> cache = new ConcurrentHashMap<PeerID, HealthMessage.Entry>();
+    private final ConcurrentHashMap<PeerID<?>, HealthMessage.Entry> cache = new ConcurrentHashMap<PeerID<?>, HealthMessage.Entry>();
     private MasterNode masterNode = null;
     private ClusterManager manager = null;
-    private final PeerID localPeerID;
+    private final PeerID<?> localPeerID;
     private volatile boolean started = false;
     private volatile boolean stop = false;
 
@@ -152,7 +153,7 @@ public class HealthMonitor implements MessageListener, Runnable {
     private long failureDetectionTCPTimeout;
     private int failureDetectionTCPPort;
     private final ThreadPoolExecutor isConnectedPool;
-    private ConcurrentHashMap<PeerID, MemberStateResult> memberStateResults = new ConcurrentHashMap<PeerID, MemberStateResult>();
+    private ConcurrentHashMap<PeerID<?>, MemberStateResult> memberStateResults = new ConcurrentHashMap<PeerID<?>, MemberStateResult>();
     //private ShutdownHook shutdownHook;
 
     /**
@@ -354,13 +355,13 @@ public class HealthMonitor implements MessageListener, Runnable {
         try {
             adv = getNodeAdvertisement(msg);
             if (adv != null) {
-                PeerID sender = adv.getID();       //sender of this query
+                PeerID<?> sender = adv.getID();       //sender of this query
                 String state = getStateFromCache(localPeerID);
                 Message response = createMemberStateResponse(state);
                 if (LOG.isLoggable(Level.FINE)){
                     LOG.fine(" sending via LWR response to " + sender.toString() + " with state " + state + " for " + localPeerID);
                 }
-                final boolean sent = mcast.send((PeerID) sender, response);    //send the response back to the query sender
+                final boolean sent = mcast.send((PeerID<?>) sender, response);    //send the response back to the query sender
                 if (!sent){
                     LOG.log(Level.WARNING, "mgmt.healthmonitor.processmemberstatequery", adv.getName());
                 }
@@ -421,7 +422,7 @@ public class HealthMonitor implements MessageListener, Runnable {
             return;
          }
          String failedTokenName = (String)value;
-         final PeerID failedMemberId = manager.getID(failedTokenName);
+         final PeerID<?> failedMemberId = manager.getID(failedTokenName);
          boolean masterFailed = (failedMemberId == null ? false : failedMemberId.equals(masterNode.getMasterNodeID()));
          if (masterNode.isMaster() && masterNode.isMasterAssigned() || masterFailed) {
              LOG.log(Level.INFO, "mgmt.healthmonitor.watchdog",
@@ -674,7 +675,7 @@ public class HealthMonitor implements MessageListener, Runnable {
 
     void cleanAllCaches(String memberToken) {
         HealthMessage.Entry entry = null;
-        PeerID id = manager.getID(memberToken);
+        PeerID<?> id = manager.getID(memberToken);
         synchronized(cache) {
             entry = cache.get(id);
         }
@@ -687,13 +688,13 @@ public class HealthMonitor implements MessageListener, Runnable {
         }
     }
 
-    private Map<PeerID, HealthMessage.Entry> getCacheCopy() {
-        ConcurrentHashMap<PeerID, HealthMessage.Entry> clone = new ConcurrentHashMap<PeerID, HealthMessage.Entry>();
+    private Map<PeerID<?>, HealthMessage.Entry> getCacheCopy() {
+        ConcurrentHashMap<PeerID<?>, HealthMessage.Entry> clone = new ConcurrentHashMap<PeerID<?>, HealthMessage.Entry>();
         //fine(" cache object in getCacheCopy() = " + cache);
         //fine(" getCacheCopy => printing main cache contents (size = " + cache.size() + ") ...");
         //print(cache);
         synchronized (cacheLock) {
-            for (Map.Entry<PeerID, HealthMessage.Entry> entry : cache.entrySet()) {
+            for (Map.Entry<PeerID<?>, HealthMessage.Entry> entry : cache.entrySet()) {
                 try {
                     clone.put(entry.getKey(), (HealthMessage.Entry) entry.getValue().clone());
                 } catch (CloneNotSupportedException e) {
@@ -706,9 +707,9 @@ public class HealthMonitor implements MessageListener, Runnable {
         return clone;
     }
 
-    private void print(ConcurrentHashMap<PeerID, HealthMessage.Entry> c) {
+    private void print(ConcurrentHashMap<PeerID<?>, HealthMessage.Entry> c) {
 
-        for (Iterator i = c.values().iterator(); i.hasNext();) {
+        for (Iterator<Entry> i = c.values().iterator(); i.hasNext();) {
             HealthMessage.Entry e = (HealthMessage.Entry) i.next();
             fine("cache contents => " + e.adv.getName() +
                     " state => " + e.state);
@@ -723,7 +724,7 @@ public class HealthMonitor implements MessageListener, Runnable {
      *              ALIVE|SLEEP|HIBERNATING|SHUTDOWN|DEAD
      * @param id    destination node ID, if null broadcast to group
      */
-    private void reportMyState(final short state, final PeerID id) {
+    private void reportMyState(final short state, final PeerID<?> id) {
         if (LOG.isLoggable(Level.FINER)){
             LOG.log(Level.FINER, MessageFormat.format("Sending state {0} to {1}", states[state],
                     id == null ? "group" : id));
@@ -849,7 +850,7 @@ public class HealthMonitor implements MessageListener, Runnable {
      * non-error related congestion, meaning that you should be able to send
      * the message after waiting some amount of time.
      */
-    private boolean send(final PeerID peerid, final Message msg) throws IOException {
+    private boolean send(final PeerID<?> peerid, final Message msg) throws IOException {
         MsgSendStats msgSendStat = null;
         boolean sent = false;
         sendStopLock.lock();
@@ -1019,7 +1020,7 @@ public class HealthMonitor implements MessageListener, Runnable {
      * directly from the concerned member.
      * @return state
      */
-    public String getMemberState(PeerID peerID, long threshold, long timeout) {
+    public String getMemberState(PeerID<?> peerID, long threshold, long timeout) {
         if (peerID == null) {
             throw new IllegalArgumentException("getMemberState parameter PeerID must be non-null");
         }
@@ -1049,13 +1050,13 @@ public class HealthMonitor implements MessageListener, Runnable {
         }
     }
 
-    public String getMemberStateFromHeartBeat(final PeerID peerID, long threshold) {
+    public String getMemberStateFromHeartBeat(final PeerID<?> peerID, long threshold) {
         if (threshold <= 0) {
            threshold = defaultThreshold;
         }
         HealthMessage.Entry entry;
         synchronized (cacheLock) {
-            entry  = cache.get((PeerID) peerID);
+            entry  = cache.get((PeerID<?>) peerID);
         }
         if (entry != null) {
             //calculate if the timestamp of the entry and the current time gives a delta that is <= threshold
@@ -1075,7 +1076,7 @@ public class HealthMonitor implements MessageListener, Runnable {
         String memberState = null;
     }
 
-    public String getMemberStateViaLWR(final PeerID peerID, long timeout) {
+    public String getMemberStateViaLWR(final PeerID<?> peerID, long timeout) {
         if (peerID.equals(localPeerID)){
             // handle getting your own member state
             return getStateFromCache(peerID);
@@ -1114,7 +1115,7 @@ public class HealthMonitor implements MessageListener, Runnable {
 
                 //send it via LWRMulticast
                 try {
-                    sent = mcast.send((PeerID) peerID, msg);
+                    sent = mcast.send((PeerID<?>) peerID, msg);
                 } catch (IOException e) {
                     ioe = true;
                     LOG.log(Level.FINE, "Could not send the LWR Multicast message to get the member state of " + peerID.toString() + " IOException : " + e.getMessage());
@@ -1150,14 +1151,14 @@ public class HealthMonitor implements MessageListener, Runnable {
         }
     }
 
-    String getStateFromCache(final PeerID peerID) {
+    String getStateFromCache(final PeerID<?> peerID) {
         HealthMessage.Entry entry;
         final String state;
-        entry = cache.get((PeerID) peerID);
+        entry = cache.get((PeerID<?>) peerID);
         if (entry != null) {
             state = entry.state;
         } else {
-            if (((PeerID) peerID).equals(localPeerID)) {
+            if (((PeerID<?>) peerID).equals(localPeerID)) {
                 if (!started) {
                     state = states[STARTING];
                 } else if (readyStateComplete) {
@@ -1166,7 +1167,7 @@ public class HealthMonitor implements MessageListener, Runnable {
                     state = states[ALIVE];
                 }
             } else {
-                entry = cache.get((PeerID) peerID);
+                entry = cache.get((PeerID<?>) peerID);
                 if (entry != null) {
                     state = entry.state;
                 } else {
@@ -1182,7 +1183,7 @@ public class HealthMonitor implements MessageListener, Runnable {
     }
 
      public boolean addHealthEntryIfMissing(final SystemAdvertisement adv) {
-        final PeerID id = adv.getID();
+        final PeerID<?> id = adv.getID();
         synchronized(cacheLock) {
             HealthMessage.Entry entry = cache.get(id);
             if (entry == null) {
@@ -1317,7 +1318,7 @@ public class HealthMonitor implements MessageListener, Runnable {
         }
 
         private void processCacheUpdate() {
-            final Map<PeerID, HealthMessage.Entry> cacheCopy = getCacheCopy();
+            final Map<PeerID<?>, HealthMessage.Entry> cacheCopy = getCacheCopy();
             final long cacheSnapShotTime = System.currentTimeMillis();
             //for each peer id
             for (HealthMessage.Entry entry : cacheCopy.values()) {
@@ -1652,7 +1653,7 @@ public class HealthMonitor implements MessageListener, Runnable {
         boolean canceled = false;
         for (CheckConnectionToPeerMachine connection : connections) {
             try {
-                Future future = connection.getFuture();
+                Future<?> future = connection.getFuture();
                 //if the task has completed after waiting for the
                 //specified timeout
                 if (! future.isDone()) {
@@ -1683,8 +1684,7 @@ public class HealthMonitor implements MessageListener, Runnable {
         HealthMessage.Entry entry;
         String address;
         Boolean connectionIsUp;
-        boolean running;
-        Future future;
+        Future<?> future;
         AtomicInteger outstandingConnectionChecks;
         PeerMachineConnectionResult result;
         final int socketConnectTimeout;
@@ -1697,26 +1697,21 @@ public class HealthMonitor implements MessageListener, Runnable {
             this.entry = entry;
             this.address = address;
             this.connectionIsUp = null;   // unknown
-            this.running = true;
             this.outstandingConnectionChecks = outstanding;
             this.result = result;
             this.socketConnectTimeout = socketConnectTimeout;
         }
 
-        void setFuture(Future future) {
+        void setFuture(Future<?> future) {
             this.future = future;
         }
 
-        Future getFuture() {
+        Future<?> getFuture() {
             return future;
         }
 
         boolean isConnectionUp() {
             return connectionIsUp != null && connectionIsUp;
-        }
-
-        boolean completedComputation() {
-            return !running;
         }
 
         public Object call() {
@@ -1754,7 +1749,6 @@ public class HealthMonitor implements MessageListener, Runnable {
                 }
             } catch (Throwable t) {
             } finally {
-                running = false;
                 outstandingConnectionChecks.decrementAndGet();
                 if (socket != null) {
                     try {
@@ -1788,8 +1782,8 @@ public class HealthMonitor implements MessageListener, Runnable {
                         }
                     }
                 }
-                return connectionIsUp;
             }
+            return connectionIsUp;
         }
     }
 
@@ -1846,14 +1840,12 @@ public class HealthMonitor implements MessageListener, Runnable {
 
         private static class MsgSendStats {
             static final long MAX_DURATION_BETWEEN_FAILURE_REPORT_MS = (60000 * 60) * 2;  // two hours between fail to send to an instance.
-            String     memberName;
             AtomicLong numSends;
             AtomicLong numFailSends;
             AtomicLong lastReportedFailSendTime;
             AtomicLong lastSendTime;
 
             MsgSendStats(String memberName) {
-                this.memberName = memberName;
                 numSends = new AtomicLong(0);
                 numFailSends = new AtomicLong(0);
                 lastReportedFailSendTime = new AtomicLong(-1);
@@ -1882,10 +1874,6 @@ public class HealthMonitor implements MessageListener, Runnable {
                 } else {
                     return false;
                 }
-            }
-
-            String getFailureReport() {
-                return memberName + " (failed to send " + numFailSends + " times)";
             }
         }
 }

@@ -41,8 +41,10 @@
 package com.sun.enterprise.mgmt;
 
 import com.sun.enterprise.ee.cms.core.GMSConstants;
+
 import static com.sun.enterprise.ee.cms.core.ServiceProviderConfigurationKeys.DISCOVERY_URI_LIST;
 import static com.sun.enterprise.ee.cms.core.ServiceProviderConfigurationKeys.VIRTUAL_MULTICAST_URI_LIST;
+
 import com.sun.enterprise.ee.cms.core.GMSMember;
 import com.sun.enterprise.ee.cms.core.RejoinSubevent;
 import com.sun.enterprise.ee.cms.impl.base.*;
@@ -60,7 +62,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -105,7 +106,6 @@ class MasterNode implements MessageListener, Runnable {
     private static final Logger mcastLogger = GMSLogDomain.getMcastLogger();
     private static final Logger masterLogger = GMSLogDomain.getMasterNodeLogger();
     private static final Logger monitorLogger = GMSLogDomain.getMonitorLogger();
-    private static final Logger nomLog = GMSLogDomain.getNoMCastLogger();
 
     private final ClusterManager manager;
     private String instanceName="";
@@ -113,7 +113,7 @@ class MasterNode implements MessageListener, Runnable {
 
     private boolean masterAssigned = false;
     private volatile boolean discoveryInProgress = true;
-    private PeerID localNodeID;
+    private PeerID<?> localNodeID;
     private final SystemAdvertisement sysAdv;
     private volatile boolean started = false;
     private volatile boolean stop = false;
@@ -151,7 +151,6 @@ class MasterNode implements MessageListener, Runnable {
     private static final String REJOIN_SUBEVENT = "RJSE";
 
     private boolean groupStarting = false;
-    private List<String> groupStartingMembers = null;
     private final Timer timer;
     private DelayedSetGroupStartingCompleteTask groupStartingTask = null;
     static final private long MAX_GROUPSTARTING_TIME_MS = 10L * 60L * 1000L;  // 10 minute limit for group starting duration.
@@ -181,7 +180,7 @@ class MasterNode implements MessageListener, Runnable {
     MasterNode(final ClusterManager manager,
                final long timeout,
                final int interval,
-               Map props) {
+               Map<?, ?> props) {
         localNodeID = manager.getPeerID();
         if (timeout > 0) {
             this.timeout = timeout;
@@ -281,7 +280,7 @@ class MasterNode implements MessageListener, Runnable {
         return true;
     }
 
-    public Message createResendRequest(PeerID master, List<Long> missed) {
+    public Message createResendRequest(PeerID<?> master, List<Long> missed) {
         final Message msg = createSelfNodeAdvertisement();
         msg.addMessageElement(RESENDREQUEST, (Serializable)missed);
         return msg;
@@ -308,7 +307,7 @@ class MasterNode implements MessageListener, Runnable {
         return msg;
     }
 
-    private void sendSelfNodeAdvertisement(final PeerID id, final String name) {
+    private void sendSelfNodeAdvertisement(final PeerID<?> id, final String name) {
         final Message msg = createSelfNodeAdvertisement();
         LOG.log(Level.FINER, "Sending a Node Response Message ");
         msg.addMessageElement(NODERESPONSE, "noderesponse");
@@ -352,10 +351,10 @@ class MasterNode implements MessageListener, Runnable {
      * Creates a Master Response Message
      *
      * @param masterID     the MasterNode ID
-     * @param announcement if true, creates an anouncement type message, otherwise it creates a response type.
+     * @param announcement if true, creates an announcement type message, otherwise it creates a response type.
      * @return a message containing a MasterResponse element
      */
-    private Message createMasterResponse(boolean announcement, final PeerID masterID) {
+    private Message createMasterResponse(boolean announcement, final PeerID<?> masterID) {
         final Message msg = createSelfNodeAdvertisement();
         String type = MASTERNODE;
         if (!announcement) {
@@ -428,7 +427,7 @@ class MasterNode implements MessageListener, Runnable {
      *
      * @return The master node ID
      */
-    PeerID getMasterNodeID() {
+    PeerID<?> getMasterNodeID() {
         return clusterViewManager.getMaster().getID();
     }
 
@@ -486,7 +485,7 @@ class MasterNode implements MessageListener, Runnable {
      * @return true if the message is a MasterNode announcement message
      * @throws IOException if an io error occurs
      */
-    @SuppressWarnings("unchecked")
+
     boolean processMasterNodeAnnouncement(final Message msg, final SystemAdvertisement source) throws IOException {
         Object msgElement = msg.getMessageElement(MASTERNODE);
         if (msgElement == null) {
@@ -503,6 +502,7 @@ class MasterNode implements MessageListener, Runnable {
         if (checkMaster(source)) {
             msgElement = msg.getMessageElement(AMASTERVIEW);
             if (msgElement != null && msgElement instanceof List) {
+                @SuppressWarnings("unchecked")
                 final List<SystemAdvertisement> newLocalView = (List<SystemAdvertisement>)msgElement;
                 if (LOG.isLoggable(Level.FINER)) {
                     LOG.log(Level.FINER, MessageFormat.format("Received an authoritative view from {0}, of size {1}" +
@@ -553,7 +553,6 @@ class MasterNode implements MessageListener, Runnable {
      * @return true if the message is a master node response message
      * @throws IOException if an io error occurs
      */
-    @SuppressWarnings("unchecked")
     boolean processMasterNodeResponse(final Message msg,
                                       final SystemAdvertisement source) throws IOException {
         Object msgElement = msg.getMessageElement(MASTERNODERESPONSE);
@@ -570,7 +569,9 @@ class MasterNode implements MessageListener, Runnable {
             Set<String> groupmembers = null;
             msgElement = msg.getMessageElement(GROUPMEMBERS);
             if (msgElement != null && msgElement instanceof Set){
-                groupmembers= (Set<String>)msgElement;
+                @SuppressWarnings("unchecked")
+                final Set<String> tmp = (Set<String>)msgElement;
+                groupmembers = tmp;
                 getGMSContext().setGroupStartupJoinMembers(groupmembers);
             }
             if (LOG.isLoggable(Level.FINE)) {
@@ -584,6 +585,7 @@ class MasterNode implements MessageListener, Runnable {
             setMaster(source, NOTIFY_LISTENERS);
             return true;
         }
+        @SuppressWarnings("unchecked")
         final List<SystemAdvertisement> newLocalView = (List<SystemAdvertisement>) msgElement;
         msgElement = msg.getMessageElement(VIEW_CHANGE_EVENT);
         if ( msgElement == null || !(msgElement instanceof ClusterViewEvent)) {
@@ -646,7 +648,7 @@ class MasterNode implements MessageListener, Runnable {
      * @return true if the message is a change event message
      * @throws IOException if an io error occurs
      */
-    @SuppressWarnings("unchecked")
+
     boolean processChangeEvent(final Message msg,
                                final SystemAdvertisement source) throws IOException {
         MemberStates[] memberStates = null;
@@ -678,6 +680,7 @@ class MasterNode implements MessageListener, Runnable {
             }
             msgElement = msg.getMessageElement(AMASTERVIEW);
             if (msgElement != null && msgElement instanceof List) {
+                @SuppressWarnings("unchecked")
                 final List<SystemAdvertisement> newLocalView = (List<SystemAdvertisement>)msgElement;
                 if (cvEvent.getEvent() == ClusterViewEvents.JOINED_AND_READY_EVENT) {
                     if (cvEvent.getAdvertisement().getID().equals(localNodeID)) {
@@ -732,11 +735,12 @@ class MasterNode implements MessageListener, Runnable {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
+
     boolean processResendRequest(final Message msg, final SystemAdvertisement adv, boolean isAdvAddedToView) throws IOException {
         if (isMaster() && masterAssigned) {
             Object element = msg.getMessageElement(RESENDREQUEST);
             if (element != null && element instanceof List) {
+                @SuppressWarnings("unchecked")
                 List<Long> missedList = (List<Long>)element;
                 for (Long missed : missedList) {
                     reliableMulticast.resend(adv.getID(), missed);
@@ -1055,30 +1059,6 @@ class MasterNode implements MessageListener, Runnable {
         }
     }
 
-    private boolean injectSimulatedFailure(MasterNodeMessageEvent mnme) {
-        boolean result = false;
-        if ((manager.getInstanceName().equals("instance02") ||
-             manager.getInstanceName().equals("instance04") ||
-             manager.getInstanceName().equals("instance06")) &&
-             (((mnme.seqId) % 5) == 0)) {
-
-            Object element = mnme.msg.getMessageElement("RESEND");
-            if (element != null && element instanceof Boolean) {
-                // don't drop the resend.
-                result = false;
-            } else {
-                // testing only. do not i18n.
-                // simulated drop of UDP message.
-                if (mcastLogger.isLoggable(Level.FINE)) {
-                    mcastLogger.fine("simulated drop of receiving UDP broadcast for member:" +
-                                     manager.getInstanceName() + " masterViewSequenceId:" + mnme.seqId);
-                }
-                // purposely return w/o processing this message.
-                result = true;
-            }
-        }
-        return result;
-    }
 
     public void receiveMessageEvent(final MessageEvent event) throws MessageIOException {
         final Message msg = event.getMessage();
@@ -1107,7 +1087,7 @@ class MasterNode implements MessageListener, Runnable {
 //                }
                 // TODO: do not allow in final release.
 
-                ProcessedMasterViewId processed = new ProcessedMasterViewId((PeerID)msg.getMessageElement(Message.SOURCE_PEER_ID_TAG), mnme.seqId);
+                ProcessedMasterViewId processed = new ProcessedMasterViewId((PeerID<?>)msg.getMessageElement(Message.SOURCE_PEER_ID_TAG), mnme.seqId);
                 boolean result;
                 synchronized(processedChangeEvents) {
                     result = processedChangeEvents.add(processed);
@@ -1152,7 +1132,6 @@ class MasterNode implements MessageListener, Runnable {
             final Message msg;
             // grab the message from the event
             msg = masterNodeMessage.msg;
-            long seqId = masterNodeMessage.seqId;
             if (msg == null) {
                 LOG.log(Level.WARNING, "mgmt.masternode.nullmessage");
                 return;
@@ -1224,16 +1203,16 @@ class MasterNode implements MessageListener, Runnable {
     }
 
     private void announceMaster(SystemAdvertisement adv) {
-	if (reliableMulticast != null) {
-	    reliableMulticast.stop();
-	    reliableMulticast = null;
+    if (reliableMulticast != null) {
+        reliableMulticast.stop();
+        reliableMulticast = null;
         }
         reliableMulticast = new ReliableMulticast(manager);
         final Message msg = createMasterResponse(true, adv.getID());
         final ClusterViewEvent cvEvent = new ClusterViewEvent(ClusterViewEvents.MASTER_CHANGE_EVENT, adv);
         if(masterAssigned && isMaster()){
             LOG.log(Level.INFO, "mgmt.masternode.announcemasternode", new Object[]{clusterViewManager.getViewSize(), manager.getInstanceName(), manager.getGroupName()});
-            
+
             sendNewView(null, cvEvent, msg, true);
         }
     }
@@ -1361,7 +1340,7 @@ class MasterNode implements MessageListener, Runnable {
      * @param msg    the message to send
      * @param name   name used for debugging messages
      */
-    private void send(final PeerID peerid, final String name, final Message msg) {
+    private void send(final PeerID<?> peerid, final String name, final Message msg) {
         try {
             if (peerid != null) {
                 // Unicast datagram
@@ -1396,7 +1375,7 @@ class MasterNode implements MessageListener, Runnable {
      * @param toID        receipient ID
      * @param includeView if true view will be included in the message
      */
-    void sendNewView(final PeerID toID,
+    void sendNewView(final PeerID<?> toID,
                      final ClusterViewEvent event,
                      final Message msg,
                      final boolean includeView) {
@@ -1619,7 +1598,7 @@ class MasterNode implements MessageListener, Runnable {
             this.addReadyAuthoritativeView(msg);
         }
         sendNewView(null, cvEvent, msg, false);
-        
+
         if (isGroup) {
             this.pendingGroupStartupMembers.remove(adv.getName());
             LOG.fine("sendReadyEventView: pendingGroupStartupMembers: member=" + adv.getName() + " size=" + pendingGroupStartupMembers.size() + " pending members remaining:" + pendingGroupStartupMembers.keySet());
@@ -1685,7 +1664,6 @@ class MasterNode implements MessageListener, Runnable {
      */
     void groupStartup(GMSConstants.groupStartupState startupState, List<String> memberTokens) {
         StringBuffer sb = new StringBuffer();
-        groupStartingMembers = memberTokens;
 
         if (LOG.isLoggable(Level.FINE)) {
             LOG.fine("MasterNode:groupStartup: memebrTokens:" + memberTokens + " startupState:" + startupState);
@@ -1771,7 +1749,7 @@ class MasterNode implements MessageListener, Runnable {
         }
     }
 
-    static public class MasterNodeMessageEvent implements Comparable {
+    static public class MasterNodeMessageEvent implements Comparable<Object> {
         public final long seqId;
         public final Message msg;
         public final MessageEvent event;
@@ -1799,7 +1777,7 @@ class MasterNode implements MessageListener, Runnable {
             }
         }
 
-        @SuppressWarnings("unchecked")
+
         public String toString() {
             StringBuffer result = new StringBuffer(100);
             try {
@@ -1835,6 +1813,7 @@ class MasterNode implements MessageListener, Runnable {
                 msgElement = msg.getMessageElement(AMASTERVIEW);
                 if (msgElement != null && msgElement instanceof List) {
                     result.append(" masterview: size:");
+                    @SuppressWarnings("unchecked")
                     final List<SystemAdvertisement> newLocalView = (List<SystemAdvertisement>) msgElement;
                     result.append(newLocalView.size());
 
@@ -1927,7 +1906,7 @@ class MasterNode implements MessageListener, Runnable {
         }
     }
 
-    private void clearChangeEventsNotFromCurrentMaster(PeerID currentMaster) {
+    private void clearChangeEventsNotFromCurrentMaster(PeerID<?> currentMaster) {
         synchronized (processedChangeEvents) {
             Iterator<ProcessedMasterViewId> iter = processedChangeEvents.iterator();
             while (iter.hasNext()) {
@@ -1944,14 +1923,14 @@ class MasterNode implements MessageListener, Runnable {
         }
     }
 
-    private PeerID lastCheckedMaster = null;
+    private PeerID<?> lastCheckedMaster = null;
     private long   lastCheckedMasterViewID = -1;
 
     static final Level DEBUG_TRACE = Level.FINE;
 
-    public List<Long> checkForMissedMasterChangeEvents(PeerID master, long latestMasterViewID) {
+    public List<Long> checkForMissedMasterChangeEvents(PeerID<?> master, long latestMasterViewID) {
         List<Long> missed = new LinkedList<Long>();
-        PeerID masterId = getMasterNodeID();
+        PeerID<?> masterId = getMasterNodeID();
         ProcessedMasterViewId current = null;
 
         // NOTE: have caller check if this is not the master. junit simulation testing tests this code when junit instance is running as master.
@@ -1963,7 +1942,7 @@ class MasterNode implements MessageListener, Runnable {
                     mcastLogger.log(DEBUG_TRACE, "enter checkForMissedMasterChangeEvents master:" + master.getInstanceName() + " latestMasterViewSeqID=" + latestMasterViewID);
                 }
             }
-            
+
             // check over all processed master view ids from this sender.
             // can request sender to rebroadcast missing ones.
 
@@ -2049,13 +2028,13 @@ class MasterNode implements MessageListener, Runnable {
         return missed;
     }
 
-    public void sendResendRequest(PeerID master, List<Long> missed) {
+    public void sendResendRequest(PeerID<?> master, List<Long> missed) {
         Message msg = createResendRequest(master, missed);
         send(master, null, msg);
     }
 
-    static public class ProcessedMasterViewId implements Comparable {
-        public final PeerID master;
+    static public class ProcessedMasterViewId implements Comparable<Object> {
+        public final PeerID<?> master;
         public final long   masterViewIdSeq;
         public final long   receivedTime;
         public final long   expirationTime;
@@ -2066,15 +2045,15 @@ class MasterNode implements MessageListener, Runnable {
             return "ProcessedMasterViewId master:" + master.getInstanceName() + " masterViewSequenceID=" + masterViewIdSeq + " receivedTime=" + new Date(receivedTime);
         }
 
-        public ProcessedMasterViewId(PeerID master, long seqId) {
+        public ProcessedMasterViewId(PeerID<?> master, long seqId) {
             this(master, seqId, EXPIRATION_DURATION_MS);
         }
 
-        public ProcessedMasterViewId(PeerID master, long seqId, long expire_duration_ms) {
+        public ProcessedMasterViewId(PeerID<?> master, long seqId, long expire_duration_ms) {
             this.master = master;
             this.masterViewIdSeq = seqId;
             receivedTime = System.currentTimeMillis();
-            expirationTime = receivedTime + expire_duration_ms;    
+            expirationTime = receivedTime + expire_duration_ms;
         }
 
         public boolean isExpired() {
@@ -2118,13 +2097,13 @@ class MasterNode implements MessageListener, Runnable {
     }
 
     static private class CheckForMissedMasterMessages implements Runnable {
-        private final PeerID master;
+        private final PeerID<?> master;
         private final long masterViewSeqId;
         private final MasterNode masterNode;
         static private final long EXPIRE_REAPER_FREQUENCY_MS = 20 * 1000;
         private long nextExpireReaperTime;
 
-        CheckForMissedMasterMessages(MasterNode masterNode, PeerID master, long masterViewSeqId) {
+        CheckForMissedMasterMessages(MasterNode masterNode, PeerID<?> master, long masterViewSeqId) {
             this.masterNode = masterNode;
             this.master = master;
             this.masterViewSeqId = masterViewSeqId;
@@ -2162,7 +2141,7 @@ class MasterNode implements MessageListener, Runnable {
         }
     }
 
-    // only the master adds its latest master view sequence id to its heartbeat 
+    // only the master adds its latest master view sequence id to its heartbeat
     void addMasterViewSeqId(Message msg) {
         if (isMaster() && isMasterAssigned() && !isDiscoveryInProgress()) {
             // have master include its current MasterViewSeqID.
@@ -2176,9 +2155,9 @@ class MasterNode implements MessageListener, Runnable {
     // thus, check if this heartbeat message has the LATESTMASTERVIEWSEQID on it.
     // if it does, then all none masters will calculate from their cache of processed master change events if they
     // missed any messages.
-    void processForLatestMasterViewId(Message msg, PeerID source) {
+    void processForLatestMasterViewId(Message msg, PeerID<?> source) {
         if (!isMaster() && masterAssigned && !isDiscoveryInProgress()) {
-            Object element = msg.getMessageElement(this.LATESTMASTERVIEWID);
+            Object element = msg.getMessageElement(LATESTMASTERVIEWID);
             if (element != null && element instanceof Long) {
                 checkForMissedMasterMsgSingletonExecutor.submit(new CheckForMissedMasterMessages(this, source, (Long)element));
             }

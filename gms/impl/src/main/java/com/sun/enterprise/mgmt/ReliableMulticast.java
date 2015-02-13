@@ -39,20 +39,22 @@
  */
 package com.sun.enterprise.mgmt;
 
-import com.sun.enterprise.ee.cms.impl.base.PeerID;
-import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
-import com.sun.enterprise.mgmt.transport.*;
-
 import java.io.IOException;
-import java.util.*;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.ee.cms.impl.base.PeerID;
+import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
+import com.sun.enterprise.mgmt.transport.Message;
+import com.sun.enterprise.mgmt.transport.MulticastMessageSender;
+
 
 public class ReliableMulticast {
     private static final Logger logger = GMSLogDomain.getMcastLogger();
-    private static final Logger monitorLogger = GMSLogDomain.getMonitorLogger();
 
     private final long DEFAULT_EXPIRE_DURATION_MS;
     private final long DEFAULT_EXPIRE_REAPING_FREQUENCY;
@@ -106,7 +108,7 @@ public class ReliableMulticast {
         ClusterViewEvents type = null;
         String cveType = null;
         String memberName = null;
-        PeerID peerId = null;
+        PeerID<?> peerId = null;
         if (element != null && element instanceof ClusterViewEvent) {
             ClusterViewEvent cve = (ClusterViewEvent)element;
             type = cve.getEvent();
@@ -145,7 +147,7 @@ public class ReliableMulticast {
 
     // TODO:  possible optimization: consider only resending certain ClusterViewEvents.
     //        given the late arrival of the event, its view will almost always be stale. especially add_events.
-    public boolean resend(PeerID to, Long seqId) throws IOException {
+    public boolean resend(PeerID<?> to, Long seqId) throws IOException {
         boolean result = false;
         ReliableBroadcast rb = sendHistory.get(seqId);
         if (rb != null) {
@@ -172,7 +174,7 @@ public class ReliableMulticast {
         this.manager = manager;
         this.sender = manager.getNetworkManager().getMulticastMessageSender();
         TimerTask reaper = new Reaper(this);
-        time = new Timer();                                    
+        time = new Timer();
         time.schedule(reaper, DEFAULT_EXPIRE_REAPING_FREQUENCY , DEFAULT_EXPIRE_REAPING_FREQUENCY);
     }
 

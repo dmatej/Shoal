@@ -40,21 +40,22 @@
 
 package com.sun.enterprise.mgmt.transport.grizzly;
 
-import static com.sun.enterprise.mgmt.ConfigConstants.*;
-import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.*;
+import static com.sun.enterprise.mgmt.ConfigConstants.BIND_INTERFACE_ADDRESS;
+import static com.sun.enterprise.mgmt.ConfigConstants.FAILURE_DETECTION_TCP_RETRANSMIT_TIMEOUT;
+import static com.sun.enterprise.mgmt.ConfigConstants.MULTICASTADDRESS;
+import static com.sun.enterprise.mgmt.ConfigConstants.MULTICASTPORT;
+import static com.sun.enterprise.mgmt.ConfigConstants.MULTICAST_PACKET_SIZE;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.DISCOVERY_URI_LIST;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.HIGH_WATER_MARK;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.MAX_PARALLEL;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.MAX_WRITE_SELECTOR_POOL_SIZE;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.MULTICAST_TIME_TO_LIVE;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.NUMBER_TO_RECLAIM;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.START_TIMEOUT;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.TCPENDPORT;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.TCPSTARTPORT;
+import static com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants.WRITE_TIMEOUT;
 
-import com.sun.enterprise.ee.cms.core.GMSConstants;
-import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
-import com.sun.enterprise.mgmt.HealthMessage;
-import com.sun.enterprise.mgmt.HealthMonitor;
-import com.sun.enterprise.mgmt.transport.*;
-
-import com.sun.enterprise.ee.cms.impl.base.PeerID;
-import com.sun.enterprise.ee.cms.impl.base.Utility;
-
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -62,9 +63,32 @@ import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.sun.enterprise.ee.cms.core.GMSConstants;
+import com.sun.enterprise.ee.cms.impl.base.PeerID;
+import com.sun.enterprise.ee.cms.impl.base.Utility;
+import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
+import com.sun.enterprise.mgmt.HealthMessage;
+import com.sun.enterprise.mgmt.HealthMonitor;
+import com.sun.enterprise.mgmt.transport.AbstractNetworkManager;
+import com.sun.enterprise.mgmt.transport.Message;
+import com.sun.enterprise.mgmt.transport.MessageEvent;
+import com.sun.enterprise.mgmt.transport.MessageImpl;
+import com.sun.enterprise.mgmt.transport.MessageSender;
+import com.sun.enterprise.mgmt.transport.MulticastMessageSender;
+import com.sun.enterprise.mgmt.transport.NetworkUtility;
+import com.sun.enterprise.mgmt.transport.VirtualMulticastSender;
 
 /**
  * @author Bongjae Chang
@@ -76,8 +100,8 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
     public final Logger LOG;
     public final Logger nomcastLogger;
 
-    public final ConcurrentHashMap<String, PeerID<GrizzlyPeerID>> peerIDMap =
-            new ConcurrentHashMap<String, PeerID<GrizzlyPeerID>>();
+    public final ConcurrentHashMap<String, GrizzlyPeerIdWrapper> peerIDMap =
+            new ConcurrentHashMap<String, GrizzlyPeerIdWrapper>();
 
     public volatile boolean running;
     public MessageSender tcpSender;
@@ -100,7 +124,7 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
     protected int highWaterMark;
     protected int numberToReclaim;
     protected int maxParallelSendConnections;
-    
+
     public long startTimeoutMillis; // ms
     public long sendWriteTimeoutMillis; // ms
     public int multicastPacketSize;
@@ -109,7 +133,7 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
 
     static final public String DEFAULT_IPv4_MULTICAST_ADDRESS = "230.30.1.1";
     static final public String DEFAULT_IPv6_MULTICAST_ADDRESS = "FF01:0:0:0:0:0:0:1";
-    public final ConcurrentHashMap<PeerID, CountDownLatch> pingMessageLockMap = new ConcurrentHashMap<PeerID, CountDownLatch>();
+    public final ConcurrentHashMap<PeerID<?>, CountDownLatch> pingMessageLockMap = new ConcurrentHashMap<PeerID<?>, CountDownLatch>();
 
     protected VirtualMulticastSender vms = null;
     protected boolean disableMulticast = false;
@@ -121,6 +145,15 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
        nomcastLogger = GMSLogDomain.getNoMCastLogger();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GrizzlyPeerIdWrapper getLocalPeerID() {
+        return (GrizzlyPeerIdWrapper) super.getLocalPeerID();
+    }
+
+
     private boolean validMulticastAddress(String multicastAddr) {
         InetAddress validateMulticastAddress = null;
         try {
@@ -130,8 +163,8 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
         return validateMulticastAddress != null && validateMulticastAddress.isMulticastAddress();
     }
 
-    @SuppressWarnings( "unchecked" )
-    public void configure( final Map properties ) {
+
+    public void configure( final Properties properties ) {
         Logger shoalLogger = getLogger();
         host = Utility.getStringProperty( BIND_INTERFACE_ADDRESS.toString(), null, properties );
         tcpStartPort = Utility.getIntProperty( TCPSTARTPORT.toString(), 9090, properties );
@@ -206,50 +239,24 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
         }
     }
 
-    @Override
-    @SuppressWarnings( "unchecked" )
-    public synchronized void initialize( final String groupName, final String instanceName, final Map properties ) throws IOException {
-        super.initialize(groupName, instanceName, properties);
-    }
-
 
     @Override
-    @SuppressWarnings( "unchecked" )
-    public synchronized void start() throws IOException {
-        // TBD: consider if code can be share here or not between grizzly 1.9 and 2.0 transport containers.
-    }
-
-
-    @Override
-    public void stop() throws IOException {
-        super.stop();
+    public void beforeDispatchingMessage( MessageEvent messageEvent, Map<?, ?> piggyback ) {
     }
 
     @Override
-    public void beforeDispatchingMessage( MessageEvent messageEvent, Map piggyback ) {
+    public void afterDispatchingMessage( MessageEvent messageEvent, Map<?, ?> piggyback ) {
     }
 
     @Override
-    public void afterDispatchingMessage( MessageEvent messageEvent, Map piggyback ) {
-    }
-
-    @Override
-    @SuppressWarnings( "unchecked" )
-    public void addRemotePeer( PeerID peerID ) {
+    public void addRemotePeer( PeerID<?> peerID ) {
         if( peerID == null )
             return;
-        if( peerID.equals( localPeerID ) )
+        if( peerID.equals( getLocalPeerID() ) )
             return; // lookback
         String instanceName = peerID.getInstanceName();
-        if( instanceName != null && peerID.getUniqueID() instanceof GrizzlyPeerID ) {
-//            PeerID<GrizzlyPeerID> previous = peerIDMap.get(instanceName);
-//            if (previous != null) {
-//                if (previous.getUniqueID().getTcpPort() != ((GrizzlyPeerID) peerID.getUniqueID()).tcpPort) {
-//                    LOG.log(Level.WARNING, "addRemotePeer: assertion failure: no mapping should have existed for member:"
-//                            + instanceName + " existingID=" + previous + " adding peerid=" + peerID, new Exception("stack trace"));
-//                }
-//            }
-            PeerID<GrizzlyPeerID> previous = peerIDMap.put( instanceName, peerID );
+        if( instanceName != null && peerID instanceof GrizzlyPeerIdWrapper ) {
+            GrizzlyPeerIdWrapper previous = peerIDMap.put( instanceName, (GrizzlyPeerIdWrapper) peerID );
             if (previous == null) {
                 if (nomcastLogger.isLoggable(Level.FINE)) {
                     nomcastLogger.log(Level.FINE, "addRemotePeer: " + instanceName + " peerId:" + peerID, new Exception("stack trace"));
@@ -263,7 +270,7 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
     }
 
     @Override
-    public boolean send( final PeerID peerID, final Message message ) throws IOException {
+    public boolean send(final PeerID<?> peerID, final Message message ) throws IOException {
         if( !running )
             throw new IOException( "network manager is not running" );
         MessageSender sender = tcpSender;
@@ -283,8 +290,8 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
     }
 
     @Override
-    public PeerID getPeerID( final String instanceName ) {
-        PeerID peerID = null;
+    public PeerID<?> getPeerID( final String instanceName ) {
+        PeerID<?> peerID = null;
         if( instanceName != null )
             peerID = peerIDMap.get( instanceName );
         if( peerID == null ) {
@@ -302,7 +309,7 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
     }
 
     @Override
-    public void removePeerID( final PeerID peerID ) {
+    public void removePeerID( final PeerID<?> peerID ) {
         if( peerID == null )
             return;
         String instanceName = peerID.getInstanceName();
@@ -318,7 +325,7 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
     }
 
     @Override
-    public boolean isConnected( final PeerID peerID ) {
+    public boolean isConnected( final PeerID<?> peerID ) {
         boolean isConnected = false;
         if( peerID != null ) {
             try {
@@ -344,7 +351,7 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
         }
     }
 
-    public CountDownLatch getPingMessageLock( PeerID peerID ) {
+    public CountDownLatch getPingMessageLock( PeerID<?> peerID ) {
         if( peerID != null )
             return pingMessageLockMap.get( peerID );
         else
@@ -382,14 +389,14 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
 
     protected abstract Logger getGrizzlyLogger();
 
-    protected List<PeerID> getVirtualPeerIDList(String groupDiscoveryUriList) {
+    protected List<GrizzlyPeerIdWrapper> getVirtualPeerIDList(String groupDiscoveryUriList) {
         if (groupDiscoveryUriList == null) {
             return null;
         }
         if (nomcastLogger.isLoggable(Level.FINE)) {
             nomcastLogger.log(Level.FINE, "DISCOVERY_URI_LIST = {0}", groupDiscoveryUriList);
         }
-        List<PeerID> virtualPeerIdList = new ArrayList<PeerID>();
+        List<GrizzlyPeerIdWrapper> virtualPeerIdList = new ArrayList<GrizzlyPeerIdWrapper>();
         //if this object has multiple addresses that are comma separated
         if (groupDiscoveryUriList.indexOf(",") > 0) {
             String addresses[] = groupDiscoveryUriList.split(",");
@@ -397,7 +404,7 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
                 List<String> virtualUriStringList = Arrays.asList(addresses);
                 for (String uriString : virtualUriStringList) {
                     try {
-                        PeerID peerID = getPeerIDFromURI(uriString);
+                        GrizzlyPeerIdWrapper peerID = getPeerIDFromURI(uriString);
                         if (peerID != null) {
                             virtualPeerIdList.add(peerID);
                             if (nomcastLogger.isLoggable(Level.FINE)) {
@@ -418,7 +425,7 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
         } else {
             //this object has only one address in it, so add it to the list
             try {
-                PeerID peerID = getPeerIDFromURI(groupDiscoveryUriList);
+                GrizzlyPeerIdWrapper peerID = getPeerIDFromURI(groupDiscoveryUriList);
                 if (peerID != null) {
                     virtualPeerIdList.add(peerID);
                     if (nomcastLogger.isLoggable(Level.FINE)) {
@@ -436,7 +443,7 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
         return virtualPeerIdList;
     }
 
-    protected PeerID<GrizzlyPeerID> getPeerIDFromURI(String uri) throws URISyntaxException {
+    protected GrizzlyPeerIdWrapper getPeerIDFromURI(String uri) throws URISyntaxException {
         if( uri == null ) {
             return null;
         }
@@ -454,9 +461,9 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
                 // specifying null multicast address and -1 multicast port
                 GrizzlyPeerID gpID = new GrizzlyPeerID(host,
                     tcpStartPort, null, -1);
-                
-                return new PeerID<GrizzlyPeerID>(gpID,
-                    localPeerID.getGroupName(),
+
+                return new GrizzlyPeerIdWrapper(gpID, getLocalPeerID()
+                        .getGroupName(),
                     // the instance name is not meaningless in this case
                     UNKNOWN + host);
             } catch (UnknownHostException ignored) {
@@ -488,11 +495,11 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
         if (port == -1) {
             port = tcpStartPort;
         }
-        return new PeerID<GrizzlyPeerID>( new GrizzlyPeerID( discoveryUri.getHost(),
+        return new GrizzlyPeerIdWrapper( new GrizzlyPeerID( discoveryUri.getHost(),
                                                              port,
                                                              multicastAddress,
                                                              multicastPort ),
-                                          localPeerID.getGroupName(),
+                                          getLocalPeerID().getGroupName(),
                                           // the instance name is not meaningless in this case
                                           UNKNOWN + discoveryUri.getHost() +"_" + port);
     }
@@ -518,9 +525,9 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
         return false;
     }
 
-    protected void addToVMS(PeerID peerID) {
+    protected void addToVMS(PeerID<?> peerID) {
         if (vms != null) {
-            Set<PeerID> virtualPeerIdSet = vms.getVirtualPeerIDSet();
+            Set<PeerID<?>> virtualPeerIdSet = vms.getVirtualPeerIDSet();
             boolean result = virtualPeerIdSet.add(peerID);
             if (result && nomcastLogger.isLoggable(Level.FINE)) {
                 nomcastLogger.log(Level.FINE, "addRemotePeer: virtualPeerIDSet added:" + peerID + " set size=" + virtualPeerIdSet.size() +
@@ -529,9 +536,9 @@ public abstract class GrizzlyNetworkManager extends AbstractNetworkManager {
         }
     }
 
-    protected void removeFromVMS(PeerID peerID) {
+    protected void removeFromVMS(PeerID<?> peerID) {
         if (vms != null) {
-            Set<PeerID> virtualPeerIdSet = vms.getVirtualPeerIDSet();
+            Set<PeerID<?>> virtualPeerIdSet = vms.getVirtualPeerIDSet();
             boolean result = virtualPeerIdSet.remove(peerID);
             if (result && nomcastLogger.isLoggable(Level.FINE)) {
                 nomcastLogger.fine("removeRemotePeer: virtualPeerIDSet removed:" + peerID + " set size=" + virtualPeerIdSet.size() +

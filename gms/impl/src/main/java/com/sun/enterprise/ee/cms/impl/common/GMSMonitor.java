@@ -63,7 +63,6 @@ import java.lang.management.ManagementFactory;
  */
 public class GMSMonitor {
     private static final Logger logger = GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER);
-    private static final Logger monitorLogger = GMSLogDomain.getMonitorLogger();
 
     // todo: fix this. hack to control this by logging.
     public final boolean ENABLED;
@@ -75,7 +74,7 @@ public class GMSMonitor {
     final public MBeanServer mbs;
     final public String instanceName;
     final public String groupName;
-    
+
     public GMSMonitor(String instanceName, String groupName, Properties props) {
         this.instanceName = instanceName;
         this.groupName = groupName;
@@ -141,8 +140,6 @@ public class GMSMonitor {
             closeEntry.close();
         }
     }
-
-    private AtomicLong maxIncomingMessageQueueSize = new AtomicLong(0);
 
     static public interface GMSMessageStatsMBean {
         long getNumFailMsgSend();

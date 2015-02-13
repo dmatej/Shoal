@@ -40,21 +40,18 @@
 
 package com.sun.enterprise.mgmt.transport.grizzly;
 
-import com.sun.enterprise.mgmt.transport.MessageListener;
+import java.util.concurrent.CountDownLatch;
+
+import com.sun.enterprise.ee.cms.impl.base.PeerID;
+import com.sun.enterprise.mgmt.transport.Message;
 import com.sun.enterprise.mgmt.transport.MessageEvent;
 import com.sun.enterprise.mgmt.transport.MessageIOException;
-import com.sun.enterprise.mgmt.transport.Message;
-import com.sun.enterprise.ee.cms.impl.base.PeerID;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.logging.Logger;
+import com.sun.enterprise.mgmt.transport.MessageListener;
 
 /**
  * @author Bongjae Chang
  */
 public class PongMessageListener implements MessageListener {
-
-    private final static Logger LOG = GrizzlyNetworkManager.getLogger();
 
     @Override
     public void receiveMessageEvent( final MessageEvent event ) throws MessageIOException {
@@ -67,7 +64,7 @@ public class PongMessageListener implements MessageListener {
         if( !( obj instanceof GrizzlyNetworkManager ) )
             return;
         GrizzlyNetworkManager networkManager = (GrizzlyNetworkManager)obj;
-        PeerID sourcePeerId = event.getSourcePeerID();
+        PeerID<?> sourcePeerId = event.getSourcePeerID();
         if( sourcePeerId == null )
             return;
         CountDownLatch pingMessageLock = networkManager.getPingMessageLock( sourcePeerId );

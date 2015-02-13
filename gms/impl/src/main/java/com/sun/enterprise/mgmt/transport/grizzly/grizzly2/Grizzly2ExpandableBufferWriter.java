@@ -47,13 +47,13 @@ import org.glassfish.grizzly.memory.MemoryManager;
 
 /**
  * Grizzly 2.0 based expandable Buffer writer.
- * 
+ *
  * @author Alexey Stashok
  */
 public final class Grizzly2ExpandableBufferWriter extends ExpandableBufferWriter {
-    
+
     public static ExpandableBufferWriterFactory createFactory(
-            final MemoryManager memoryManager) {
+            final MemoryManager<org.glassfish.grizzly.Buffer> memoryManager) {
         return new ExpandableBufferWriterFactory() {
 
             @Override
@@ -63,12 +63,12 @@ public final class Grizzly2ExpandableBufferWriter extends ExpandableBufferWriter
         };
     }
 
-    private final MemoryManager memoryManager;
+    private final MemoryManager<org.glassfish.grizzly.Buffer> memoryManager;
 
-    private final GMSBufferWrapper wrapper = new GMSBufferWrapper();    
+    private final GMSBufferWrapper wrapper = new GMSBufferWrapper();
     private org.glassfish.grizzly.Buffer grizzlyBuffer;
-    
-    private Grizzly2ExpandableBufferWriter(final MemoryManager memoryManager) {
+
+    private Grizzly2ExpandableBufferWriter(final MemoryManager<org.glassfish.grizzly.Buffer> memoryManager) {
         this.memoryManager = memoryManager;
         grizzlyBuffer = memoryManager.allocate(4096);
         wrapper.wrap(grizzlyBuffer);
@@ -99,7 +99,7 @@ public final class Grizzly2ExpandableBufferWriter extends ExpandableBufferWriter
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+
     protected void ensureCapacity(final int delta) {
         if (delta <= 0 || grizzlyBuffer.remaining() >= delta) return;
 

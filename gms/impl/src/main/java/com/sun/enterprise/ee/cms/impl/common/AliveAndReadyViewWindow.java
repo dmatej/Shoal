@@ -40,13 +40,6 @@
 
 package com.sun.enterprise.ee.cms.impl.common;
 
-import com.sun.enterprise.ee.cms.core.*;
-import com.sun.enterprise.ee.cms.impl.client.FailureNotificationActionFactoryImpl;
-import com.sun.enterprise.ee.cms.impl.client.JoinedAndReadyNotificationActionFactoryImpl;
-import com.sun.enterprise.ee.cms.impl.client.PlannedShutdownActionFactoryImpl;
-import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
-import com.sun.enterprise.ee.cms.spi.MemberStates;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
@@ -55,6 +48,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.ee.cms.core.AliveAndReadyView;
+import com.sun.enterprise.ee.cms.core.CallBack;
+import com.sun.enterprise.ee.cms.core.FailureNotificationSignal;
+import com.sun.enterprise.ee.cms.core.GMSConstants;
+import com.sun.enterprise.ee.cms.core.GroupHandle;
+import com.sun.enterprise.ee.cms.core.JoinedAndReadyNotificationSignal;
+import com.sun.enterprise.ee.cms.core.PlannedShutdownSignal;
+import com.sun.enterprise.ee.cms.core.RejoinSubevent;
+import com.sun.enterprise.ee.cms.core.Signal;
+import com.sun.enterprise.ee.cms.impl.client.FailureNotificationActionFactoryImpl;
+import com.sun.enterprise.ee.cms.impl.client.JoinedAndReadyNotificationActionFactoryImpl;
+import com.sun.enterprise.ee.cms.impl.client.PlannedShutdownActionFactoryImpl;
+import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
+import com.sun.enterprise.ee.cms.spi.MemberStates;
 
 public class AliveAndReadyViewWindow {
     protected static final Logger LOG = Logger.getLogger(GMSLogDomain.GMS_LOGGER + ".ready");
@@ -107,7 +115,7 @@ public class AliveAndReadyViewWindow {
         jrcallback = new JoinedAndReadyCallBack(null, aliveAndReadyView);
         leaveCallback = new LeaveCallBack(null, aliveAndReadyView);
         currentInstanceName = null;
-        
+
          // initialize with a null initial previous and current views
         aliveAndReadyView.add(new AliveAndReadyViewImpl(new TreeSet<String>(), viewId++));
         aliveAndReadyView.add(new AliveAndReadyViewImpl(new TreeSet<String>(), viewId++));
@@ -181,7 +189,7 @@ public class AliveAndReadyViewWindow {
             if (current != null) {
                 current.setSignal(signal);
             }
-            
+
             // create a new current view
             AliveAndReadyView arview = new AliveAndReadyViewImpl(members, viewId++);
             aliveAndReadyView.add(arview);

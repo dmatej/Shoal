@@ -271,7 +271,7 @@ class ViewWindowImpl implements ViewWindow, Runnable {
     }
 
     private Signal[] analyzeViewChange(final EventPacket packet) {
-        ((Vector) signals).removeAllElements();
+        signals.clear();
         final ClusterViewEvents events = packet.getClusterViewEvent();
         switch (events) {
             case ADD_EVENT:
@@ -568,7 +568,7 @@ class ViewWindowImpl implements ViewWindow, Runnable {
             logger.log(Level.FINE, "addNewMemberJoins: member: " + member  +
                                " joined group time:" + new Date(Utility.getStartTime(advert)) + " rejoin subevent=" + rjse);
         }
-        
+
         // Series of checks needed to avoid duplicate ADD messages.
         // This conditional was added to avoid duplicate ADD events caused
         // by GroupLeaderShip change notifications.
@@ -576,7 +576,7 @@ class ViewWindowImpl implements ViewWindow, Runnable {
         // Lastly,  this instance is always added to view so let ADD event through w/o check for this instance.
         if (isCoordinator() ||
             ! oldMembers.contains(token)  ||
-            rjse != null || 
+            rjse != null ||
             token.compareTo(getGMSContext().getServerIdentityToken()) == 0) {
             if (packet.getClusterView().getSize() > 1) {
                 // TODO: Figure out a better way to sync
@@ -705,7 +705,7 @@ class ViewWindowImpl implements ViewWindow, Runnable {
         }
     }
 
-    private void syncDSC(final PeerID peerid) {
+    private void syncDSC(final PeerID<?> peerid) {
         final DistributedStateCacheImpl dsc;
         // if coordinator, call dsc to sync with this member
         if (isCoordinator()) {

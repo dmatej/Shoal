@@ -54,11 +54,11 @@ import org.glassfish.grizzly.filterchain.NextAction;
 
 /**
  * Message dispatcher Filter.
- * 
+ *
  * @author Alexey Stashok
  */
 public class MessageDispatcherFilter extends BaseFilter {
-    private final Attribute<Map<String, Connection>> piggyBackAttribute =
+    private final Attribute<Map<String, Connection<?>>> piggyBackAttribute =
             Grizzly.DEFAULT_ATTRIBUTE_BUILDER.createAttribute(
             MessageDispatcherFilter.class.getName() + ".piggyBack");
 
@@ -70,18 +70,18 @@ public class MessageDispatcherFilter extends BaseFilter {
 
     @Override
     public NextAction handleRead(final FilterChainContext ctx) throws IOException {
-        final Connection connection = ctx.getConnection();
+        final Connection<?> connection = ctx.getConnection();
         final Message message = ctx.getMessage();
 
-        Map<String, Connection> piggyBack = piggyBackAttribute.get(connection);
+        Map<String, Connection<?>> piggyBack = piggyBackAttribute.get(connection);
         if (piggyBack == null) {
-            piggyBack = new HashMap<String, Connection>();
+            piggyBack = new HashMap<String, Connection<?>>();
             piggyBack.put(GrizzlyNetworkManager2.MESSAGE_CONNECTION_TAG, connection);
             piggyBackAttribute.set(connection, piggyBack);
         }
-        
+
         networkManager.receiveMessage(message, piggyBack);
-        
+
         return ctx.getInvokeAction();
     }
 }

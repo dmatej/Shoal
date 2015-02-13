@@ -40,23 +40,18 @@
 
 package com.sun.enterprise.mgmt;
 
-import java.text.SimpleDateFormat;
 import java.util.logging.Level;
-import java.util.Date;
+
+import junit.framework.TestCase;
 
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
 import com.sun.enterprise.mgmt.transport.Message;
 import com.sun.enterprise.mgmt.transport.MessageImpl;
-import junit.framework.TestCase;
 
 public class ReliableMulticastTest extends TestCase  {
 
     static final long TEST_EXPIRATION_DURATION_MS = 500;  // 1/2 second.
     private ReliableMulticast rm;
-    private static final String RFC_3339_DATE_FORMAT =
-            "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-    private static final SimpleDateFormat dateFormatter =
-            new SimpleDateFormat( RFC_3339_DATE_FORMAT );
 
     public ReliableMulticastTest( String testName ) {
         super( testName );

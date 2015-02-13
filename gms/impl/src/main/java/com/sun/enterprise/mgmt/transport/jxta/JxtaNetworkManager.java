@@ -751,9 +751,9 @@ public class JxtaNetworkManager extends AbstractNetworkManager implements Rendez
      * @return the net peergroup
      *
      * @throws PeerGroupException Thrown for errors creating the domain.
-     * @throws java.io.IOException Thrown for erros creating jxta pipe manager. 
+     * @throws java.io.IOException Thrown for erros creating jxta pipe manager.
      */
-    @SuppressWarnings( "unchecked" )
+
     private PeerGroup startDomain() throws PeerGroupException, IOException {
         // Configure the peer name
         final NetworkConfigurator config;

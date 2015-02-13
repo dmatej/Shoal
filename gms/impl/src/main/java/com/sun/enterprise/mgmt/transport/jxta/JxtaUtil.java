@@ -94,7 +94,7 @@ public class JxtaUtil {
         }
     }
 
-    @SuppressWarnings("unchecked")
+
     public static <T> T getObjectFromByteArray( MessageElement element) {
         if (element == null) {
             return null;
@@ -196,7 +196,7 @@ public class JxtaUtil {
         }
     }
 
-    @SuppressWarnings("unchecked")
+
     static public void appendChild( StructuredDocument adv, Element child) {
         adv.appendChild(child);
     }

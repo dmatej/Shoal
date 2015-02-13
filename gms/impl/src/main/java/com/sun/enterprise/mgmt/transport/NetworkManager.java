@@ -43,6 +43,7 @@ package com.sun.enterprise.mgmt.transport;
 import com.sun.enterprise.ee.cms.impl.base.PeerID;
 
 import java.util.Map;
+import java.util.Properties;
 import java.io.IOException;
 
 /**
@@ -64,7 +65,7 @@ public interface NetworkManager extends MulticastMessageSender, MessageSender {
      * @param properties specific properties
      * @throws IOException if an unexpected error occurs
      */
-    public void initialize( final String groupName, final String instanceName, final Map properties ) throws IOException;
+    public void initialize( final String groupName, final String instanceName, final Properties properties ) throws IOException;
 
     /**
      * Starts this network manager
@@ -78,7 +79,7 @@ public interface NetworkManager extends MulticastMessageSender, MessageSender {
     /**
      * Stops this network manager
      *
-     * For cleaning up remaining values and finishing I/O operation, this method could be used 
+     * For cleaning up remaining values and finishing I/O operation, this method could be used
      *
      * @throws IOException if an I/O error occurs
      */
@@ -107,13 +108,13 @@ public interface NetworkManager extends MulticastMessageSender, MessageSender {
      * @param message inbound message
      * @param piggyback piggyback
      */
-    public void receiveMessage( Message message, Map piggyback );
+    public void receiveMessage( Message message, Map<?, ?> piggyback );
 
     /**
      * Returns local {@link PeerID}
      * @return peer id
      */
-    public PeerID getLocalPeerID();
+    public PeerID<?> getLocalPeerID();
 
     /**
      * Returns the proper {@link PeerID} corresponding with a given instance name
@@ -121,19 +122,19 @@ public interface NetworkManager extends MulticastMessageSender, MessageSender {
      * @param instanceName instance name
      * @return peer id
      */
-    public PeerID getPeerID( final String instanceName );
+    public PeerID<?> getPeerID( final String instanceName );
 
     /**
      * Add the <code>peerID</code> to this network manager
      * @param peerID
      */
-    public void addRemotePeer( final PeerID peerID );
+    public void addRemotePeer( final PeerID<?> peerID );
 
     /**
      * Removes the <code>peerID</code> from this network manager
      * @param peerID
      */
-    public void removePeerID( final PeerID peerID );
+    public void removePeerID( final PeerID<?> peerID );
 
     /**
      * Check whether the suspicious peer is alive or not
@@ -143,7 +144,7 @@ public interface NetworkManager extends MulticastMessageSender, MessageSender {
      * @param peerID peer id
      * @return true if the peer is still alive, otherwise false
      */
-    public boolean isConnected( final PeerID peerID );
+    public boolean isConnected( final PeerID<?> peerID );
 
     /**
      * Returns a {@link MessageSender} corresponding with transport type

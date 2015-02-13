@@ -39,16 +39,15 @@
  */
 
 package com.sun.enterprise.mgmt.transport.grizzly.grizzly2;
-import com.sun.enterprise.mgmt.transport.Message;
-import com.sun.enterprise.mgmt.transport.MessageImpl;
-import junit.framework.TestCase;
-
 import java.io.IOException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import junit.framework.TestCase;
+
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.filterchain.BaseFilter;
@@ -63,6 +62,9 @@ import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.utils.ChunkingFilter;
 
+import com.sun.enterprise.mgmt.transport.Message;
+import com.sun.enterprise.mgmt.transport.MessageImpl;
+
 /**
  * Set of Grizzly 2.0 tests
  *
@@ -75,7 +77,7 @@ public class GrizzlyParserTest extends TestCase {
     public static final int PORT = 8998;
 
     private static final Logger LOGGER = Grizzly.logger(GrizzlyParserTest.class);
-    
+
     private TCPNIOTransport transport;
     private ServerEchoFilter serverEchoFilter;
 
@@ -88,7 +90,7 @@ public class GrizzlyParserTest extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        transport.stop();
+        transport.shutdownNow();
 
         super.tearDown();
     }
@@ -115,7 +117,7 @@ public class GrizzlyParserTest extends TestCase {
 
     public Message sendRequest(final Message request) throws Exception {
         final FutureImpl<Message> future = SafeFutureImpl.<Message>create();
-        
+
         final FilterChain clientFilterChain = FilterChainBuilder.stateless()
                 .add(new TransportFilter())
                 .add(new ChunkingFilter(1))
@@ -126,11 +128,12 @@ public class GrizzlyParserTest extends TestCase {
                 TCPNIOTransportBuilder.newInstance().build();
         clientTransport.setProcessor(clientFilterChain);
 
-        Connection connection = null;
+        Connection<?> connection = null;
         try {
             clientTransport.start();
 
-            final Future<Connection> connectFuture =
+            @SuppressWarnings("rawtypes")
+			final Future<Connection> connectFuture =
                     clientTransport.connect("localhost", PORT);
 
             connection = connectFuture.get(10, TimeUnit.SECONDS);
@@ -147,7 +150,7 @@ public class GrizzlyParserTest extends TestCase {
                 connection.close();
             }
             try {
-                clientTransport.stop();
+                clientTransport.shutdownNow();
             } catch (IOException ignored) {
             }
         }
@@ -156,7 +159,7 @@ public class GrizzlyParserTest extends TestCase {
     private static Message createMessage(final int num,
             final int objectsCount) throws IOException {
         final MessageImpl message = new MessageImpl(100);
-        
+
         message.addMessageElement(NUMBER_ELEMENT_KEY, num);
         for (int i = 0; i < objectsCount; i++) {
             message.addMessageElement("Param #" + i, "Value #" + i);
@@ -179,7 +182,7 @@ public class GrizzlyParserTest extends TestCase {
 
             return ctx.getStopAction();
         }
-    
+
     }
 
     private static class ServerEchoFilter extends BaseFilter {
@@ -190,12 +193,12 @@ public class GrizzlyParserTest extends TestCase {
             final Message message = ctx.getMessage();
 
             count.incrementAndGet();
-            
+
             final Message outputMessage = new MessageImpl(100);
             outputMessage.addMessageElement(RESULT_ELEMENT, message != null ? "OK" : "FAILED");
 
             ctx.write(outputMessage);
-            
+
             return ctx.getInvokeAction();
         }
 

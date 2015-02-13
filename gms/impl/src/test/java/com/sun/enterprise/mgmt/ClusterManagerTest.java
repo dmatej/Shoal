@@ -40,18 +40,21 @@
 
 package com.sun.enterprise.mgmt;
 
-import com.sun.enterprise.ee.cms.core.GMSException;
-import com.sun.enterprise.ee.cms.core.GroupManagementService;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 
+import junit.framework.TestCase;
+
+import com.sun.enterprise.ee.cms.core.GMSException;
+import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.base.CustomTagNames;
 import com.sun.enterprise.ee.cms.impl.base.PeerID;
 import com.sun.enterprise.ee.cms.impl.base.SystemAdvertisement;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
-import com.sun.enterprise.mgmt.transport.Message;
-import junit.framework.TestCase;
 
 /**
  *
@@ -133,7 +136,7 @@ public class ClusterManagerTest extends TestCase  {
     }
 
 
-    private boolean addProcessedMasterChangeEvent(PeerID master, long mvceSeqId) {
+    private boolean addProcessedMasterChangeEvent(PeerID<?> master, long mvceSeqId) {
         final long TEST_EXPIRATION_DURATION_MS = 1000L;
         MasterNode.ProcessedMasterViewId processed =
                 new MasterNode.ProcessedMasterViewId(master, mvceSeqId, TEST_EXPIRATION_DURATION_MS);
@@ -152,7 +155,7 @@ public class ClusterManagerTest extends TestCase  {
     }
 
     /**
-     * 
+     *
      */
 
     public void testStartRunStopClusterManager() throws GMSException {
@@ -169,7 +172,7 @@ public class ClusterManagerTest extends TestCase  {
             Thread.sleep(500); // long enough to announce being master.
         } catch (InterruptedException ie) {
         }
-        masterNode = manager.getMasterNode();         
+        masterNode = manager.getMasterNode();
         assertTrue(masterNode.isMaster());
         assertTrue(masterNode.isMasterAssigned());
         assertTrue(!masterNode.isDiscoveryInProgress());
@@ -184,7 +187,7 @@ public class ClusterManagerTest extends TestCase  {
         assertTrue(missed.size() == 0);
         missed = masterNode.checkForMissedMasterChangeEvents(masterNode.getMasterNodeID(), 10);
         assertTrue(missed.size() == 0);
-        generateProcessedMasterChangeEvents(11, 13);                                     
+        generateProcessedMasterChangeEvents(11, 13);
         missed = masterNode.checkForMissedMasterChangeEvents(masterNode.getMasterNodeID(), 12);
         assertTrue(missed.size() == 0);
         missed = masterNode.checkForMissedMasterChangeEvents(masterNode.getMasterNodeID(), 12);

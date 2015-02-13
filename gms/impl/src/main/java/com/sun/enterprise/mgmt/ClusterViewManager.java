@@ -40,23 +40,26 @@
 
 package com.sun.enterprise.mgmt;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.sun.enterprise.ee.cms.core.GMSMember;
 import com.sun.enterprise.ee.cms.core.RejoinSubevent;
 import com.sun.enterprise.ee.cms.impl.base.CustomTagNames;
-import com.sun.enterprise.ee.cms.impl.base.SystemAdvertisement;
 import com.sun.enterprise.ee.cms.impl.base.PeerID;
+import com.sun.enterprise.ee.cms.impl.base.SystemAdvertisement;
 import com.sun.enterprise.ee.cms.impl.base.Utility;
 import com.sun.enterprise.ee.cms.impl.client.RejoinSubeventImpl;
 import com.sun.enterprise.ee.cms.impl.common.GMSContext;
 import com.sun.enterprise.ee.cms.impl.common.GMSContextFactory;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
-
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Manages Cluster Views and notifies cluster view listeners when cluster view
@@ -64,7 +67,7 @@ import java.util.logging.Logger;
  */
 public class ClusterViewManager {
     private static final Logger LOG = GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER);
-    private TreeMap<PeerID, SystemAdvertisement> view = new TreeMap<PeerID, SystemAdvertisement>();
+    private TreeMap<PeerID<?>, SystemAdvertisement> view = new TreeMap<PeerID<?>, SystemAdvertisement>();
     private SystemAdvertisement advertisement = null;
     private SystemAdvertisement masterAdvertisement = null;
     private List<ClusterViewEventListener> cvListeners = new ArrayList<ClusterViewEventListener>();
@@ -184,7 +187,7 @@ public class ClusterViewManager {
     /**
      * Set the master instance
      *
-     * @param advertisement Master system adverisement                                                          
+     * @param advertisement Master system adverisement
      * @param notify        if true, notifies registered listeners
      * @return true if there is master's change, false otherwise
      */
@@ -249,7 +252,7 @@ public class ClusterViewManager {
     /**
      * Gets the master advertisement
      *
-     * @return SystemAdvertisement Master system adverisement
+     * @return SystemAdvertisement Master system advertisement
      */
     public SystemAdvertisement getMaster() {
         return masterAdvertisement;
@@ -261,7 +264,7 @@ public class ClusterViewManager {
      * @param id instance id
      * @return Returns the SystemAdvertisement associated with id
      */
-    public SystemAdvertisement get(final PeerID id) {
+    public SystemAdvertisement get(final PeerID<?> id) {
         final SystemAdvertisement adv;
         lockLog("get()");
         viewLock.lock();
@@ -282,7 +285,7 @@ public class ClusterViewManager {
      */
     SystemAdvertisement remove(final SystemAdvertisement advertisement) {
         SystemAdvertisement removed = null;
-        final PeerID id = advertisement.getID();
+        final PeerID<?> id = advertisement.getID();
         lockLog("remove()");
         viewLock.lock();
         try {
@@ -303,12 +306,12 @@ public class ClusterViewManager {
         return removed;
     }
 
-    public boolean containsKey(final PeerID id) {
+    public boolean containsKey(final PeerID<?> id) {
         return containsKey(id, false);
     }
 
 
-    public boolean containsKey(final PeerID id, boolean debug) {
+    public boolean containsKey(final PeerID<?> id, boolean debug) {
         final boolean contains;
         viewLock.lock();
         try {
@@ -343,15 +346,16 @@ public class ClusterViewManager {
      *
      * @return The localView List
      */
-    @SuppressWarnings("unchecked")
     public ClusterView getLocalView() {
-        final TreeMap<PeerID, SystemAdvertisement> temp;
+        final TreeMap<PeerID<?>, SystemAdvertisement> clone;
         long localViewId = 0;
         long masterViewId = 0;
         lockLog("getLocalView()");
         viewLock.lock();
         try {
-            temp = (TreeMap<PeerID, SystemAdvertisement>) view.clone();
+            @SuppressWarnings("unchecked")
+            final TreeMap<PeerID<?>, SystemAdvertisement> temp = (TreeMap<PeerID<?>, SystemAdvertisement>) view.clone();
+            clone = temp;
             localViewId = viewId++;
             masterViewId = getMasterViewID();
         } finally {
@@ -360,7 +364,7 @@ public class ClusterViewManager {
         if (LOG.isLoggable(Level.FINEST)){
             LOG.log(Level.FINEST, "returning new ClusterView with view size:" + view.size());
         }
-        return new ClusterView(temp, localViewId, masterViewId);
+        return new ClusterView(clone, localViewId, masterViewId);
     }
 
     /**
@@ -402,7 +406,7 @@ public class ClusterViewManager {
             // group of members.  (i.e. VM in Cloud complete and new member may replace in future, not a restart
             // of previous member.)
             long seniorMemberStartTime = Long.MAX_VALUE;
-            for (Map.Entry<PeerID, SystemAdvertisement> e : view.entrySet()) {
+            for (Map.Entry<PeerID<?>, SystemAdvertisement> e : view.entrySet()) {
                 SystemAdvertisement i = e.getValue();
                 if (seniorMember == null) {
                     seniorMember = i;
@@ -455,7 +459,7 @@ public class ClusterViewManager {
      * @return true if this node is a the top of the list, false otherwise
      */
     public boolean isFirst() {
-        final PeerID id = view.firstKey();
+        final PeerID<?> id = view.firstKey();
         return advertisement.getID().equals(id);
     }
 
@@ -467,13 +471,13 @@ public class ClusterViewManager {
      * @return the index of id this view, or -1 if this view does not
      *         contain this element.
      */
-    public int indexOf(final PeerID id) {
+    public int indexOf(final PeerID<?> id) {
         if (id == null) {
             return -1;
         }
         int index = 0;
-        PeerID key;
-        for (PeerID peerID : view.keySet()) {
+        PeerID<?> key;
+        for (PeerID<?> peerID : view.keySet()) {
             key = peerID;
             if (key.equals(id)) {
                 return index;
@@ -483,7 +487,7 @@ public class ClusterViewManager {
         return -1;
     }
 
-    public PeerID getID(final String name) {
+    public PeerID<?> getID(final String name) {
         return manager.getID(name);
     }
 
@@ -505,7 +509,7 @@ public class ClusterViewManager {
         if (authoritative) {
             ClusterViewEvents event = cvEvent.getEvent();
             boolean changed = addToView( newView );
-            if (changed || event != ClusterViewEvents.ADD_EVENT) {  
+            if (changed || event != ClusterViewEvents.ADD_EVENT) {
                 //only if there are changes that we notify
                 notifyListeners(cvEvent);
             } else {
@@ -622,9 +626,8 @@ public class ClusterViewManager {
         try {
             sb.append("clusterviewmanager snapshot: group:" +  manager.getGroupName() + " current view id=" + this.viewId + " \n");
             int counter = 0;
-            for (Map.Entry<PeerID,SystemAdvertisement> current : view.entrySet()) {
-                PeerID peerid = current.getKey();
-                SystemAdvertisement sa = current.getValue();
+            for (Map.Entry<PeerID<?>,SystemAdvertisement> current : view.entrySet()) {
+                PeerID<?> peerid = current.getKey();
                 sb.append(++counter).append(". ");
                 sb.append(peerid.getInstanceName());
                 sb.append(" ");

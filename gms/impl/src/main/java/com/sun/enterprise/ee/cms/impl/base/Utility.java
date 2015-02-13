@@ -40,13 +40,16 @@
 
 package com.sun.enterprise.ee.cms.impl.base;
 
+import java.util.Properties;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.ErrorManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.sun.enterprise.ee.cms.core.GMSMember;
 import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
 import com.sun.enterprise.ee.cms.logging.NiceLogFormatter;
-
-import java.util.logging.*;
-import java.util.Map;
 
 /**
  * Utility class that can be used by any calling code to do common routines
@@ -88,7 +91,7 @@ public class Utility {
         return GroupManagementService.MemberType.WATCHDOG.toString().equalsIgnoreCase( member.getMemberType() );
     }
 
-    public static String getStringProperty( String propertyName, String defaultValue, Map props ) {
+    public static String getStringProperty( String propertyName, String defaultValue, Properties props ) {
         try {
             String value = null;
             if( props != null ) {
@@ -108,7 +111,7 @@ public class Utility {
         }
     }
 
-    public static int getIntProperty( String propertyName, int defaultValue, Map props ) {
+    public static int getIntProperty( String propertyName, int defaultValue, Properties props ) {
         try {
             String value = null;
             if( props != null ) {
@@ -130,7 +133,7 @@ public class Utility {
         }
     }
 
-    public static long getLongProperty( String propertyName, long defaultValue, Map props ) {
+    public static long getLongProperty( String propertyName, long defaultValue, Properties props ) {
         try {
             String value = null;
             if( props != null ) {
@@ -155,7 +158,7 @@ public class Utility {
         }
     }
 
-    public static boolean getBooleanProperty( String propertyName, boolean defaultValue, Map props ) {
+    public static boolean getBooleanProperty( String propertyName, boolean defaultValue, Properties props ) {
         try {
             String value = null;
             if( props != null ) {

@@ -94,7 +94,7 @@ public class NiceLogFormatter extends Formatter {
 
     private long recordNumber = 0;
 
-    @SuppressWarnings("unchecked")
+    
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     private static final String RECORD_BEGIN_MARKER = "[#|";

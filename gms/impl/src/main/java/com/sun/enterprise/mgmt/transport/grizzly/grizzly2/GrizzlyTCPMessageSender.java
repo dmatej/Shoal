@@ -39,29 +39,27 @@
  */
 package com.sun.enterprise.mgmt.transport.grizzly.grizzly2;
 
-import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyNetworkManager;
-import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyPeerID;
-import com.sun.enterprise.ee.cms.impl.base.PeerID;
-import com.sun.enterprise.mgmt.transport.AbstractMessageSender;
-import com.sun.enterprise.mgmt.transport.Message;
-import com.sun.enterprise.mgmt.transport.MessageIOException;
-
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.SocketAddress;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Future;
+import java.net.SocketAddress;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.WriteResult;
 import org.glassfish.grizzly.impl.FutureImpl;
-import org.glassfish.grizzly.impl.SafeFutureImpl;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.utils.Futures;
+
+import com.sun.enterprise.ee.cms.impl.base.PeerID;
+import com.sun.enterprise.mgmt.transport.AbstractMessageSender;
+import com.sun.enterprise.mgmt.transport.Message;
+import com.sun.enterprise.mgmt.transport.MessageIOException;
+import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyNetworkManager;
+import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyPeerID;
 
 /**
  * @author Bongjae Chang
@@ -85,7 +83,7 @@ public class GrizzlyTCPMessageSender extends AbstractMessageSender {
     }
 
     @Override
-    protected boolean doSend(final PeerID peerID, final Message message)
+    protected boolean doSend(final PeerID<?> peerID, final Message message)
             throws IOException {
 
         if (peerID == null) {
@@ -104,11 +102,11 @@ public class GrizzlyTCPMessageSender extends AbstractMessageSender {
         return send(null, remoteSocketAddress, message, peerID);
     }
 
-    @SuppressWarnings("unchecked")
+
     private boolean send(final SocketAddress localAddress,
             final SocketAddress remoteAddress,
-            final Message message, final PeerID target) throws IOException {
-        
+            final Message message, final PeerID<?> target) throws IOException {
+
         final int MAX_RESEND_ATTEMPTS = 4;
         if (tcpNioTransport == null) {
             throw new IOException("grizzly controller must be initialized");
@@ -146,7 +144,7 @@ public class GrizzlyTCPMessageSender extends AbstractMessageSender {
                                 Futures.createSafeFuture();
                 connection.write(remoteAddress, message, Futures.toCompletionHandler(syncWriteFuture), null);
                 syncWriteFuture.get(writeTimeoutMillis, TimeUnit.MILLISECONDS);
-                
+
                 connectionCache.offer(connection);
                 return true;
             } catch (Exception e) {

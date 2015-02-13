@@ -40,9 +40,10 @@
 
 package com.sun.enterprise.ee.cms.impl.common;
 
-import com.sun.enterprise.ee.cms.core.*;
-
-import java.util.logging.Level;
+import com.sun.enterprise.ee.cms.core.FailureRecoverySignal;
+import com.sun.enterprise.ee.cms.core.GMSException;
+import com.sun.enterprise.ee.cms.core.SignalAcquireException;
+import com.sun.enterprise.ee.cms.core.SignalReleaseException;
 
 /**
  * Implements the FailureRecoverySignal Interface and provides operations
@@ -57,8 +58,8 @@ public class FailureRecoverySignalImpl extends FailureNotificationSignalImpl
  {
     private String componentName;
     public FailureRecoverySignalImpl(final String componentName,
-                                     final String failedMember, 
-                                     final String groupName, 
+                                     final String failedMember,
+                                     final String groupName,
                                      final long startTime)
     {
         this.failedMember = failedMember;

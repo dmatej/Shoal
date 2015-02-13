@@ -40,22 +40,24 @@
 
 package com.sun.enterprise.mgmt.transport;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.MulticastSocket;
+import java.net.NetworkInterface;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.sun.enterprise.ee.cms.core.GMSConstants;
 import com.sun.enterprise.ee.cms.impl.base.PeerID;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
-
-import java.net.InetSocketAddress;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.MulticastSocket;
-import java.net.DatagramPacket;
-import java.net.Inet6Address;
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.util.concurrent.*;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.List;
 
 /**
  * This class is a default {@link MulticastMessageSender}'s implementation and extends {@link AbstractMulticastMessageSender}
@@ -94,14 +96,13 @@ public class BlockingIOMulticastSender extends AbstractMulticastMessageSender im
     private final ThreadPoolExecutor threadPoolExecutor;
     private long maxExecutorQueueSize = 0;
     private long rejectedExecution = 0;
-    private final boolean monitoringEnabled;
 
     public BlockingIOMulticastSender( String host,
                                       String multicastAddress,
                                       int multicastPort,
                                       String networkInterfaceName,
                                       int multicastPacketSize,
-                                      PeerID localPeerID,
+                                      PeerID<?> localPeerID,
                                       Executor executor,
                                       int multicastTimeToLive,
                                       NetworkManager networkManager ) throws IOException {
@@ -132,8 +133,6 @@ public class BlockingIOMulticastSender extends AbstractMulticastMessageSender im
         //    monitorLog.setLevel(Level.FINE);
         //}
         // END DO NOT CHECK IN
-
-        this.monitoringEnabled = monitorLog.isLoggable(Level.FINE);
     }
 
     /**
@@ -220,9 +219,8 @@ public class BlockingIOMulticastSender extends AbstractMulticastMessageSender im
         printStats(Level.INFO);
 
 
-        boolean finished = false;
         try {
-            finished = endGate.await( shutdownTimeout, TimeUnit.MILLISECONDS );
+            endGate.await( shutdownTimeout, TimeUnit.MILLISECONDS );
         } catch( InterruptedException e ) {
         }
                    // interrupt thread that is waiting on a receive datagram.

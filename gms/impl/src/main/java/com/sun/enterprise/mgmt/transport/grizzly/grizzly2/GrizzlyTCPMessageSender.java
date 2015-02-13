@@ -120,7 +120,7 @@ public class GrizzlyTCPMessageSender extends AbstractMessageSender {
 
         int attemptNo = 1;
         do {
-            final Connection connection;
+            final Connection<SocketAddress> connection;
 
             try {
                 connection = connectionCache.poll(localAddress, remoteAddress);
@@ -140,9 +140,9 @@ public class GrizzlyTCPMessageSender extends AbstractMessageSender {
             }
 
             try {
-                final FutureImpl<WriteResult> syncWriteFuture =
-                                Futures.createSafeFuture();
-                connection.write(remoteAddress, message, Futures.toCompletionHandler(syncWriteFuture), null);
+                final FutureImpl<WriteResult<Message, SocketAddress>> syncWriteFuture = Futures.createSafeFuture();
+                final CompletionHandler<WriteResult<Message, SocketAddress>> completionHandler = Futures.toCompletionHandler(syncWriteFuture);
+                connection.write(remoteAddress, message, completionHandler);
                 syncWriteFuture.get(writeTimeoutMillis, TimeUnit.MILLISECONDS);
 
                 connectionCache.offer(connection);

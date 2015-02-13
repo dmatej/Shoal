@@ -52,7 +52,7 @@ import java.util.Comparator;
  *         Date: May 9, 2005
  * @version $Revision$
  */
-public class GMSCacheable implements Serializable, Comparator {
+public class GMSCacheable implements Serializable, Comparator<Object> {
     static final long serialVersionUID = 8510812525534342911L;
 
     private final String componentName;

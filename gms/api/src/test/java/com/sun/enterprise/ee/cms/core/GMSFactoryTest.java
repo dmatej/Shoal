@@ -1,3 +1,5 @@
+package com.sun.enterprise.ee.cms.core;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -38,10 +40,9 @@
  * holder.
  */
 
-import com.sun.enterprise.ee.cms.core.*;
-import junit.framework.TestCase;
-
 import java.util.Properties;
+
+import junit.framework.TestCase;
 
 public class GMSFactoryTest extends TestCase {
 

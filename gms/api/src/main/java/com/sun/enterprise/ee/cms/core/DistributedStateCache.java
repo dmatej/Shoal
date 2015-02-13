@@ -108,7 +108,7 @@ public interface DistributedStateCache {
      * returns the current cache state to caller.
      * @return Map - containing the cache of this DSC instance
      */
-    Map getAllCache();
+    Map<GMSCacheable, Object> getAllCache();
 
     /**
      * removes an entry from the cache for the given composite key of
@@ -117,8 +117,8 @@ public interface DistributedStateCache {
      * @param memberTokenId   Member's identity
      * @param key The component provided key
      * @throws GMSException
-     */ 
-    void removeFromCache(String componentName, String memberTokenId, 
+     */
+    void removeFromCache(String componentName, String memberTokenId,
                          Serializable key) throws GMSException;
 
     /**
@@ -174,7 +174,7 @@ public interface DistributedStateCache {
      * Empties the DistributedStateCache. This is typically called in a group
      * shutdown context so that the group's stale date is not retained for any
      * later lives of the group.
-     */ 
+     */
     void removeAll ();
 
     /**

@@ -46,7 +46,9 @@
  * @version $Revision$
  */
 public class GMSNotEnabledException extends GMSException {
-    public GMSNotEnabledException(){
+	private static final long serialVersionUID = -9164334926157710973L;
+
+	public GMSNotEnabledException(){
         super();
     }
 

@@ -48,7 +48,9 @@ package com.sun.enterprise.ee.cms.core;
  * @version $Revision$
  */
 public class GMSNotInitializedException extends GMSException{
-    public GMSNotInitializedException(){
+	private static final long serialVersionUID = -6120235287892833517L;
+
+	public GMSNotInitializedException(){
         super();
     }
 

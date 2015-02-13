@@ -51,7 +51,9 @@ package com.sun.enterprise.ee.cms.core;
  * @version $Revision$
  */
 public class SignalReleaseException extends Exception{
-    public SignalReleaseException(){
+	private static final long serialVersionUID = 4568715109280384599L;
+
+	public SignalReleaseException(){
         super();
     }
 

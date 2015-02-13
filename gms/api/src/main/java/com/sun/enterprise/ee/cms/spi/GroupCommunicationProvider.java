@@ -41,13 +41,14 @@
 package com.sun.enterprise.ee.cms.spi;
 
  import com.sun.enterprise.ee.cms.core.GMSException;
- import com.sun.enterprise.ee.cms.core.MemberNotInViewException;
- import com.sun.enterprise.ee.cms.core.GMSConstants;
- import com.sun.enterprise.ee.cms.core.GMSConstants.groupStartupState;
+import com.sun.enterprise.ee.cms.core.MemberNotInViewException;
+import com.sun.enterprise.ee.cms.core.GMSConstants;
+import com.sun.enterprise.ee.cms.core.GMSConstants.groupStartupState;
 
  import java.io.Serializable;
- import java.util.List;
- import java.util.Map;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Provides a plugging interface for integrating group communication
@@ -81,7 +82,7 @@ public interface GroupCommunicationProvider {
             String memberName,
             String groupName,
             Map<String, String> identityMap,
-            Map configProperties ) throws GMSException;
+            Properties configProperties ) throws GMSException;
 
     /**
      * Joins the group using semantics specified by the underlying GCP system
@@ -246,5 +247,5 @@ public interface GroupCommunicationProvider {
                               GMSConstants.groupStartupState startupState,
                               List<String> memberTokens);
 
-    boolean isDiscoveryInProgress(); 
+    boolean isDiscoveryInProgress();
 }

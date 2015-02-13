@@ -80,7 +80,7 @@ import java.util.logging.Level;
   * @author Shreedhar Ganapathy
   * @version $Revision$
   */
- 
+
 public class GMSFactory {
     static private Logger LOG = Logger.getLogger("ShoalLogger.api", StringManager.LOG_STRINGS);
     static private StringManager sm = StringManager.getInstance();
@@ -109,7 +109,7 @@ public class GMSFactory {
      * configuration.
      *
      * Calls to GMSFactory.getGMSModule() made before any code calls this method
-     * will result in GMSNotEnabledException to be thrown. 
+     * will result in GMSNotEnabledException to be thrown.
      *
      * @param serverToken  a logical name or identity given the member that
      * is repeatable over lifetimes of the server
@@ -186,7 +186,7 @@ public class GMSFactory {
      */
     public static GroupManagementService getGMSModule() throws GMSException {
         GroupManagementService gms;
-        final Collection instances = getAllGMSInstancesForMember();
+        final Collection<GroupManagementService> instances = getAllGMSInstancesForMember();
         if(instances.size() == 0){
             throw new GMSNotInitializedException(sm.get("ex.init.failure"));
         }
@@ -199,7 +199,7 @@ public class GMSFactory {
      * become a member.
      * @return Collection
      */
-    public static Collection getAllGMSInstancesForMember(){
+    public static Collection<GroupManagementService> getAllGMSInstancesForMember(){
         return groups.values();
     }
 
@@ -270,7 +270,7 @@ public class GMSFactory {
         GroupManagementService gmsImpl = null;
         // for jdk 5.  just use class loader.
         try {
-            Class GmsImplClass = Class.forName(classname);
+            Class<?> GmsImplClass = Class.forName(classname);
             if (GmsImplClass == null) {
                 LOG.log(Level.SEVERE, "factory.load.service.error");
             } else {

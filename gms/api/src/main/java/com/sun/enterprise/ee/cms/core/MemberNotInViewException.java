@@ -50,7 +50,9 @@ package com.sun.enterprise.ee.cms.core;
  */
 public class MemberNotInViewException extends GMSException {
 
-    public MemberNotInViewException(){
+	private static final long serialVersionUID = -8581553671167071724L;
+
+	public MemberNotInViewException(){
         super();
     }
 

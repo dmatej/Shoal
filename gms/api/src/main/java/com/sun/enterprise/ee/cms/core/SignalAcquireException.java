@@ -52,13 +52,15 @@ package com.sun.enterprise.ee.cms.core;
  * out of the group. This will indicate a group condition wherein
  * control of resources is atomically defined such that it may be acceptable
  * for most group communication environments for continuing operations.
- * 
+ *
  * @author Shreedhar Ganapathy
  * Date: Jan 8, 2004
  * @version $Revision$
  */
 public class SignalAcquireException extends Exception{
-    public SignalAcquireException(){
+	private static final long serialVersionUID = -1507353998630657590L;
+
+	public SignalAcquireException(){
         super();
     }
 

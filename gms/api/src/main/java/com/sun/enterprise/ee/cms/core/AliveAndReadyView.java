@@ -40,11 +40,7 @@
 
 package com.sun.enterprise.ee.cms.core;
 
-import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
-
-import com.sun.enterprise.ee.cms.core.Signal;
 
 
 /**
@@ -53,7 +49,7 @@ import com.sun.enterprise.ee.cms.core.Signal;
  * The GMS notification signals of JoinedAndReadyNotificationSignal, FailureNotificationSignal and PlannedShutdownSignal
  * transition from one of these views to the next view. When one of these signal occurs, the current view is terminated
  * by setting its signal.  While the view's signal is null, it is considered the current view. Once a terminating signal
- * occurs, than this view is considered the previous view and getSignal() returns the GMS notification that caused this 
+ * occurs, than this view is considered the previous view and getSignal() returns the GMS notification that caused this
  * view to conclude.
  */
 public interface AliveAndReadyView {

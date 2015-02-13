@@ -49,11 +49,11 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    
+
     <groupId>org.shoal</groupId>
     <artifactId>shoal</artifactId>
     <packaging>pom</packaging>
-    <version>1.6.51-SNAPSHOT</version>
+    <version>1.7.0-payara-SNAPSHOT</version>
     <name>shoal</name>
     <url>http://java.net/projects/shoal</url>
 

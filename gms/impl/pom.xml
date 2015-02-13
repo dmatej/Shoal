@@ -47,10 +47,10 @@
     <parent>
         <groupId>org.shoal</groupId>
         <artifactId>shoal-gms</artifactId>
-        <version>1.6.51-SNAPSHOT</version>
+        <version>1.7.0-payara-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    
+
     <artifactId>shoal-gms-impl</artifactId>
     <packaging>bundle</packaging>
     <name>shoal-gms-impl</name>
@@ -58,7 +58,7 @@
     <properties>
         <shoal.home>${basedir}</shoal.home>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

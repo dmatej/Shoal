@@ -71,24 +71,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>${grizzly.group.id}</groupId>
-            <artifactId>grizzly-utils</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>${grizzly.group.id}</groupId>
-            <artifactId>grizzly-framework</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>${grizzly.group.id}</groupId>
-            <artifactId>grizzly-http</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>${grizzly2.group.id}</groupId>
             <artifactId>grizzly-framework</artifactId>
             <scope>provided</scope>
@@ -102,7 +84,7 @@
         <dependency>
             <groupId>${grizzly2.group.id}</groupId>
             <artifactId>grizzly-config</artifactId>
-            <version>${grizzly2.version}</version>
+            <version>2.3.2</version>
         </dependency>
     </dependencies>
 

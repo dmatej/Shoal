@@ -114,15 +114,6 @@
                         <Export-Package>com.sun.enterprise.ee.cms.impl.*;com.sun.enterprise.gms.tools;com.sun.enterprise.ee.cms.logging;com.sun.enterprise.mgmt.*;com.sun.enterprise.osgi</Export-Package>
                     </instructions>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <inherited>true</inherited>

@@ -119,7 +119,7 @@
         <junit.group.id>junit</junit.group.id>
         <junit.version>3.8.1</junit.version>
 
-        <ha.api.version>3.1.8</ha.api.version>
+        <ha.api.version>3.1.13</ha.api.version>
 
         <!-- Set sourceEncoding property to eliminate warning with
              "File encoding not set" when running FindBugs plugin.
@@ -127,7 +127,7 @@
              it.
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <findbugs.exclude />
+        <findbugs.exclude/>
 	<findbugs.version>2.5.2</findbugs.version>
 	<findbugs.threshold>Low</findbugs.threshold>
     </properties>
